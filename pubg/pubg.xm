@@ -67,30 +67,41 @@
         CGPoint rmin = CGPointMake(145,281);
         CGPoint dmin = CGPointMake(104, 318);
         CGPoint lmin = CGPointMake(70, 280);
-        CGPoint umin = CGPointMake(108, 241);
-
+        CGPoint umin = CGPointMake(108, 200);
+        CGFloat yValueNeutral = 281;
+        CGFloat xValueNeutral = 108;
         if (xValue != 0){
             NSLog(@"x value: %f", xValue);
             if (xValue > 0) { //moving right
-                /*
-                 0.45               x
-                ------      =     -----
-                   1               185 - 70
 
-                   x = (185-70) * 0.45
-                */
-                //- (void)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount
+                
                 CGFloat newX = 185 * xValue;
                 NSLog(@"new x: %f", newX);
-                [[self IOSView] dragFromPoint:CGPointMake(xValue, 281) toPoint:lmin steps:10];
+                if (yValue != 0){
+                    //yValueNeutral * ABS(yValue);
+                }
+                [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin steps:2];
             } else if (0 > xValue){
                 CGFloat newX = 185 * ABS(xValue);
                 NSLog(@"lower new x: %f", newX);
-                [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, 281) steps:10];
+                [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral) steps:2];
             }
         }
         if (yValue != 0){
             NSLog(@"y value: %f", yValue);
+            if (yValue > 0) { //moving up
+
+                CGFloat newY = 241 * yValue;
+                NSLog(@"new y: %f", newY);
+                if (xValue != 0){
+                    //xValueNeutral * ABS(xValue);
+                }
+                [[self IOSView] dragFromPoint:umin toPoint:CGPointMake(xValueNeutral, newY) steps:2];
+            } else if (0 > yValue){
+                CGFloat newY = 241 * ABS(yValue);
+                NSLog(@"lower new y: %f", newY);
+                [[self IOSView] dragFromPoint:CGPointMake(xValueNeutral, newY) toPoint:dmin steps:2];
+            }
         }
       
     };
@@ -145,7 +156,7 @@
             [[self IOSView] tapAtPoint:cancelPoint];
 
             CGPoint cancelPoint2 = [self convertPointForScreen:CGPointMake(610,72)];
-            [[self IOSView] tapAtPoint:cancelPoint];
+            [[self IOSView] tapAtPoint:cancelPoint2];
 
         }
     };
