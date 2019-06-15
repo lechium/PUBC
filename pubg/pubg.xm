@@ -62,7 +62,7 @@
 
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
            
-      
+        
         CGPoint mid = CGPointMake(106,281);
         CGPoint rmin = CGPointMake(145,281);
         CGPoint dmin = CGPointMake(104, 318);
@@ -140,6 +140,12 @@
 
             CGPoint okPoint = [self convertPointForScreen:CGPointMake(388,266)];
             [[self IOSView] tapAtPoint:okPoint];
+
+            CGPoint cancelPoint = [self convertPointForScreen:CGPointMake(627,31)];
+            [[self IOSView] tapAtPoint:cancelPoint];
+
+            CGPoint cancelPoint2 = [self convertPointForScreen:CGPointMake(610,72)];
+            [[self IOSView] tapAtPoint:cancelPoint];
 
         }
     };
