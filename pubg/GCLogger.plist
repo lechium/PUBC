@@ -1,0 +1,9 @@
+{
+	Filter = {
+		Bundles = (
+			"com.apple.GameController",
+			"com.apple.CoreBluetooth",
+			"com.tencent.ig",
+		);
+	};
+}
