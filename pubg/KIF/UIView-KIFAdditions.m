@@ -449,7 +449,38 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     [self tapAtPoint:centerPoint];
 }
 
-- (void)tapAtPoint:(CGPoint)point;
+- (UITouch *)tapDownAtPoint:(CGPoint)point
+{
+    UITouch *touch = [[UITouch alloc] initAtPoint:point inView:self];
+    [touch setPhaseAndUpdateTimestamp:UITouchPhaseBegan];
+    
+    UIEvent *event = [self eventWithTouch:touch];
+    
+    [[UIApplication sharedApplication] sendEvent:event];
+
+    // Dispatching the event doesn't actually update the first responder, so fake it
+    if ([touch.view isDescendantOfView:self] && [self canBecomeFirstResponder]) {
+        [self becomeFirstResponder];
+    }
+    return touch;
+}
+
+- (void)finishTouch:(UITouch *)touch
+{
+    [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
+    
+    UIEvent *event = [self eventWithTouch:touch];
+    
+    [[UIApplication sharedApplication] sendEvent:event];
+    
+    // Dispatching the event doesn't actually update the first responder, so fake it
+    if ([touch.view isDescendantOfView:self] && [self canBecomeFirstResponder]) {
+        [self becomeFirstResponder];
+    }
+    
+}
+
+- (UITouch *)tapAtPoint:(CGPoint)point
 {
     // Web views don't handle touches in a normal fashion, but they do have a method we can call to tap them
     // This may not be necessary anymore. We didn't properly support controls that used gesture recognizers
@@ -465,7 +496,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     
     if (webBrowserView) {
         [webBrowserView tapInteractionWithLocation:point];
-        return;
+        return nil;
     }
     
     // Handle touches in the normal way for other views
@@ -483,7 +514,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     if ([touch.view isDescendantOfView:self] && [self canBecomeFirstResponder]) {
         [self becomeFirstResponder];
     }
-
+    return touch;
 }
 
 - (void)twoFingerTapAtPoint:(CGPoint)point {
@@ -536,26 +567,26 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     
 }
 
-- (void)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
 {
-    [self dragFromPoint:startPoint toPoint:endPoint steps:3];
+    return [self dragFromPoint:startPoint toPoint:endPoint steps:3];
 }
 
 
-- (void)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
 {
     KIFDisplacement displacement = CGPointMake(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
-    [self dragFromPoint:startPoint displacement:displacement steps:stepCount];
+    return [self dragFromPoint:startPoint displacement:displacement steps:stepCount];
 }
 
-- (void)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
 {
     CGPoint endPoint = CGPointMake(startPoint.x + displacement.x, startPoint.y + displacement.y);
     NSArray<NSValue *> *path = [self pointsFromStartPoint:startPoint toPoint:endPoint steps:stepCount];
-    [self dragPointsAlongPaths:@[path]];
+    return [self dragPointsAlongPaths:@[path]];
 }
 
-- (void)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
+- (NSArray <UITouch *> *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
 {
     // convert point array into NSArray with NSValue
     NSMutableArray *array = [NSMutableArray array];
@@ -563,26 +594,26 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     {
         [array addObject:[NSValue valueWithCGPoint:points[i]]];
     }
-    [self dragPointsAlongPaths:@[[array copy]]];
+    return [self dragPointsAlongPaths:@[[array copy]]];
 }
 
-- (void)dragPointsAlongPaths:(NSArray<NSArray<NSValue *> *> *)arrayOfPaths {
+- (NSArray <UITouch *> *)dragPointsAlongPaths:(NSArray<NSArray<NSValue *> *> *)arrayOfPaths{
     // There must be at least one path with at least one point
     if (arrayOfPaths.count == 0 || arrayOfPaths.firstObject.count == 0)
     {
-        return;
+        return nil;
     }
-
+    
     // all paths must have the same number of points
     NSUInteger pointsInPath = [arrayOfPaths[0] count];
     for (NSArray *path in arrayOfPaths)
     {
         if (path.count != pointsInPath)
         {
-            return;
+            return nil;
         }
     }
-
+    
     NSMutableArray<UITouch *> *touches = [NSMutableArray array];
     
     // Convert paths to be in window coordinates before we start, because the view may
@@ -599,7 +630,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     }
     
     arrayOfPaths = newPaths;
-
+    
     for (NSUInteger pointIndex = 0; pointIndex < pointsInPath; pointIndex++) {
         // create initial touch event and send touch down event
         if (pointIndex == 0)
@@ -631,30 +662,45 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
             }
             UIEvent *event = [self eventWithTouches:[NSArray arrayWithArray:touches]];
             [[UIApplication sharedApplication] sendEvent:event];
-
+            
             CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
-
+            
             // The last point needs to also send a phase ended touch.
             if (pointIndex == pointsInPath - 1) {
                 for (UITouch * touch in touches) {
+                    
                     [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
                     UIEvent *eventUp = [self eventWithTouch:touch];
+                    //NSLog(@"event up: %@", eventUp);
                     [[UIApplication sharedApplication] sendEvent:eventUp];
-                    
+                 
                 }
-
+                
             }
         }
     }
-
+    
     // Dispatching the event doesn't actually update the first responder, so fake it
     if ([touches.firstObject view] == self && [self canBecomeFirstResponder]) {
         [self becomeFirstResponder];
     }
-
+    
     while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
         CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
     }
+    return touches;
+}
+
+- (void)endTouches:(NSArray <UITouch *> *)touches {
+    
+    for (UITouch * touch in touches) {
+        [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
+        UIEvent *eventUp = [self eventWithTouch:touch];
+        //NSLog(@"event up: %@", eventUp);
+        [[UIApplication sharedApplication] sendEvent:eventUp];
+        
+    }
+    
 }
 
 - (void)twoFingerPanFromPoint:(CGPoint)startPoint toPoint:(CGPoint)toPoint steps:(NSUInteger)stepCount {

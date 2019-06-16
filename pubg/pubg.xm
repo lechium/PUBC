@@ -164,7 +164,11 @@ typedef enum {
         case PGBActionFirstItemSelect:
             outpoint = [self convertPointForScreen:CGPointMake(437,132)];// y+50 = 2 item y+ 100 = 3rd item
             break;
-            
+
+        case PGBActionTypeOKSoloButton:
+           outpoint = [self convertPointForScreen:CGPointMake(330,266)];
+           break;
+        
         default:
             break;
     }
@@ -185,12 +189,18 @@ typedef enum {
     return CGPointMake(x, y);
 }
 
+static CGFloat lastXMove;
+static CGFloat lastYMove;
+static UITouch *lastXTouch;
+static UITouch *lastYTouch;
+
 %new - (void)controllerConnected:(NSNotification *)n {
     
     GCController *gameController = n.object;
     //28/140 = training button
     GCExtendedGamepad *profile = gameController.extendedGamepad;
     
+    __block NSArray <UITouch *> *touches = nil;
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         
@@ -201,6 +211,17 @@ typedef enum {
         CGPoint umin = CGPointMake(108, 200);
         CGFloat yValueNeutral = 281;
         CGFloat xValueNeutral = 108;
+
+        if (xValue == 0 && yValue == 0){
+
+            if (touches){
+
+                [[self IOSView] endTouches:touches];
+                touches = nil;
+            }
+
+        }
+
         if (xValue != 0){
             NSLog(@"x value: %f", xValue);
             if (xValue > 0) { //moving right
@@ -211,11 +232,11 @@ typedef enum {
                 if (yValue != 0){
                     //yValueNeutral * ABS(yValue);
                 }
-                [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin steps:2];
+                 [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin steps:2];
             } else if (0 > xValue){
                 CGFloat newX = 185 * ABS(xValue);
                 NSLog(@"lower new x: %f", newX);
-                [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral) steps:2];
+                 [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral) steps:2];
             } else {
                 [[self IOSView] dragFromPoint:mid toPoint:mid steps:2];
             }
@@ -318,6 +339,9 @@ typedef enum {
             CGPoint okPoint = PAT(PGBActionTypeOKDualButton);
             [[self IOSView] tapAtPoint:okPoint];
             
+            CGPoint okSolo = PAT(PGBActionTypeOKSoloButton);
+            [[self IOSView] tapAtPoint:okSolo];
+
             CGPoint closePoint = PAT(PGBActionTypeXCloseButton);
             [[self IOSView] tapAtPoint:closePoint];
             
@@ -326,31 +350,59 @@ typedef enum {
             
         }
     };
+
+    __block UITouch *currentRightTouch = nil;
     profile.rightTrigger.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed){
             NSLog(@"right trigger pressed punch right");
             CGPoint punchRight = PAT(PGBActionTypeRight);
-            [[self IOSView] tapAtPoint:punchRight];
+            currentRightTouch = [[self IOSView] tapDownAtPoint:punchRight];
+        } else {    
+
+            if (currentRightTouch) {
+                NSLog(@"touch up: %@", currentRightTouch);
+                [[self IOSView] finishTouch:currentRightTouch];
+                currentRightTouch = nil;
+            }
         }
     };
+
+     __block UITouch *currentLeftTouch = nil;
     profile.leftTrigger.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
+       
         if (pressed)
         {
             NSLog(@"left trigger punch left");
             CGPoint punchLeft = PAT(PGBActionTypeLeft);
-            [[self IOSView] tapAtPoint:punchLeft];
+            currentLeftTouch = [[self IOSView] tapDownAtPoint:punchLeft];
+        } else {    
+
+            if (currentLeftTouch) {
+                NSLog(@"touch up: %@", currentLeftTouch);
+                [[self IOSView] finishTouch:currentLeftTouch];
+                currentLeftTouch = nil;
+            }
         }
     };
     
+    __block UITouch *jumpTouch = nil;
     profile.buttonA.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed)
         {
             NSLog(@"buttonA pressed, jump");
             CGPoint jump = PAT(PGBActionTypeJump);
-            [[self IOSView] longPressAtPoint: jump duration: .1];
+            //jumpTouch = [[self IOSView] longPressAtPoint: jump duration: .1];
+            jumpTouch =  [[self IOSView] tapDownAtPoint:jump];
+        } else {
+            if (jumpTouch) {
+                NSLog(@"touch up: %@", jumpTouch);
+                [[self IOSView] finishTouch:jumpTouch];
+                jumpTouch = nil;
+            }
+
         }
     };
 
@@ -369,7 +421,7 @@ typedef enum {
     {
         if (pressed)
         {
-            CGPoint run = PAT(PGBActionTypeRun]);
+            CGPoint run = PAT(PGBActionTypeRun);
             [[self IOSView] tapAtPoint:run];
             NSLog(@"buttonX pressed run");
         }
@@ -379,7 +431,7 @@ typedef enum {
     {
         if (pressed)
         {
-            CGPoint crouch = PAT(PGBActionTypeCrouch]);
+            CGPoint crouch = PAT(PGBActionTypeCrouch);
             [[self IOSView] tapAtPoint:crouch];
             
             NSLog(@"buttonY pressed crouch");

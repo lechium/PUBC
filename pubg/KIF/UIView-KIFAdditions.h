@@ -39,10 +39,12 @@ typedef CGPoint KIFDisplacement;
 
 - (void)flash;
 - (void)tap;
-- (void)tapAtPoint:(CGPoint)point;
+- (void)finishTouch:(UITouch *)touch;
+- (UITouch *)tapAtPoint:(CGPoint)point;
+- (UITouch *)tapDownAtPoint:(CGPoint)point;
 - (void)twoFingerTapAtPoint:(CGPoint)point;
 - (void)longPressAtPoint:(CGPoint)point duration:(NSTimeInterval)duration;
-
+- (void)endTouches:(NSArray <UITouch *> *)touches;
 /*!
  @method dragFromPoint:toPoint:
  @abstract Simulates dragging a finger on the screen between the given points.
@@ -50,10 +52,10 @@ typedef CGPoint KIFDisplacement;
  @param startPoint The point at which to start the drag, in the coordinate system of the receiver.
  @param endPoint The point at which to end the drag, in the coordinate system of the receiver.
  */
-- (void)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
-- (void)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
-- (void)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
-- (void)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
+- (NSArray <UITouch *> *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
 - (void)twoFingerPanFromPoint:(CGPoint)startPoint toPoint:(CGPoint)toPoint steps:(NSUInteger)stepCount;
 - (void)pinchAtPoint:(CGPoint)centerPoint distance:(CGFloat)distance steps:(NSUInteger)stepCount;
 - (void)zoomAtPoint:(CGPoint)centerPoint distance:(CGFloat)distance steps:(NSUInteger)stepCount;
