@@ -212,15 +212,7 @@ static UITouch *lastYTouch;
         CGFloat yValueNeutral = 281;
         CGFloat xValueNeutral = 108;
 
-        if (xValue == 0 && yValue == 0){
-
-            if (touches){
-
-                [[self IOSView] endTouches:touches];
-                touches = nil;
-            }
-
-        }
+    
 
         if (xValue != 0){
             NSLog(@"x value: %f", xValue);
@@ -230,10 +222,13 @@ static UITouch *lastYTouch;
                 CGFloat newX = 185 * xValue;
                 NSLog(@"new x: %f", newX);
                 if (yValue != 0){
-                    //yValueNeutral * ABS(yValue);
+                    yValueNeutral *= ABS(yValue);
                 }
                  [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin steps:2];
             } else if (0 > xValue){
+                if (yValue != 0){
+                    yValueNeutral *= ABS(yValue);
+                }
                 CGFloat newX = 185 * ABS(xValue);
                 NSLog(@"lower new x: %f", newX);
                  [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral) steps:2];
@@ -241,6 +236,7 @@ static UITouch *lastYTouch;
                 [[self IOSView] dragFromPoint:mid toPoint:mid steps:2];
             }
         }
+        /*
         if (yValue != 0){
             NSLog(@"y value: %f", yValue);
             if (yValue > 0) { //moving up
@@ -259,6 +255,7 @@ static UITouch *lastYTouch;
                 [[self IOSView] dragFromPoint:mid toPoint:mid steps:2];
             }
         }
+        */
         
     };
     
