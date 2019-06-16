@@ -27,6 +27,19 @@ static NSString * const PGBActionMapAction = @"PGBActionMapAction";
 static NSString * const PGBActionTypeTrainingButton = @"PGBActionTypeTrainingButton";
 static NSString * const PGBActionTypeStartButton = @"PGBActionTypeStartButton";
 
+static NSString * const LeftThumbstick = @"LeftThumbstick";
+static NSString * const RightThumbstick = @"RightThumbstick";
+static NSString * const LeftThumbstickButton = @"LeftThumbstickButton";
+static NSString * const RightThumbstickButton = @"RightThumbstickButton";
+static NSString * const ButtonA = @"ButtonA";
+static NSString * const ButtonB = @"ButtonB";
+static NSString * const ButtonX = @"ButtonX";
+static NSString * const ButtonY = @"ButtonY";
+static NSString * const DpadUp = @"Dpad.up";
+static NSString * const DpadDown = @"Dpad.down";
+static NSString * const DpadLeft = @"Dpad.left";
+static NSString * const DpadRight = @"Dpad.right";
+
 typedef enum {
     
     kPGBActionTypeLeft,
@@ -52,6 +65,7 @@ typedef enum {
     kPGBActionMapAction,
     kPGBActionTypeTrainingButton,
     kPGBActionTypeStartButton,
+    kPGBActionTypeUndefined,
     
 } PGBActionType;
 
@@ -98,23 +112,73 @@ typedef enum {
 
 %hook IOSAppDelegate
 
+%new - (PGBActionType)actionTypeFromConstant:(NSString *)constant {
+    
+    PGBActionType type = kPGBActionTypeUndefined;
+    if ([constant isEqualToString:PGBActionTypeAim]){
+        type = kPGBActionTypeAim;
+    } else if ([constant isEqualToString:PGBActionTypeRun]){
+        type = kPGBActionTypeRun;
+    } else if ([constant isEqualToString:PGBActionTypeConceal]){
+        type = kPGBActionTypeConceal;
+    } else if ([constant isEqualToString:PGBActionTypeReload]){
+        type = kPGBActionTypeReload;
+    } else if ([constant isEqualToString:PGBActionTypeFirstWeapon]){
+        type = kPGBActionTypeFirstWeapon;
+    } else if ([constant isEqualToString:PGBActionTypeSecondWeapon]){
+        type = kPGBActionTypeSecondWeapon;
+    } else if ([constant isEqualToString:PGBActionTypeTrainingButton]){
+        type = kPGBActionTypeTrainingButton;
+    } else if ([constant isEqualToString:PGBActionTypeOKCancelButton]){
+        type = kPGBActionTypeOKCancelButton;
+    } else if ([constant isEqualToString:PGBActionTypeXCloseButton]){
+        type = kPGBActionTypeXCloseButton;
+    } else if ([constant isEqualToString:PGBActionTypeStartButton]){
+        type = kPGBActionTypeStartButton;
+    } else if ([constant isEqualToString:PGBActionTypeOKDualButton]){
+        type = kPGBActionTypeOKDualButton;
+    } else if ([constant isEqualToString:PGBActionTypeXClose2Button]){
+        type = kPGBActionTypeXClose2Button;
+    } else if ([constant isEqualToString:PGBActionTypeRight]){
+        type = kPGBActionTypeRight;
+    } else if ([constant isEqualToString:PGBActionTypeLeft]){
+        type = kPGBActionTypeLeft;
+    } else if ([constant isEqualToString:PGBActionTypeJump]){
+        type = kPGBActionTypeJump;
+    } else if ([constant isEqualToString:PGBActionTypeCrouch]){
+        type = kPGBActionTypeCrouch;
+    } else if ([constant isEqualToString:PGBActionTypeSmallWeapon]){
+        type = kPGBActionTypeSmallWeapon;
+    } else if ([constant isEqualToString:PGBActionTypeExitRound]){
+        type = kPGBActionTypeExitRound;
+    } else if ([constant isEqualToString:PGBActionHandAction]){
+        type = kPGBActionHandAction;
+    } else if ([constant isEqualToString:PGBActionTypeInventory]){
+        type = kPGBActionTypeInventory;
+    } else if ([constant isEqualToString:PGBActionFirstItemSelect]){
+        type = kPGBActionFirstItemSelect;
+    } else if ([constant isEqualToString:PGBActionTypeOKSoloButton]){
+        type = kPGBActionTypeOKSoloButton;
+    }
+
+    return type;
+    
+}
+
 %new - (CGPoint)pointForActionType:(PGBActionType)type {
     
     CGPoint outpoint = CGPointZero;
     
     switch (type) {
         case kPGBActionTypeAim:
-            
             outpoint = [self convertPointForScreen:CGPointMake(641,197)];
             break;
             
         case kPGBActionTypeRun:
-            
             outpoint = [self convertPointForScreen:CGPointMake(558, 99)];
             break;
             
         case kPGBActionTypeConceal: //lay down
-            
             outpoint = [self convertPointForScreen:CGPointMake(617, 345)];
             break;
     

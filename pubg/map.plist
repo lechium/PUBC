@@ -18,9 +18,9 @@
 	<string>PGBActionTypeLeft</string>
 	<key>RightTrigger</key>
 	<string>PGBActionTypeRight</string>
-	<key>RightTriggerButton</key>
+	<key>RightThumbstickButton</key>
 	<string>PGBActionHandAction</string>
-	<key>LeftTriggerButton</key>
+	<key>LeftThumbstickButton</key>
 	<string>PGBActionFirstItemSelect</string>
 	<key>dpad.up</key>
 	<string>PGBActionTypeAim</string>
