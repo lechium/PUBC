@@ -200,7 +200,7 @@ static UITouch *lastYTouch;
     //28/140 = training button
     GCExtendedGamepad *profile = gameController.extendedGamepad;
     
-    __block NSArray <UITouch *> *touches = nil;
+    __block UITouch *touch = nil;
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         
@@ -213,6 +213,13 @@ static UITouch *lastYTouch;
         CGFloat xValueNeutral = 108;
 
     
+        if (touch) {
+
+            NSLog(@"shit aint null: %@", touch);
+
+            [[self IOSView] finishTouch:touch];
+            touch = nil;
+        }
 
         if (xValue != 0){
             NSLog(@"x value: %f", xValue);
@@ -224,37 +231,39 @@ static UITouch *lastYTouch;
                 if (yValue != 0){
                     yValueNeutral *= ABS(yValue);
                 }
-                 [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin steps:2];
+                touch = [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin];
             } else if (0 > xValue){
                 if (yValue != 0){
                     yValueNeutral *= ABS(yValue);
                 }
                 CGFloat newX = 185 * ABS(xValue);
                 NSLog(@"lower new x: %f", newX);
-                 [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral) steps:2];
+                touch = [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral)];
             } else {
-                [[self IOSView] dragFromPoint:mid toPoint:mid steps:2];
+              touch =   [[self IOSView] dragFromPoint:mid toPoint:mid];
             }
-        }
-        /*
-        if (yValue != 0){
+        } else {
+            if (yValue != 0){
             NSLog(@"y value: %f", yValue);
             if (yValue > 0) { //moving up
                 
                 CGFloat newY = 241 * yValue;
                 NSLog(@"new y: %f", newY);
                 if (xValue != 0){
-                    //xValueNeutral * ABS(xValue);
+                    xValueNeutral *= ABS(xValue);
                 }
-                [[self IOSView] dragFromPoint:umin toPoint:CGPointMake(xValueNeutral, newY) steps:2];
+                [[self IOSView] dragFromPoint:umin toPoint:CGPointMake(xValueNeutral, newY)];
             } else if (0 > yValue){
                 CGFloat newY = 241 * ABS(yValue);
                 NSLog(@"lower new y: %f", newY);
-                [[self IOSView] dragFromPoint:CGPointMake(xValueNeutral, newY) toPoint:dmin steps:2];
+              touch = [[self IOSView] dragFromPoint:CGPointMake(xValueNeutral, newY) toPoint:dmin];
             } else {
-                [[self IOSView] dragFromPoint:mid toPoint:mid steps:2];
+               touch = [[self IOSView] dragFromPoint:mid toPoint:mid];
             }
         }
+        }
+        /*
+        
         */
         
     };

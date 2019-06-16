@@ -567,26 +567,26 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     
 }
 
-- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
+- (UITouch *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
 {
     return [self dragFromPoint:startPoint toPoint:endPoint steps:3];
 }
 
 
-- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
+- (UITouch *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
 {
     KIFDisplacement displacement = CGPointMake(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
     return [self dragFromPoint:startPoint displacement:displacement steps:stepCount];
 }
 
-- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
+- (UITouch *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
 {
     CGPoint endPoint = CGPointMake(startPoint.x + displacement.x, startPoint.y + displacement.y);
     NSArray<NSValue *> *path = [self pointsFromStartPoint:startPoint toPoint:endPoint steps:stepCount];
     return [self dragPointsAlongPaths:@[path]];
 }
 
-- (NSArray <UITouch *> *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
+- (UITouch *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
 {
     // convert point array into NSArray with NSValue
     NSMutableArray *array = [NSMutableArray array];
@@ -597,7 +597,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     return [self dragPointsAlongPaths:@[[array copy]]];
 }
 
-- (NSArray <UITouch *> *)dragPointsAlongPaths:(NSArray<NSArray<NSValue *> *> *)arrayOfPaths{
+- (UITouch *)dragPointsAlongPaths:(NSArray<NSArray<NSValue *> *> *)arrayOfPaths{
     // There must be at least one path with at least one point
     if (arrayOfPaths.count == 0 || arrayOfPaths.firstObject.count == 0)
     {
@@ -667,12 +667,13 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
             
             // The last point needs to also send a phase ended touch.
             if (pointIndex == pointsInPath - 1) {
+                NSLog(@"point index: %lu", pointIndex);
                 for (UITouch * touch in touches) {
                     
-                    [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
-                    UIEvent *eventUp = [self eventWithTouch:touch];
-                    //NSLog(@"event up: %@", eventUp);
-                    [[UIApplication sharedApplication] sendEvent:eventUp];
+                    //[touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
+                    //UIEvent *eventUp = [self eventWithTouch:touch];
+                    //NSLog(@"touch: %@", touch);
+                   // [[UIApplication sharedApplication] sendEvent:eventUp];
                  
                 }
                 
@@ -688,7 +689,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
         CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
     }
-    return touches;
+    return touches.lastObject;
 }
 
 - (void)endTouches:(NSArray <UITouch *> *)touches {

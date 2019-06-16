@@ -52,10 +52,10 @@ typedef CGPoint KIFDisplacement;
  @param startPoint The point at which to start the drag, in the coordinate system of the receiver.
  @param endPoint The point at which to end the drag, in the coordinate system of the receiver.
  */
-- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
-- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
-- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
-- (NSArray <UITouch *> *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
+- (UITouch *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
+- (UITouch *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
+- (UITouch *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
+- (UITouch *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
 - (void)twoFingerPanFromPoint:(CGPoint)startPoint toPoint:(CGPoint)toPoint steps:(NSUInteger)stepCount;
 - (void)pinchAtPoint:(CGPoint)centerPoint distance:(CGFloat)distance steps:(NSUInteger)stepCount;
 - (void)zoomAtPoint:(CGPoint)centerPoint distance:(CGFloat)distance steps:(NSUInteger)stepCount;
