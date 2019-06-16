@@ -3,31 +3,55 @@
 #import "UIView-KIFAdditions.h"
 //static GCController* gameController = nil; //Dictionary{index:STTouch}
 
+static NSString * const PGBActionTypeLeft = @"PGBActionTypeLeft";
+static NSString * const PGBActionTypeRight = @"PGBActionTypeRight";
+static NSString * const PGBActionTypeRun = @"PGBActionTypeRun";
+static NSString * const PGBActionTypeCrouch = @"PGBActionTypeCrouch";
+static NSString * const PGBActionTypeConceal = @"PGBActionTypeConceal";
+static NSString * const PGBActionTypeJump = @"PGBActionTypeJump";
+static NSString * const PGBActionTypeFirstWeapon = @"PGBActionTypeFirstWeapon";
+static NSString * const PGBActionTypeSecondWeapon = @"PGBActionTypeSecondWeapon";
+static NSString * const PGBActionTypeSmallWeapon = @"PGBActionTypeSmallWeapon";
+static NSString * const PGBActionTypeAim = @"PGBActionTypeAim";
+static NSString * const PGBActionTypeReload = @"PGBActionTypeReload";
+static NSString * const PGBActionTypeExitRound = @"PGBActionTypeExitRound";
+static NSString * const PGBActionTypeOKCancelButton = @"PGBActionTypeOKCancelButton";
+static NSString * const PGBActionTypeXCloseButton = @"PGBActionTypeXCloseButton";
+static NSString * const PGBActionTypeXClose2Button = @"PGBActionTypeXClose2Button";
+static NSString * const PGBActionTypeOKDualButton = @"PGBActionTypeOKDualButton";
+static NSString * const PGBActionTypeOKSoloButton = @"PGBActionTypeOKSoloButton";
+static NSString * const PGBActionTypeInventory = @"PGBActionTypeInventory";
+static NSString * const PGBActionHandAction = @"PGBActionHandAction";
+static NSString * const PGBActionFirstItemSelect = @"PGBActionFirstItemSelect";
+static NSString * const PGBActionMapAction = @"PGBActionMapAction";
+static NSString * const PGBActionTypeTrainingButton = @"PGBActionTypeTrainingButton";
+static NSString * const PGBActionTypeStartButton = @"PGBActionTypeStartButton";
+
 typedef enum {
     
-    PGBActionTypeLeft,
-    PGBActionTypeRight,
-    PGBActionTypeRun,
-    PGBActionTypeCrouch,
-    PGBActionTypeConceal,
-    PGBActionTypeJump,
-    PGBActionTypeFirstWeapon,
-    PGBActionTypeSecondWeapon,
-    PGBActionTypeSmallWeapon,
-    PGBActionTypeAim,
-    PGBActionTypeReload,
-    PGBActionTypeExitRound,
-    PGBActionTypeOKCancelButton,
-    PGBActionTypeXCloseButton,
-    PGBActionTypeXClose2Button,
-    PGBActionTypeOKDualButton,
-    PGBActionTypeOKSoloButton,
-    PGBActionTypeInventory,
-    PGBActionHandAction,
-    PGBActionFirstItemSelect,
-    PGBActionMapAction,
-    PGBActionTypeTrainingButton,
-    PGBActionTypeStartButton,
+    kPGBActionTypeLeft,
+    kPGBActionTypeRight,
+    kPGBActionTypeRun,
+    kPGBActionTypeCrouch,
+    kPGBActionTypeConceal,
+    kPGBActionTypeJump,
+    kPGBActionTypeFirstWeapon,
+    kPGBActionTypeSecondWeapon,
+    kPGBActionTypeSmallWeapon,
+    kPGBActionTypeAim,
+    kPGBActionTypeReload,
+    kPGBActionTypeExitRound,
+    kPGBActionTypeOKCancelButton,
+    kPGBActionTypeXCloseButton,
+    kPGBActionTypeXClose2Button,
+    kPGBActionTypeOKDualButton,
+    kPGBActionTypeOKSoloButton,
+    kPGBActionTypeInventory,
+    kPGBActionHandAction,
+    kPGBActionFirstItemSelect,
+    kPGBActionMapAction,
+    kPGBActionTypeTrainingButton,
+    kPGBActionTypeStartButton,
     
 } PGBActionType;
 
@@ -79,93 +103,93 @@ typedef enum {
     CGPoint outpoint = CGPointZero;
     
     switch (type) {
-        case PGBActionTypeAim:
+        case kPGBActionTypeAim:
             
             outpoint = [self convertPointForScreen:CGPointMake(641,197)];
             break;
             
-        case PGBActionTypeRun:
+        case kPGBActionTypeRun:
             
             outpoint = [self convertPointForScreen:CGPointMake(558, 99)];
             break;
             
-        case PGBActionTypeConceal: //lay down
+        case kPGBActionTypeConceal: //lay down
             
             outpoint = [self convertPointForScreen:CGPointMake(617, 345)];
             break;
     
-        case PGBActionTypeReload:
+        case kPGBActionTypeReload:
             outpoint = [self convertPointForScreen:CGPointMake(508,353)];
             break;
             
-        case PGBActionTypeFirstWeapon:
+        case kPGBActionTypeFirstWeapon:
             outpoint = [self convertPointForScreen:CGPointMake(290,340)];
             break;
   
-        case PGBActionTypeSecondWeapon:
+        case kPGBActionTypeSecondWeapon:
             outpoint = [self convertPointForScreen:CGPointMake(376,340)];
             break;
             
-        case PGBActionTypeTrainingButton:
+        case kPGBActionTypeTrainingButton:
             outpoint = [self convertPointForScreen:CGPointMake(28, 140)];
             break;
             
-        case PGBActionTypeOKCancelButton:    //Cancel button (on ok/cancel alert)
+        case kPGBActionTypeOKCancelButton:    //Cancel button (on ok/cancel alert)
             outpoint = [self convertPointForScreen:CGPointMake(281,266)];
             break;
             
-        case PGBActionTypeXCloseButton:  //top right close x
+        case kPGBActionTypeXCloseButton:  //top right close x
             outpoint = [self convertPointForScreen:CGPointMake(610,72)];
             break;
    
-        case PGBActionTypeStartButton:
+        case kPGBActionTypeStartButton:
             outpoint = [self convertPointForScreen:CGPointMake(81, 32)];
             break;
             
-        case PGBActionTypeOKDualButton: //(point for OK on Cancel / OK alert)
+        case kPGBActionTypeOKDualButton: //(point for OK on Cancel / OK alert)
             outpoint = [self convertPointForScreen:CGPointMake(388,266)];
             break;
             
-        case PGBActionTypeXClose2Button: //lower close X
+        case kPGBActionTypeXClose2Button: //lower close X
             outpoint = [self convertPointForScreen:CGPointMake(627,31)];
             break;
     
-        case PGBActionTypeRight:
+        case kPGBActionTypeRight:
             outpoint = [self convertPointForScreen:CGPointMake(565, 275)];
             break;
             
-        case PGBActionTypeLeft:
+        case kPGBActionTypeLeft:
             outpoint = [self convertPointForScreen:CGPointMake(39, 198)];
             break;
             
-        case PGBActionTypeJump:
+        case kPGBActionTypeJump:
             outpoint = [self convertPointForScreen:CGPointMake(639, 258)]; //long press
             break;
             
-        case PGBActionTypeCrouch:
+        case kPGBActionTypeCrouch:
             outpoint = [self convertPointForScreen:CGPointMake(560, 349)];
             break;
-        case PGBActionTypeSmallWeapon:
+        case kPGBActionTypeSmallWeapon:
             outpoint = [self convertPointForScreen:CGPointMake(406,313)];
             break;
             
-        case PGBActionTypeExitRound:
+        case kPGBActionTypeExitRound:
             outpoint = [self convertPointForScreen:CGPointMake(64,13)];
             break;
             
-        case PGBActionTypeInventory:
+        case kPGBActionTypeInventory:
             outpoint =  [self convertPointForScreen:CGPointMake(48, 343)];
             break;
             
-        case PGBActionHandAction:
+        case kPGBActionHandAction:
             outpoint = [self convertPointForScreen:CGPointMake(480,95)];
             break;
             
-        case PGBActionFirstItemSelect:
+        case kPGBActionFirstItemSelect:
             outpoint = [self convertPointForScreen:CGPointMake(437,132)];// y+50 = 2 item y+ 100 = 3rd item
             break;
 
-        case PGBActionTypeOKSoloButton:
+        case kPGBActionTypeOKSoloButton:
            outpoint = [self convertPointForScreen:CGPointMake(330,266)];
            break;
         
@@ -200,7 +224,23 @@ static UITouch *lastYTouch;
     //28/140 = training button
     GCExtendedGamepad *profile = gameController.extendedGamepad;
     
-    __block UITouch *touch = nil;
+    __block NSArray <UITouch *> *touches = nil;
+
+    [profile.leftThumbstick.xAxis setValueChangedHandler:^(GCControllerAxisInput *axis, float value) {
+				NSInteger v=(NSInteger)(value*127); //-127 ... + 127 range
+
+				if (v != 0){
+				    NSLog(@"Joy X: %i", v);
+                }
+	}];
+	[profile.leftThumbstick.yAxis setValueChangedHandler:^(GCControllerAxisInput *axis, float value) {
+				NSInteger v= (NSInteger)(value*127 * - 1); //-127 ... + 127 range
+
+                if (v != 0){
+				    NSLog(@"Joy Y: %i", v);
+                }
+	}];
+    
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         
@@ -208,17 +248,21 @@ static UITouch *lastYTouch;
         CGPoint rmin = CGPointMake(145,281);
         CGPoint dmin = CGPointMake(104, 318);
         CGPoint lmin = CGPointMake(70, 280);
-        CGPoint umin = CGPointMake(108, 200);
+        CGPoint umin = CGPointMake(108, 240);
         CGFloat yValueNeutral = 281;
         CGFloat xValueNeutral = 108;
 
     
-        if (touch) {
+        if (touches.count > 0) {
+        
+            if (xValue == 0 && yValue == 0){
+                    NSLog(@"shit aint null: %@", touches);
 
-            NSLog(@"shit aint null: %@", touch);
-
-            [[self IOSView] finishTouch:touch];
-            touch = nil;
+                    [[self IOSView] endTouches:touches];
+                    touches = nil;
+        
+            }
+        
         }
 
         if (xValue != 0){
@@ -231,16 +275,16 @@ static UITouch *lastYTouch;
                 if (yValue != 0){
                     yValueNeutral *= ABS(yValue);
                 }
-                touch = [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin];
+                touches = [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin];
             } else if (0 > xValue){
                 if (yValue != 0){
                     yValueNeutral *= ABS(yValue);
                 }
                 CGFloat newX = 185 * ABS(xValue);
                 NSLog(@"lower new x: %f", newX);
-                touch = [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral)];
+                touches = [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral)];
             } else {
-              touch =   [[self IOSView] dragFromPoint:mid toPoint:mid];
+              touches =   [[self IOSView] dragFromPoint:mid toPoint:mid];
             }
         } else {
             if (yValue != 0){
@@ -256,9 +300,9 @@ static UITouch *lastYTouch;
             } else if (0 > yValue){
                 CGFloat newY = 241 * ABS(yValue);
                 NSLog(@"lower new y: %f", newY);
-              touch = [[self IOSView] dragFromPoint:CGPointMake(xValueNeutral, newY) toPoint:dmin];
+              touches = [[self IOSView] dragFromPoint:CGPointMake(xValueNeutral, newY) toPoint:dmin];
             } else {
-               touch = [[self IOSView] dragFromPoint:mid toPoint:mid];
+               touches = [[self IOSView] dragFromPoint:mid toPoint:mid];
             }
         }
         }
@@ -272,7 +316,7 @@ static UITouch *lastYTouch;
         
         if (pressed){
             
-            CGPoint hand = PAT(PGBActionHandAction);
+            CGPoint hand = PAT(kPGBActionHandAction);
             [[self IOSView] tapAtPoint:hand];
         }
         
@@ -282,7 +326,7 @@ static UITouch *lastYTouch;
         
         if (pressed){
             
-            CGPoint first = PAT(PGBActionFirstItemSelect);
+            CGPoint first = PAT(kPGBActionFirstItemSelect);
             [[self IOSView] tapAtPoint:first];
         }
         
@@ -292,27 +336,23 @@ static UITouch *lastYTouch;
     profile.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         if (dpad.down.isPressed){
-            NSLog(@"dpad down");
-            CGPoint reload = PAT(PGBActionTypeReload);
+            CGPoint reload = PAT(kPGBActionTypeReload);
             [[self IOSView] tapAtPoint:reload];
             
         }
         
         if (dpad.left.isPressed){
-            NSLog(@"dpad left");
-            CGPoint leftWeapon = PAT(PGBActionTypeFirstWeapon);
+            CGPoint leftWeapon = PAT(kPGBActionTypeFirstWeapon);
             [[self IOSView] tapAtPoint:leftWeapon];
         }
         
         if (dpad.up.isPressed){
-            NSLog(@"dpad up");
-            CGPoint aim = PAT(PGBActionTypeAim);
+            CGPoint aim = PAT(kPGBActionTypeAim);
             [[self IOSView] tapAtPoint:aim];
         }
         
         if (dpad.right.isPressed){
-            NSLog(@"dpad right");
-            CGPoint rightWeapon = PAT(PGBActionTypeSecondWeapon);
+            CGPoint rightWeapon = PAT(kPGBActionTypeSecondWeapon);
             [[self IOSView] tapAtPoint:rightWeapon];
         }
         
@@ -322,11 +362,10 @@ static UITouch *lastYTouch;
     profile.leftShoulder.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed){
-            NSLog(@"right should pressed hit training mode");
-            CGPoint training = PAT(PGBActionTypeTrainingButton);
+            CGPoint training = PAT(kPGBActionTypeTrainingButton);
             [[self IOSView] tapAtPoint:training];
             
-            CGPoint cancelPoint = PAT(PGBActionTypeOKCancelButton);
+            CGPoint cancelPoint = PAT(kPGBActionTypeOKCancelButton);
             [[self IOSView] tapAtPoint:cancelPoint];
             
             CGPoint closePoint = [self convertPointForScreen:CGPointMake(610,72)];
@@ -338,17 +377,16 @@ static UITouch *lastYTouch;
     profile.rightShoulder.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed){
-            NSLog(@"right should pressed hit start mode");
-            CGPoint start = PAT(PGBActionTypeStartButton);
+            CGPoint start = PAT(kPGBActionTypeStartButton);
             [[self IOSView] tapAtPoint:start];
             
-            CGPoint okPoint = PAT(PGBActionTypeOKDualButton);
+            CGPoint okPoint = PAT(kPGBActionTypeOKDualButton);
             [[self IOSView] tapAtPoint:okPoint];
             
-            CGPoint okSolo = PAT(PGBActionTypeOKSoloButton);
+            CGPoint okSolo = PAT(kPGBActionTypeOKSoloButton);
             [[self IOSView] tapAtPoint:okSolo];
 
-            CGPoint closePoint = PAT(PGBActionTypeXCloseButton);
+            CGPoint closePoint = PAT(kPGBActionTypeXCloseButton);
             [[self IOSView] tapAtPoint:closePoint];
             
             //CGPoint cancelPoint2 = [self convertPointForScreen:CGPointMake(610,72)];
@@ -361,13 +399,11 @@ static UITouch *lastYTouch;
     profile.rightTrigger.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed){
-            NSLog(@"right trigger pressed punch right");
-            CGPoint punchRight = PAT(PGBActionTypeRight);
+            CGPoint punchRight = PAT(kPGBActionTypeRight);
             currentRightTouch = [[self IOSView] tapDownAtPoint:punchRight];
         } else {    
 
             if (currentRightTouch) {
-                NSLog(@"touch up: %@", currentRightTouch);
                 [[self IOSView] finishTouch:currentRightTouch];
                 currentRightTouch = nil;
             }
@@ -380,13 +416,11 @@ static UITouch *lastYTouch;
        
         if (pressed)
         {
-            NSLog(@"left trigger punch left");
-            CGPoint punchLeft = PAT(PGBActionTypeLeft);
+            CGPoint punchLeft = PAT(kPGBActionTypeLeft);
             currentLeftTouch = [[self IOSView] tapDownAtPoint:punchLeft];
         } else {    
 
             if (currentLeftTouch) {
-                NSLog(@"touch up: %@", currentLeftTouch);
                 [[self IOSView] finishTouch:currentLeftTouch];
                 currentLeftTouch = nil;
             }
@@ -398,13 +432,11 @@ static UITouch *lastYTouch;
     {
         if (pressed)
         {
-            NSLog(@"buttonA pressed, jump");
-            CGPoint jump = PAT(PGBActionTypeJump);
+            CGPoint jump = PAT(kPGBActionTypeJump);
             //jumpTouch = [[self IOSView] longPressAtPoint: jump duration: .1];
             jumpTouch =  [[self IOSView] tapDownAtPoint:jump];
         } else {
             if (jumpTouch) {
-                NSLog(@"touch up: %@", jumpTouch);
                 [[self IOSView] finishTouch:jumpTouch];
                 jumpTouch = nil;
             }
@@ -417,9 +449,8 @@ static UITouch *lastYTouch;
     {
         if (pressed)
         {
-            CGPoint laydown = PAT(PGBActionTypeConceal);
+            CGPoint laydown = PAT(kPGBActionTypeConceal);
             [[self IOSView] tapAtPoint:laydown];
-            NSLog(@"buttonB pressed lay down");
         }
     };
     
@@ -427,9 +458,8 @@ static UITouch *lastYTouch;
     {
         if (pressed)
         {
-            CGPoint run = PAT(PGBActionTypeRun);
+            CGPoint run = PAT(kPGBActionTypeRun);
             [[self IOSView] tapAtPoint:run];
-            NSLog(@"buttonX pressed run");
         }
     };
     
@@ -437,10 +467,9 @@ static UITouch *lastYTouch;
     {
         if (pressed)
         {
-            CGPoint crouch = PAT(PGBActionTypeCrouch);
+            CGPoint crouch = PAT(kPGBActionTypeCrouch);
             [[self IOSView] tapAtPoint:crouch];
             
-            NSLog(@"buttonY pressed crouch");
         }
     };
 }
@@ -454,7 +483,6 @@ static UITouch *lastYTouch;
 
     %log;
      NSArray *controllers = [GCController controllers];
-     NSLog(@"controllers: %@", controllers);
      /*
     Class sb = NSClassFromString(@"BKSystemApplication");
     

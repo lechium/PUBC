@@ -567,7 +567,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     
 }
 
-- (UITouch *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
 {
     return [self dragFromPoint:startPoint toPoint:endPoint steps:3];
 }
@@ -579,14 +579,14 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     return [self dragFromPoint:startPoint displacement:displacement steps:stepCount];
 }
 
-- (UITouch *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
 {
     CGPoint endPoint = CGPointMake(startPoint.x + displacement.x, startPoint.y + displacement.y);
     NSArray<NSValue *> *path = [self pointsFromStartPoint:startPoint toPoint:endPoint steps:stepCount];
     return [self dragPointsAlongPaths:@[path]];
 }
 
-- (UITouch *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
+- (NSArray <UITouch *> *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
 {
     // convert point array into NSArray with NSValue
     NSMutableArray *array = [NSMutableArray array];
@@ -597,7 +597,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     return [self dragPointsAlongPaths:@[[array copy]]];
 }
 
-- (UITouch *)dragPointsAlongPaths:(NSArray<NSArray<NSValue *> *> *)arrayOfPaths{
+- (NSArray <UITouch *> *)dragPointsAlongPaths:(NSArray<NSArray<NSValue *> *> *)arrayOfPaths{
     // There must be at least one path with at least one point
     if (arrayOfPaths.count == 0 || arrayOfPaths.firstObject.count == 0)
     {
@@ -689,7 +689,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
     while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
         CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
     }
-    return touches.lastObject;
+    return touches;
 }
 
 - (void)endTouches:(NSArray <UITouch *> *)touches {
@@ -701,7 +701,10 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
         [[UIApplication sharedApplication] sendEvent:eventUp];
         
     }
-    
+    // Dispatching the event doesn't actually update the first responder, so fake it
+    if ([touches.firstObject view] == self && [self canBecomeFirstResponder]) {
+        [self becomeFirstResponder];
+    }
 }
 
 - (void)twoFingerPanFromPoint:(CGPoint)startPoint toPoint:(CGPoint)toPoint steps:(NSUInteger)stepCount {

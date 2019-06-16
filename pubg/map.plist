@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ButtonA</key>
+	<string>PGBActionTypeJump</string>
+	<key>ButtonB</key>
+	<string>PGBActionTypeConceal</string>
+	<key>ButtonX</key>
+	<string>PGBActionTypeRun</string>
+	<key>ButtonY</key>
+	<string>PGBActionTypeCrouch</string>
+	<key>LeftShoulder</key>
+	<string>PGBActionTypeTrainingButton</string>
+	<key>RightShoulder</key>
+	<string>PGBActionTypeStartButton</string>
+	<key>LeftTrigger</key>
+	<string>PGBActionTypeLeft</string>
+	<key>RightTrigger</key>
+	<string>PGBActionTypeRight</string>
+	<key>RightTriggerButton</key>
+	<string>PGBActionHandAction</string>
+	<key>LeftTriggerButton</key>
+	<string>PGBActionFirstItemSelect</string>
+	<key>dpad.up</key>
+	<string>PGBActionTypeAim</string>
+	<key>dpad.down</key>
+	<string>PGBActionTypeReload</string>
+	<key>dpad.left</key>
+	<string>PGBActionTypeFirstWeapon</string>
+	<key>dpad.right</key>
+	<string>PGBActionTypeSecondWeapon</string>
+</dict>
+</plist>
