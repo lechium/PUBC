@@ -15,20 +15,20 @@
 	<key>RightShoulder</key>
 	<string>PGBActionTypeStartButton</string>
 	<key>LeftTrigger</key>
-	<string>PGBActionTypeLeft</string>
+	<string>PGBActionTypePeakLeft</string>
 	<key>RightTrigger</key>
 	<string>PGBActionTypeRight</string>
 	<key>RightThumbstickButton</key>
 	<string>PGBActionHandAction</string>
 	<key>LeftThumbstickButton</key>
 	<string>PGBActionFirstItemSelect</string>
-	<key>dpad.up</key>
+	<key>Dpad.up</key>
 	<string>PGBActionTypeAim</string>
-	<key>dpad.down</key>
-	<string>PGBActionTypeReload</string>
-	<key>dpad.left</key>
+	<key>Dpad.down</key>
+	<string>PGBActionMapAction</string>
+	<key>Dpad.left</key>
 	<string>PGBActionTypeFirstWeapon</string>
-	<key>dpad.right</key>
+	<key>Dpad.right</key>
 	<string>PGBActionTypeSecondWeapon</string>
 </dict>
 </plist>

@@ -670,10 +670,10 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
                 NSLog(@"point index: %lu", pointIndex);
                 for (UITouch * touch in touches) {
                     
-                    //[touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
-                    //UIEvent *eventUp = [self eventWithTouch:touch];
+                    [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
+                    UIEvent *eventUp = [self eventWithTouch:touch];
                     //NSLog(@"touch: %@", touch);
-                   // [[UIApplication sharedApplication] sendEvent:eventUp];
+                    [[UIApplication sharedApplication] sendEvent:eventUp];
                  
                 }
                 

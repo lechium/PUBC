@@ -39,12 +39,13 @@ typedef CGPoint KIFDisplacement;
 
 - (void)flash;
 - (void)tap;
-- (void)finishTouch:(UITouch *)touch;
+
 - (UITouch *)tapAtPoint:(CGPoint)point;
 - (UITouch *)tapDownAtPoint:(CGPoint)point;
 - (void)twoFingerTapAtPoint:(CGPoint)point;
 - (void)longPressAtPoint:(CGPoint)point duration:(NSTimeInterval)duration;
 - (void)endTouches:(NSArray <UITouch *> *)touches;
+- (void)finishTouch:(UITouch *)touch;
 /*!
  @method dragFromPoint:toPoint:
  @abstract Simulates dragging a finger on the screen between the given points.
