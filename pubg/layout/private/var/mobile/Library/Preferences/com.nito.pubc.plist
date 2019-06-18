@@ -30,5 +30,7 @@
 	<string>PGBActionTypeFirstWeapon</string>
 	<key>Dpad.right</key>
 	<string>PGBActionTypeSecondWeapon</string>
+	<key>Menu</key>
+	<string>PGBActionTypeSmallWeapon</string>
 </dict>
 </plist>

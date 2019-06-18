@@ -1,82 +1,10 @@
 #import <GameController/GameController.h>
 #import "NSObject+AssociatedObjects.h"
 #import "UIView-KIFAdditions.h"
-//static GCController* gameController = nil; //Dictionary{index:STTouch}
-
-static NSString * const PGBActionTypeLeft = @"PGBActionTypeLeft";
-static NSString * const PGBActionTypeRight = @"PGBActionTypeRight";
-static NSString * const PGBActionTypeRun = @"PGBActionTypeRun";
-static NSString * const PGBActionTypeCrouch = @"PGBActionTypeCrouch";
-static NSString * const PGBActionTypeConceal = @"PGBActionTypeConceal";
-static NSString * const PGBActionTypeJump = @"PGBActionTypeJump";
-static NSString * const PGBActionTypeFirstWeapon = @"PGBActionTypeFirstWeapon";
-static NSString * const PGBActionTypeSecondWeapon = @"PGBActionTypeSecondWeapon";
-static NSString * const PGBActionTypeSmallWeapon = @"PGBActionTypeSmallWeapon";
-static NSString * const PGBActionTypeAim = @"PGBActionTypeAim";
-static NSString * const PGBActionTypeReload = @"PGBActionTypeReload";
-static NSString * const PGBActionTypeExitRound = @"PGBActionTypeExitRound";
-static NSString * const PGBActionTypeOKCancelButton = @"PGBActionTypeOKCancelButton";
-static NSString * const PGBActionTypeXCloseButton = @"PGBActionTypeXCloseButton";
-static NSString * const PGBActionTypeXClose2Button = @"PGBActionTypeXClose2Button";
-static NSString * const PGBActionTypeOKDualButton = @"PGBActionTypeOKDualButton";
-static NSString * const PGBActionTypeOKSoloButton = @"PGBActionTypeOKSoloButton";
-static NSString * const PGBActionTypeInventory = @"PGBActionTypeInventory";
-static NSString * const PGBActionHandAction = @"PGBActionHandAction";
-static NSString * const PGBActionFirstItemSelect = @"PGBActionFirstItemSelect";
-static NSString * const PGBActionMapAction = @"PGBActionMapAction";
-static NSString * const PGBActionTypeTrainingButton = @"PGBActionTypeTrainingButton";
-static NSString * const PGBActionTypeStartButton = @"PGBActionTypeStartButton";
-static NSString * const PGBActionTypePeakLeft = @"PGBActionTypePeakLeft";
-static NSString * const PGBActionTypePeakRight = @"PGBActionTypePeakRight";
-
-static NSString * const LeftThumbstick = @"LeftThumbstick";
-static NSString * const RightThumbstick = @"RightThumbstick";
-static NSString * const LeftThumbstickButton = @"LeftThumbstickButton";
-static NSString * const RightThumbstickButton = @"RightThumbstickButton";
-static NSString * const LeftShoulder = @"LeftShoulder";
-static NSString * const RightShoulder = @"RightShoulder";
-static NSString * const RightTrigger = @"RightTrigger";
-static NSString * const LeftTrigger = @"LeftTrigger";
-static NSString * const ButtonA = @"ButtonA";
-static NSString * const ButtonB = @"ButtonB";
-static NSString * const ButtonX = @"ButtonX";
-static NSString * const ButtonY = @"ButtonY";
-static NSString * const DpadUp = @"Dpad.up";
-static NSString * const DpadDown = @"Dpad.down";
-static NSString * const DpadLeft = @"Dpad.left";
-static NSString * const DpadRight = @"Dpad.right";
+#import "Defines.h"
 
 
-typedef enum {
-    
-    kPGBActionTypeLeft,
-    kPGBActionTypeRight,
-    kPGBActionTypeRun,
-    kPGBActionTypeCrouch,
-    kPGBActionTypeConceal,
-    kPGBActionTypeJump,
-    kPGBActionTypeFirstWeapon,
-    kPGBActionTypeSecondWeapon,
-    kPGBActionTypeSmallWeapon,
-    kPGBActionTypeAim,
-    kPGBActionTypeReload,
-    kPGBActionTypeExitRound,
-    kPGBActionTypeOKCancelButton,
-    kPGBActionTypeXCloseButton,
-    kPGBActionTypeXClose2Button,
-    kPGBActionTypeOKDualButton,
-    kPGBActionTypeOKSoloButton,
-    kPGBActionTypeInventory,
-    kPGBActionHandAction,
-    kPGBActionFirstItemSelect,
-    kPGBActionMapAction,
-    kPGBActionTypeTrainingButton,
-    kPGBActionTypeStartButton,
-    kPGBActionTypePeakLeft,
-    kPGBActionTypePeakRight,
-    kPGBActionTypeUndefined,
-    
-} PGBActionType;
+
 
 @interface GCExtendedGamepad (science)
 
@@ -96,27 +24,13 @@ typedef enum {
 - (PGBActionType)actionTypeForControllerButton:(NSString *)constantString;
 
 @end
-/*
+//%group ourScience
 @interface IOSAppDelegate (pubg)
 
 @property (nonatomic) GCController *gameController;
-
+@property (nonatomic) NSDictionary *gamePlayDictionary;
 @end
 
-@implementation IOSAppDelegate (ButtonConvenience)
-
-- (void)setGameController:(GCController *)gameController
-{
-    [self associateValue:gameController withKey:@selector(gameController)];
-}
-
-- (GCController *)gameController
-{
-    return [self associatedValueForKey:@selector(gameController)];
-}
-
-@end
-*/
 
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
 #define SCREEN_HEIGHT [[UIScreen mainScreen] bounds].size.height
@@ -124,12 +38,43 @@ typedef enum {
 
 #define degreesToRadians(x) (M_PI * (x) / 180.0)
 
+static NSDictionary *gameplayDict = nil;
+static CGFloat lastXMove;
+static CGFloat lastYMove;
+static UITouch *lastXTouch;
+static UITouch *lastYTouch;
+//static GCController* gameController = nil; //Dictionary{index:STTouch}
+
 %hook IOSAppDelegate
+
+%new - (void)setGamePlayDictionary:(NSDictionary *)gpd
+{
+    [self associateValue:gpd withKey:@selector(gamePlayDictionary)];
+}
+
+%new - (NSDictionary *)gamePlayDictionary
+{
+    return [self associatedValueForKey:@selector(gamePlayDictionary)];
+}
+
+%new - (void)setGameController:(GCController *)gameController
+{
+    [self associateValue:gameController withKey:@selector(gameController)];
+}
+
+%new - (GCController *)gameController
+{
+    return [self associatedValueForKey:@selector(gameController)];
+}
 
 %new - (NSDictionary *)controllerPreferences {
     
-    NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
-    return [NSDictionary dictionaryWithContentsOfFile:preferenceFile];
+    if (self.gamePlayDictionary == nil){
+        NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
+        self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:preferenceFile];
+        NSLog(@"gameplay dict: %@", self.gamePlayDictionary);
+    }
+    return self.gamePlayDictionary;
 }
 
 %new - (PGBActionType)actionTypeForControllerButton:(NSString *)constantString {
@@ -155,16 +100,12 @@ typedef enum {
     return CGPointMake(x, y);
 }
 
-static CGFloat lastXMove;
-static CGFloat lastYMove;
-static UITouch *lastXTouch;
-static UITouch *lastYTouch;
 
 %new - (void)controllerConnected:(NSNotification *)n {
     
-    GCController *gameController = n.object;
+    self.gameController = n.object;
     //28/140 = training button
-    GCExtendedGamepad *profile = gameController.extendedGamepad;
+    GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     
     __block NSArray <UITouch *> *touches = nil;
     
@@ -183,13 +124,21 @@ static UITouch *lastYTouch;
         }
     }];
     
+      self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
+      
+        NSLog(@"### pause button??");
+
+        CGPoint menu = PAT([self actionTypeForControllerButton:Menu]);
+        [[self IOSView] tapAtPoint:menu];
+    };
+
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         
-        CGPoint mid = CGPointMake(106,281);
-        CGPoint rmin = CGPointMake(145,281);
-        CGPoint dmin = CGPointMake(104, 318);
-        CGPoint lmin = CGPointMake(70, 280);
+        CGPoint mid = CGPointMake(106,280);
+        CGPoint rmin = CGPointMake(145,280);
+        CGPoint dmin = CGPointMake(104, 320);
+        CGPoint lmin = CGPointMake(67, 280);
         CGPoint umin = CGPointMake(108, 240);
         CGFloat yValueNeutral = 281;
         CGFloat xValueNeutral = 108;
@@ -328,8 +277,8 @@ static UITouch *lastYTouch;
             CGPoint okSolo = PAT(kPGBActionTypeOKSoloButton);
             [[self IOSView] tapAtPoint:okSolo];
             
-            CGPoint closePoint = PAT(kPGBActionTypeXCloseButton);
-            [[self IOSView] tapAtPoint:closePoint];
+            //CGPoint closePoint = PAT(kPGBActionTypeXCloseButton);
+            //[[self IOSView] tapAtPoint:closePoint];
             
             //CGPoint cancelPoint2 = [self convertPointForScreen:CGPointMake(610,72)];
             //[[self IOSView] tapAtPoint:cancelPoint2];
@@ -342,6 +291,10 @@ static UITouch *lastYTouch;
     {
         if (pressed){
             CGPoint punchRight = PAT([self actionTypeForControllerButton:RightTrigger]);//PAT(kPGBActionTypeRight);
+            if (currentRightTouch){
+                [[self IOSView] finishTouch:currentRightTouch];
+                currentRightTouch = nil;
+            }
             currentRightTouch = [[self IOSView] tapDownAtPoint:punchRight];
         } else {
             
@@ -424,6 +377,7 @@ static UITouch *lastYTouch;
 - (_Bool)application:(id)arg1 didFinishLaunchingWithOptions:(id)arg2 {
 
     %log;
+     //%init(ourScience);
      NSArray *controllers = [GCController controllers];
      /*
     Class sb = NSClassFromString(@"BKSystemApplication");
