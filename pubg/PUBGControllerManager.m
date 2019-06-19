@@ -1,66 +1,78 @@
-#import <GameController/GameController.h>
-#import "NSObject+AssociatedObjects.h"
-#import "UIView-KIFAdditions.h"
-#import "PUBGDefines.h"
+//
+//  PUBGControllerManager.m
+//  nitoTV4
+//
+//  Created by Kevin Bradley on 6/15/19.
+//  Copyright © 2019 nito. All rights reserved.
+//
+
 #import "PUBGControllerManager.h"
+#import <GameController/GameController.h>
+#import "UIView-KIFAdditions.h"
 
+#define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
+#define SCREEN_HEIGHT [[UIScreen mainScreen] bounds].size.height
+#define PAT(x) [self pointForActionType:x]
+#define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
+#define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
+#define DLOG_SELF DLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 
+@interface GCExtendedGamepad (science)
 
+@property (nonatomic,readonly) GCControllerButtonInput * leftThumbstickButton;
+@property (nonatomic,readonly) GCControllerButtonInput * rightThumbstickButton;
+
+@end
 
 @interface IOSAppDelegate : UIResponder <UIApplicationDelegate, UITextFieldDelegate>
 
 @property(retain) UIView *IOSView; // @synthesize IOSView;
-- (CGPoint)convertPointForScreen:(CGPoint)inputPoint;
-- (CGPoint)pointForActionType:(PGBActionType)type;
-- (NSDictionary *)controllerPreferences;
-- (PGBActionType)actionTypeFromConstant:(NSString *)constant;
-- (PGBActionType)actionTypeForControllerButton:(NSString *)constantString;
 
 @end
-/*
-//%group ourScience
-@interface IOSAppDelegate (pubg)
 
-@property (nonatomic) GCController *gameController;
-@property (nonatomic) NSDictionary *gamePlayDictionary;
+
+@interface PUBGControllerManager ()
+
+@property (readwrite, assign) CGPoint previousPoint;
+@property (nonatomic, strong) NSMutableArray *touches;
+
 @end
 
+@implementation PUBGControllerManager
 
+@synthesize previousPoint;
 
-
-static NSDictionary *gameplayDict = nil;
-static CGFloat lastXMove;
-static CGFloat lastYMove;
-static UITouch *lastXTouch;
-static UITouch *lastYTouch;
-static CGPoint previousPoint;
-//static GCController* gameController = nil; //Dictionary{index:STTouch}
-*/
-
-%hook IOSAppDelegate
-
-/*
-%new - (void)setGamePlayDictionary:(NSDictionary *)gpd
-{
-    [self associateValue:gpd withKey:@selector(gamePlayDictionary)];
+- (CGPoint)convertPointForScreen:(CGPoint)inputPoint {
+    
+    if (SCREEN_HEIGHT == 667) {
+        return inputPoint;
+    }
+    //x = (OG_VALUE * TARGET_WIDTH) / OG_WIDTH;
+    //y = (OG_VALUE * TARGET_HEIGHT / OG_HEIGHT;
+    CGFloat x = (inputPoint.x * SCREEN_WIDTH) / 667;
+    CGFloat y = (inputPoint.y * SCREEN_HEIGHT) / 375;
+    
+    return CGPointMake(x, y);
 }
 
-%new - (NSDictionary *)gamePlayDictionary
++ (id)sharedManager
 {
-    return [self associatedValueForKey:@selector(gamePlayDictionary)];
+    LOG_SELF;
+    static dispatch_once_t onceToken;
+    
+    static PUBGControllerManager *shared = nil;
+    if(shared == nil)
+    {
+        dispatch_once(&onceToken, ^{
+            shared = [[PUBGControllerManager alloc] init];
+            shared.touches = [NSMutableArray new];
+            //[shared listenForControllers];
+        });
+    }
+    return shared;
 }
 
-%new - (void)setGameController:(GCController *)gameController
-{
-    [self associateValue:gameController withKey:@selector(gameController)];
-}
-
-%new - (GCController *)gameController
-{
-    return [self associatedValueForKey:@selector(gameController)];
-}
-
-%new - (NSDictionary *)controllerPreferences {
+- (NSDictionary *)controllerPreferences {
     
     if (self.gamePlayDictionary == nil){
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
@@ -70,34 +82,26 @@ static CGPoint previousPoint;
     return self.gamePlayDictionary;
 }
 
-%new - (PGBActionType)actionTypeForControllerButton:(NSString *)constantString {
+- (UIView *)IOSView {
     
-    NSDictionary *controllerDictionary = [self controllerPreferences];
-    NSString *controllerValue = controllerDictionary[constantString];
-    NSLog(@"controllerValue: %@", controllerValue);
-    return [self actionTypeFromConstant:controllerValue];
+   return [(IOSAppDelegate*)[[UIApplication sharedApplication] delegate] valueForKey:@"IOSView"];
+    
 }
 
-
-
-%new - (CGPoint)convertPointForScreen:(CGPoint)inputPoint {
-
-    if (SCREEN_HEIGHT == 667) {
-        return inputPoint;
-    }
-    //x = (OG_VALUE * TARGET_WIDTH) / OG_WIDTH;
-    //y = (OG_VALUE * TARGET_HEIGHT / OG_HEIGHT;
-    CGFloat x = (inputPoint.x * SCREEN_WIDTH) / 667;
-    CGFloat y = (inputPoint.y * SCREEN_HEIGHT) / 375;
-
-    return CGPointMake(x, y);
+- (void)listenForControllers {
+    
+    LOG_SELF;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDisconnected:) name:GCControllerDidDisconnectNotification object:nil];
+    
 }
 
-
-%new - (void)controllerConnected:(NSNotification *)n {
-    
-    self.gameController = n.object;
+- (void)setupController:(GCController *)controller {
+ 
+    LOG_SELF;
     //28/140 = training button
+    self.gameController = controller;
+    
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     
     __block NSArray <UITouch *> *touches = nil;
@@ -117,97 +121,132 @@ static CGPoint previousPoint;
         }
     }];
     
-      self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
-      
+    self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
+        
         NSLog(@"### pause button??");
-
+        
         CGPoint menu = PAT([self actionTypeForControllerButton:Menu]);
         [[self IOSView] tapAtPoint:menu];
     };
-
+    
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         
-        CGPoint mid = CGPointMake(106,280);
+        CGPoint mid = CGPointMake(108,280);
         CGPoint rmin = CGPointMake(145,280);
         CGPoint dmin = CGPointMake(104, 320);
         CGPoint lmin = CGPointMake(67, 280);
         CGPoint umin = CGPointMake(108, 240);
         CGFloat yValueNeutral = 281;
         CGFloat xValueNeutral = 108;
-        
-        
-        if (touches.count > 0) {
-            
-            if (xValue == 0 && yValue == 0){
-                NSLog(@"shit aint null: %@", touches);
-                
-                //[[self IOSView] endTouches:touches];
-                touches = nil;
-                
-            }
-            
-        }
-    
-        
-        NSInteger xv=(NSInteger)(xValue*280); 
-        NSInteger xy=(NSInteger)(yValue*280); 
-        NSLog(@"xv: %i, xy: %i", xv, xy);
-        if (CGPointEqualToPoint(previousPoint, CGPointZero)){
-
-        }
-
-            
-
-        }
         /*
-        if (xValue != 0){
-            NSLog(@"x value: %f", xValue);
-           // NSInteger xv=(NSInteger)(xValue*127); //-127 ... + 127 range
-            NSLog(@"xv: %i", xv);
-            NSInteger xy= (NSInteger)(yValue*280 * - 1); //-127 ... + 127 range
-            NSLog(@"xy: %i", xy);
-            if (xValue > 0) { //moving right
-                
-                
-                CGFloat newX = 185 * xValue;
-                NSLog(@"new x: %f", newX);
-                if (yValue != 0){
-                    yValueNeutral *= ABS(yValue);
-                }
-                [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin];
-            } else if (0 > xValue){
-                if (yValue != 0){
-                    yValueNeutral *= ABS(yValue);
-                }
-                CGFloat newX = 185 * ABS(xValue);
-                NSLog(@"lower new x: %f", newX);
-                [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral)];
-            } else {
-               [[self IOSView] dragFromPoint:mid toPoint:mid];
-            }
+         
+         if (touches.count > 0) {
+         
+         if (xValue == 0 && yValue == 0){
+         NSLog(@"shit aint null: %@", touches);
+         
+         //[[self IOSView] endTouches:touches];
+         touches = nil;
+         
+         }
+         
+         }
+         */
+        
+        if (xValue == 0 && yValue == 0){
+            
+            NSLog(@"reset points");
+            //move from previous point to median point and end all touches events.
+            [self.IOSView endTouches:self.touches];
+            NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid];
+            [self.IOSView endTouches:newtouches];
+           
+            previousPoint = CGPointZero;
+            
         } else {
-            if (yValue != 0){
-                NSLog(@"y value: %f", yValue);
-                if (yValue > 0) { //moving up
-                    
-                    CGFloat newY = 241 * yValue;
-                    NSLog(@"new y: %f", newY);
-                    if (xValue != 0){
-                        xValueNeutral *= ABS(xValue);
-                    }
-                    [[self IOSView] dragFromPoint:umin toPoint:CGPointMake(xValueNeutral, newY)];
-                } else if (0 > yValue){
-                    CGFloat newY = 241 * ABS(yValue);
-                    NSLog(@"lower new y: %f", newY);
-                    [[self IOSView] dragFromPoint:CGPointMake(xValueNeutral, newY) toPoint:dmin];
+            CGFloat xv=(xValue*240)+108;
+            CGFloat xy=(241 * ABS(yValue))+281;
+            NSLog(@"xv: %f, xy: %f", xv, xy);
+            if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
+                
+                
+                //move from median point to x,y without touching back up.. maybe keep track of all the touches?
+                previousPoint = CGPointMake(xv, xy);
+                NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
+               // if (xv > 0){
+                    NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousPoint];
+                    if (newtouches){
+                        [self.touches addObjectsFromArray:newtouches];
+                 //   }
                 } else {
-                     [[self IOSView] dragFromPoint:mid toPoint:mid];
+                   /*
+                    NSArray *newtouches = [self.IOSView dragFromPoint:previousPoint toPoint:mid];
+                    if (newtouches){
+                        [self.touches addObjectsFromArray:newtouches];
+                    }
+                    */
                 }
+            
+
+             
+                
+            } else { //we are already touched down, we just want to move from one place to the next
+                
+                
+                CGPoint newPoint = CGPointMake(xv, xy);
+                NSLog(@"already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
+                NSArray *newtouches = [self.IOSView dragFromPoint:previousPoint toPoint:newPoint];
+                if (newtouches){
+                    [self.touches addObjectsFromArray:newtouches];
+                }
+                previousPoint = newPoint;
             }
+            
         }
         
-       
+        
+        /*
+         if (xValue != 0){
+         NSLog(@"x value: %f", xValue);
+         if (xValue > 0) { //moving right
+         CGFloat newX = 185 * xValue;
+         NSLog(@"new x: %f", newX);
+         if (yValue != 0){
+         yValueNeutral *= ABS(yValue);
+         }
+         [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin];
+         } else if (0 > xValue){
+         if (yValue != 0){
+         yValueNeutral *= ABS(yValue);
+         }
+         CGFloat newX = 185 * ABS(xValue);
+         NSLog(@"lower new x: %f", newX);
+         [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral)];
+         } else {
+         [[self IOSView] dragFromPoint:mid toPoint:mid];
+         }
+         } else {
+         if (yValue != 0){
+         NSLog(@"y value: %f", yValue);
+         if (yValue > 0) { //moving up
+         
+         CGFloat newY = 241 * yValue;
+         NSLog(@"new y: %f", newY);
+         if (xValue != 0){
+         xValueNeutral *= ABS(xValue);
+         }
+         [[self IOSView] dragFromPoint:umin toPoint:CGPointMake(xValueNeutral, newY)];
+         } else if (0 > yValue){
+         CGFloat newY = 241 * ABS(yValue);
+         NSLog(@"lower new y: %f", newY);
+         [[self IOSView] dragFromPoint:CGPointMake(xValueNeutral, newY) toPoint:dmin];
+         } else {
+         [[self IOSView] dragFromPoint:mid toPoint:mid];
+         }
+         }
+         }
+         */
         
     };
     
@@ -264,6 +303,7 @@ static CGPoint previousPoint;
             CGPoint training = PAT([self actionTypeForControllerButton:LeftShoulder]);//PAT(kPGBActionTypeTrainingButton);
             [[self IOSView] tapAtPoint:training];
             
+            NSLog(@"ios view: %@", [self IOSView]);
             CGPoint cancelPoint = PAT(kPGBActionTypeOKCancelButton);
             [[self IOSView] tapAtPoint:cancelPoint];
             
@@ -375,26 +415,17 @@ static CGPoint previousPoint;
             
         }
     };
+    
 }
 
-%new - (void)controllerDisconnected:(NSNotification *)n {
-    %log;
-
+- (void)controllerConnected:(NSNotification *)n {
+    
+    [self setupController:n.object];
+    
+    
 }
-*/
 
-- (_Bool)application:(id)arg1 didFinishLaunchingWithOptions:(id)arg2 {
-
-    %log;
-    PUBGControllerManager *man = [PUBGControllerManager sharedManager];
-    [man listenForControllers];
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDisconnected:) name:GCControllerDidDisconnectNotification object:nil];
-    return %orig;
-
-}
-/*
-%new - (PGBActionType)actionTypeFromConstant:(NSString *)constant {
+- (PGBActionType)actionTypeFromConstant:(NSString *)constant {
     
     PGBActionType type = kPGBActionTypeUndefined;
     if ([constant isEqualToString:PGBActionTypeAim]){
@@ -445,14 +476,22 @@ static CGPoint previousPoint;
         type = kPGBActionTypePeakLeft;
     }  else if ([constant isEqualToString:PGBActionTypePeakRight]){
         type = kPGBActionTypePeakRight;
-    } else if ([constant isEqualToString:PGBActionMapAction]){
-        type = kPGBActionMapAction;
     }
     return type;
     
 }
 
-%new - (CGPoint)pointForActionType:(PGBActionType)type {
+
+- (PGBActionType)actionTypeForControllerButton:(NSString *)constantString {
+    
+    NSDictionary *controllerDictionary = [self controllerPreferences];
+    NSString *controllerValue = controllerDictionary[constantString];
+    return [self actionTypeFromConstant:controllerValue];
+}
+
+
+
+- (CGPoint)pointForActionType:(PGBActionType)type {
     
     CGPoint outpoint = CGPointZero;
     
@@ -468,7 +507,7 @@ static CGPoint previousPoint;
         case kPGBActionTypeConceal: //lay down
             outpoint = [self convertPointForScreen:CGPointMake(617, 345)];
             break;
-    
+            
         case kPGBActionTypeReload:
             outpoint = [self convertPointForScreen:CGPointMake(508,353)];
             break;
@@ -476,7 +515,7 @@ static CGPoint previousPoint;
         case kPGBActionTypeFirstWeapon:
             outpoint = [self convertPointForScreen:CGPointMake(290,340)];
             break;
-  
+            
         case kPGBActionTypeSecondWeapon:
             outpoint = [self convertPointForScreen:CGPointMake(376,340)];
             break;
@@ -492,7 +531,7 @@ static CGPoint previousPoint;
         case kPGBActionTypeXCloseButton:  //top right close x
             outpoint = [self convertPointForScreen:CGPointMake(610,72)];
             break;
-   
+            
         case kPGBActionTypeStartButton:
             outpoint = [self convertPointForScreen:CGPointMake(81, 32)];
             break;
@@ -504,7 +543,7 @@ static CGPoint previousPoint;
         case kPGBActionTypeXClose2Button: //lower close X
             outpoint = [self convertPointForScreen:CGPointMake(627,31)];
             break;
-    
+            
         case kPGBActionTypeRight:
             outpoint = [self convertPointForScreen:CGPointMake(565, 275)];
             break;
@@ -539,23 +578,19 @@ static CGPoint previousPoint;
         case kPGBActionFirstItemSelect:
             outpoint = [self convertPointForScreen:CGPointMake(437,132)];// y+50 = 2 item y+ 100 = 3rd item
             break;
-
+            
         case kPGBActionTypeOKSoloButton:
-           outpoint = [self convertPointForScreen:CGPointMake(330,266)];
-           break;
-
-        case kPGBActionTypePeakLeft:
-           outpoint = [self convertPointForScreen:CGPointMake(91,139)];
-           break;
-
-        case kPGBActionTypePeakRight:
-           outpoint = [self convertPointForScreen:CGPointMake(144,139)];
-           break;
-        
-        case kPGBActionMapAction:
-            outpoint = [self convertPointForScreen:CGPointMake(645,18)];
+            outpoint = [self convertPointForScreen:CGPointMake(330,266)];
             break;
-
+            
+        case kPGBActionTypePeakLeft:
+            outpoint = [self convertPointForScreen:CGPointMake(91,139)];
+            break;
+            
+        case kPGBActionTypePeakRight:
+            outpoint = [self convertPointForScreen:CGPointMake(144,139)];
+            break;
+            
         default:
             break;
     }
@@ -563,14 +598,4 @@ static CGPoint previousPoint;
     
 }
 
-%end
-
-%hook FIOSView
-- (void)touchesCancelled:(id)arg1 withEvent:(id)arg2 { %log; %orig; }
-- (void)touchesEnded:(id)arg1 withEvent:(id)arg2 { %log; %orig; } 
-- (void)touchesMoved:(id)arg1 withEvent:(id)arg2 { %log; %orig; } 
-- (void)touchesBegan:(id)arg1 withEvent:(id)arg2 { 	%log; %orig; }
-- (void)HandleTouches:(id)arg1 ofType:(int)arg2 { %log; %orig; }
-
-%end
-*/
+@end

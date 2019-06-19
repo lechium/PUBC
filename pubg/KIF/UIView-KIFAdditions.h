@@ -19,18 +19,6 @@ typedef CGPoint KIFDisplacement;
 @property (nonatomic, readonly, getter=isProbablyTappable) BOOL probablyTappable;
 
 - (BOOL)isDescendantOfFirstResponder;
-- (UIAccessibilityElement *)accessibilityElementWithLabel:(NSString *)label;
-- (UIAccessibilityElement *)accessibilityElementWithLabel:(NSString *)label traits:(UIAccessibilityTraits)traits;
-- (UIAccessibilityElement *)accessibilityElementWithLabel:(NSString *)label accessibilityValue:(NSString *)value traits:(UIAccessibilityTraits)traits;
-+ (BOOL)accessibilityElement:(UIAccessibilityElement *)element hasLabel:(NSString *)label accessibilityValue:(NSString *)value traits:(UIAccessibilityTraits)traits;
-
-/*!
- @method accessibilityElementMatchingBlock:
- @abstract Finds the descendent accessibility element that matches the conditions defined by the match block.
- @param matchBlock A block which returns YES for matching elements.
- @result The matching accessibility element.
- */
-- (UIAccessibilityElement *)accessibilityElementMatchingBlock:(BOOL(^)(UIAccessibilityElement *))matchBlock;
 
 - (UIView *)subviewWithClassNamePrefix:(NSString *)prefix __deprecated;
 - (NSArray *)subviewsWithClassNamePrefix:(NSString *)prefix;
