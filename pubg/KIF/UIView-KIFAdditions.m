@@ -347,7 +347,6 @@ static CGFloat const kTwoFingerConstantWidth = 40;
             UIEvent *eventDown = [self eventWithTouches:[NSArray arrayWithArray:touches]];
             [[UIApplication sharedApplication] sendEvent:eventDown];
             
-           // CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
         }
         else
         {
@@ -363,26 +362,7 @@ static CGFloat const kTwoFingerConstantWidth = 40;
             UIEvent *event = [self eventWithTouches:[NSArray arrayWithArray:touches]];
             [[UIApplication sharedApplication] sendEvent:event];
             
-            //CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
-           
-            //PUBC specific change, we don't want to the touch events to end immediately in every drag instance
             
-            /*
-            // The last point needs to also send a phase ended touch.
-            if (pointIndex == pointsInPath - 1) {
-                //NSLog(@"point index: %lu", pointIndex);
-                for (UITouch * touch in touches) {
-                    
-                    [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
-                    UIEvent *eventUp = [self eventWithTouch:touch];
-                    //NSLog(@"touch: %@", touch);
-                    [[UIApplication sharedApplication] sendEvent:eventUp];
-                 
-                }
-                
-            } //end eventUp if
-            
-            */
         }
     }
     
@@ -390,10 +370,7 @@ static CGFloat const kTwoFingerConstantWidth = 40;
     if ([touches.firstObject view] == self && [self canBecomeFirstResponder]) {
         [self becomeFirstResponder];
     }
-    /*
-    while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
-        CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
-    }*/
+ 
     return touches;
 }
 
