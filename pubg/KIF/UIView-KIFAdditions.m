@@ -326,23 +326,60 @@ static CGFloat const kTwoFingerConstantWidth = 40;
     }
     
     arrayOfPaths = newPaths;
-    
+    //NSLog(@"newpaths: %@", newPaths);
     for (NSUInteger pointIndex = 0; pointIndex < pointsInPath; pointIndex++) {
         // create initial touch event and send touch down event
-        UITouch *touch;
-        for (NSUInteger pathIndex = 0; pathIndex < arrayOfPaths.count; pathIndex++)
+        if (pointIndex == 0)
         {
-            NSArray<NSValue *> *path = arrayOfPaths[pathIndex];
-            CGPoint point = [path[pointIndex] CGPointValue];
-            touch = touches[pathIndex];
-            [touch setLocationInWindow:point];
-            [touch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
+            for (NSArray<NSValue *> *path in arrayOfPaths)
+            {
+                CGPoint point = [path[pointIndex] CGPointValue];
+                // The starting point needs to be relative to the view receiving the UITouch event.
+                point = [self convertPoint:point fromView:self.window];
+                UITouch *touch = [[UITouch alloc] initAtPoint:point inView:self];
+                [touch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
+                [touches addObject:touch];
+            }
+            UIEvent *eventDown = [self eventWithTouches:[NSArray arrayWithArray:touches]];
+            [[UIApplication sharedApplication] sendEvent:eventDown];
+            
+            // CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
         }
-        UIEvent *event = [self eventWithTouches:[NSArray arrayWithArray:touches]];
-        [[UIApplication sharedApplication] sendEvent:event];
-        
-       // CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
-        
+        else
+        {
+            UITouch *touch;
+            for (NSUInteger pathIndex = 0; pathIndex < arrayOfPaths.count; pathIndex++)
+            {
+                NSArray<NSValue *> *path = arrayOfPaths[pathIndex];
+                CGPoint point = [path[pointIndex] CGPointValue];
+                touch = touches[pathIndex];
+                [touch setLocationInWindow:point];
+                [touch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
+            }
+            UIEvent *event = [self eventWithTouches:[NSArray arrayWithArray:touches]];
+            [[UIApplication sharedApplication] sendEvent:event];
+            
+            //CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
+            
+            //PUBC specific change, we don't want to the touch events to end immediately in every drag instance
+            
+            /*
+             // The last point needs to also send a phase ended touch.
+             if (pointIndex == pointsInPath - 1) {
+             //NSLog(@"point index: %lu", pointIndex);
+             for (UITouch * touch in touches) {
+             
+             [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
+             UIEvent *eventUp = [self eventWithTouch:touch];
+             //NSLog(@"touch: %@", touch);
+             [[UIApplication sharedApplication] sendEvent:eventUp];
+             
+             }
+             
+             } //end eventUp if
+             
+             */
+        }
     }
     
     // Dispatching the event doesn't actually update the first responder, so fake it
@@ -350,9 +387,9 @@ static CGFloat const kTwoFingerConstantWidth = 40;
         [self becomeFirstResponder];
     }
     /*
-    while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
-        CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
-    }*/
+     while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
+     CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
+     }*/
     return touches;
 }
 
@@ -421,7 +458,7 @@ static CGFloat const kTwoFingerConstantWidth = 40;
     }
     
     arrayOfPaths = newPaths;
-    
+    //NSLog(@"newpaths: %@", newPaths);
     for (NSUInteger pointIndex = 0; pointIndex < pointsInPath; pointIndex++) {
         // create initial touch event and send touch down event
         if (pointIndex == 0)

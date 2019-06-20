@@ -10,6 +10,7 @@
 #import <GameController/GameController.h>
 #import "UIView-KIFAdditions.h"
 #include <sys/sysctl.h>
+#import "UITouch-KIFAdditions.h"
 
 //screen size
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
@@ -280,10 +281,26 @@
                 CGPoint newPoint = CGPointMake(xv, yv);
                 NSLog(@"PUBC: already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
                 
-                NSArray *newtouches = [self.IOSView dragFromPoint:previousPoint toPoint:newPoint];
+                //NSLog(@"last touch: %@", self.touches.lastObject);
+                NSMutableArray *newTouches = [NSMutableArray new];
+                for (UITouch *updatedTouch in self.touches){
+                        [updatedTouch setLocationInWindow:newPoint];
+                        [updatedTouch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
+                        [newTouches addObject:updatedTouch];
+                }
+                
+                UIEvent *event = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
+                [[UIApplication sharedApplication] sendEvent:event];
+                [[self touches] removeAllObjects];
+                if (newTouches){
+                    [self.touches addObjectsFromArray:newTouches];
+                }
+            
+                /*
+                NSArray *newtouches = [self.IOSView moveFromPoint:previousPoint toPoint:newPoint];
                 if (newtouches){
                     [self.touches addObjectsFromArray:newtouches];
-                }
+                }*/
                 previousPoint = newPoint;
             }
             
