@@ -1,3 +1,0 @@
-@interface UITableViewHeaderFooterView : UITableViewCell
-
-@end
