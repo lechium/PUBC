@@ -46,12 +46,6 @@ typedef CGPoint KIFDisplacement;
 - (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
 - (NSArray <UITouch *> *)dragAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
 
-- (NSArray <UITouch *> *)moveFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
-- (NSArray <UITouch *> *)moveFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
-- (NSArray <UITouch *> *)moveFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
-- (NSArray <UITouch *> *)moveFromPoint:(CGPoint)startPoint displacement:(KIFDisplacement)displacement steps:(NSUInteger)stepCount;
-- (NSArray <UITouch *> *)moveAlongPathWithPoints:(CGPoint *)points count:(NSInteger)count;
-
 - (UIEvent *)eventWithTouches:(NSArray *)touches;
 
 - (void)twoFingerPanFromPoint:(CGPoint)startPoint toPoint:(CGPoint)toPoint steps:(NSUInteger)stepCount;

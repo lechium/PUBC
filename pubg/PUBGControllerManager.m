@@ -267,7 +267,7 @@
                 
                 //move from median point to x,y without touching back up
                 previousPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
-                NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
+                //NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
                 NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousPoint];
                 if (newtouches){
                     [self.touches addObjectsFromArray:newtouches];
@@ -279,7 +279,7 @@
                 //This doesn't appear to work properly, i wonder if we need to end previous touch events first and THEN move it? i dont know.
                 
                 CGPoint newPoint = CGPointMake(xv, yv);
-                NSLog(@"PUBC: already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
+                //NSLog(@"PUBC: already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
                 
                 //NSLog(@"last touch: %@", self.touches.lastObject);
                 NSMutableArray *newTouches = [NSMutableArray new];
@@ -296,11 +296,7 @@
                     [self.touches addObjectsFromArray:newTouches];
                 }
             
-                /*
-                NSArray *newtouches = [self.IOSView moveFromPoint:previousPoint toPoint:newPoint];
-                if (newtouches){
-                    [self.touches addObjectsFromArray:newtouches];
-                }*/
+            
                 previousPoint = newPoint;
             }
             
