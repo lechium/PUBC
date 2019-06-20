@@ -116,9 +116,9 @@
     
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
-        CGPoint mid = CGPointMake(108,280);
-        CGFloat yValueNeutral = 281;
-        CGFloat xValueNeutral = 108;
+        CGPoint mid = CGPointMake(104,280);
+        CGFloat yValueNeutral = 280;
+        CGFloat xValueNeutral = 104;
      
         
         if (xValue == 0 && yValue == 0){
@@ -134,6 +134,12 @@
         } else {
             CGFloat xv=(xValue*180)+xValueNeutral;
             CGFloat xy=(yValue*180 * - 1)+yValueNeutral;
+            
+            if (xv < 40) xv = 40;
+            if (xv > 170) xv = 170;
+            if (yv < 230) xy = 230;
+            if (yv > 321) yv = 321;
+            
             NSLog(@"xv: %f, xy: %f", xv, xy);
             if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
                 
