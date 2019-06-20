@@ -1,3 +1,15 @@
+/**
+ 
+ These constants exist to simplify key mapping in the project (and for autocompletion sanity)
+ 
+ The top section are all the different buttons pubc simulates the touches for the bottom list
+ is the constants for the buttons we support custom mapping for on said controller.
+ 
+ for now edit layout/var/mobile/Library/Preferences/com.nito.pubc.plist.og if you want to customize
+ your layout before building.
+ 
+ */
+
 static NSString * const PGBActionTypeLeft = @"PGBActionTypeLeft";
 static NSString * const PGBActionTypeRight = @"PGBActionTypeRight";
 static NSString * const PGBActionTypeRun = @"PGBActionTypeRun";

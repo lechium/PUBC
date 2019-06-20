@@ -143,12 +143,21 @@
 
 /**
  
- The controller preferences are stored here, keys are mapped
+ The controller preferences are stored here, keys are mapped like the following
+ 
+ ButtonA: PGBActionTypeJump
+ 
+ all these are defined in PUBGDefines.h
+ 
+ It should be pretty self explanatory from here
  
  */
 
 - (NSDictionary *)controllerPreferences {
     
+    /* TODO: this will require the game is reloaded for any changes made to the controller layout,
+     should get this working through defaults somehow - but at that point it should have a preference loader bundle
+     */
     if (self.gamePlayDictionary == nil){
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
         
@@ -158,6 +167,14 @@
     return self.gamePlayDictionary;
 }
 
+/**
+ 
+ IOSView (of class type FIOSView) is the main root view being displayed at all times in pubg
+ that is where we need to route all touch events, there is a reference to it in
+ IOSAppDelegate (the main app delegate class for pubg).
+ 
+ */
+
 - (UIView *)IOSView {
     
     return [(IOSAppDelegate*)[[UIApplication sharedApplication] delegate] valueForKey:@"IOSView"];
@@ -166,15 +183,19 @@
 
 - (void)listenForControllers {
     
-    LOG_SELF;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDisconnected:) name:GCControllerDidDisconnectNotification object:nil];
-    
 }
+
+/**
+ 
+ Take the MFI controller that was detected and add valueChangedHandlers. These allow me to listen for button
+ presses and simulate touch events to to correspond to how a user would press a button on the screen.
+ 
+ */
 
 - (void)setupController:(GCController *)controller {
     
-    LOG_SELF;
     //28/140 = training button
     self.gameController = controller;
     
@@ -194,20 +215,44 @@
         CGFloat yValueNeutral = 280;
         CGFloat xValueNeutral = 104;
         
-        
+        //this means we're at neutral this is where we reset to "normal" as if no drags have ever occured
         if (xValue == 0 && yValue == 0){
             
             //NSLog(@"reset points");
-            //move from previous point to median point and end all touches events.
-            [self.IOSView endTouches:self.touches];
-            NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid];
-            [self.IOSView endTouches:newtouches];
+            //move from previous point to joystick mid point and end all touches events.
+            [self.IOSView endTouches:self.touches]; //end previous touch events first
+            NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid]; //move from center to center
+            [self.IOSView endTouches:newtouches]; //end those touches
             
-            previousPoint = CGPointZero;
+            previousPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
             
-        } else {
+        } else { //either xValue or yValue != 0
+            
+            /**
+             
+             X / Y values are returned on a range from -1 to 1
+             
+             we want to reach a area that is 180 in diameter so we need to normalize the value
+             
+             280x104 is the center point of the joystick, so that is our neutral point (this is 6s specific, but
+             shouldn't matter- the joystick allows you to use the whole half of the screen, the center can be
+             arbitrary as long as its consistent.
+             
+             so xValue * 180 = the percentage we are moving the point across the plane, so we need to
+             add the "neutral" value to move it up / down , left / right as necessary from the central point.
+             
+             */
+            
             CGFloat xv=(xValue*180)+xValueNeutral;
             CGFloat yv=(yValue*180 * - 1)+yValueNeutral;
+            
+            /*
+             
+             The above values can get high unpredictable values occasionally which leads them to triggering
+             other buttons on the view erroneously. This 'boxes' them into a range of values to try and prevent
+             that
+             
+             */
             
             if (xv < 40) xv = 40;
             if (xv > 170) xv = 170;
@@ -218,19 +263,18 @@
             if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
                 
                 
-                //move from median point to x,y without touching back up.. maybe keep track of all the touches?
-                previousPoint = CGPointMake(xv, yv);
+                //move from median point to x,y without touching back up
+                previousPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
                 NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
                 NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousPoint];
                 if (newtouches){
                     [self.touches addObjectsFromArray:newtouches];
                 }
                 
-                
-                
-                
+        
             } else { //we are already touched down, we just want to move from one place to the next
                 
+                //This doesn't appear to work properly, i wonder if we need to end previous touch events first and THEN move it? i dont know.
                 
                 CGPoint newPoint = CGPointMake(xv, yv);
                 NSLog(@"already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
@@ -246,6 +290,8 @@
         
         
     };
+    
+    //L3/R3 are API specific, but since i do the lazy category above to add this to everything, respondsToSelector wouldn't be sufficient.
     
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"12.1")){
         
@@ -480,6 +526,13 @@
     
 }
 
+/**
+ 
+ Controller mapping, this will take controller map button constant (ie ButtonA)
+ and map it to its corresponding action type ie kPGBActionTypeRun. This is
+ how the controller mapping gets customized to the values in our preferences plist.
+ 
+ */
 
 - (PGBActionType)actionTypeForControllerButton:(NSString *)constantString {
     
@@ -487,6 +540,17 @@
     NSString *controllerValue = controllerDictionary[constantString];
     return [self actionTypeFromConstant:controllerValue];
 }
+
+/**
+ 
+ For now certain devices will get special treatment like this until i figure out a better solution.
+ 
+ This receives an action type (ie kPGBActionTypeRun) and translates it to a hardcoded value offset
+ on the desired device screen. This is specific for the iPad Pro 9.7, not sure if this will be
+ able to be used to translate to other ipads or not yet.
+ 
+ 
+ */
 
 - (CGPoint)pointForActionTypeOnIPadPro97:(PGBActionType)type {
     
@@ -603,6 +667,15 @@
     return outpoint;
     
 }
+
+/**
+ 
+ All devices pass through here to get the actual action -> CGPoint mapping
+ of where to simulate the touch event, all the values are mapped to the 6s
+ screen, but then I attempt to translate the button offset to other screen sizes
+ it works for a decent amount of models, but not all. still needs work.
+ 
+ */
 
 - (CGPoint)pointForActionType:(PGBActionType)type {
     
