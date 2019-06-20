@@ -1,0 +1,3 @@
+[submodule "pubg/theos"]
+	path = pubg/theos
+	url = https://github.com/theos/theos
