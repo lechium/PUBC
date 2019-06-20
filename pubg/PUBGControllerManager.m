@@ -10,6 +10,8 @@
 #import <GameController/GameController.h>
 #import "UIView-KIFAdditions.h"
 
+#include <sys/sysctl.h>
+
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
 #define SCREEN_HEIGHT [[UIScreen mainScreen] bounds].size.height
 #define PAT(x) [self pointForActionType:x]
@@ -41,6 +43,16 @@
 @implementation PUBGControllerManager
 
 @synthesize previousPoint;
+
+- (NSString *)machine {
+    
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    return [NSString stringWithCString:machine encoding:NSUTF8StringEncoding];
+    
+}
 
 - (CGPoint)convertPointForScreen:(CGPoint)inputPoint {
     
@@ -84,7 +96,7 @@
 
 - (UIView *)IOSView {
     
-   return [(IOSAppDelegate*)[[UIApplication sharedApplication] delegate] valueForKey:@"IOSView"];
+    return [(IOSAppDelegate*)[[UIApplication sharedApplication] delegate] valueForKey:@"IOSView"];
     
 }
 
@@ -97,7 +109,7 @@
 }
 
 - (void)setupController:(GCController *)controller {
- 
+    
     LOG_SELF;
     //28/140 = training button
     self.gameController = controller;
@@ -105,7 +117,7 @@
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     
     __block NSArray <UITouch *> *touches = nil;
-
+    
     self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
         
         NSLog(@"### pause button??");
@@ -119,7 +131,7 @@
         CGPoint mid = CGPointMake(104,280);
         CGFloat yValueNeutral = 280;
         CGFloat xValueNeutral = 104;
-     
+        
         
         if (xValue == 0 && yValue == 0){
             
@@ -128,7 +140,7 @@
             [self.IOSView endTouches:self.touches];
             NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid];
             [self.IOSView endTouches:newtouches];
-           
+            
             previousPoint = CGPointZero;
             
         } else {
@@ -147,13 +159,13 @@
                 //move from median point to x,y without touching back up.. maybe keep track of all the touches?
                 previousPoint = CGPointMake(xv, yv);
                 NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
-                    NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousPoint];
-                    if (newtouches){
-                        [self.touches addObjectsFromArray:newtouches];
+                NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousPoint];
+                if (newtouches){
+                    [self.touches addObjectsFromArray:newtouches];
                 }
-            
-
-             
+                
+                
+                
                 
             } else { //we are already touched down, we just want to move from one place to the next
                 
@@ -169,30 +181,32 @@
             
         }
         
-      
+        
         
     };
     
-    profile.leftThumbstickButton.valueChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"12.1")){
         
-        if (pressed){
+        profile.leftThumbstickButton.valueChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
             
-            CGPoint hand = PAT([self actionTypeForControllerButton:LeftThumbstickButton]);//PAT(kPGBActionHandAction);
-            [[self IOSView] tapAtPoint:hand];
-        }
-        
-    };
-    
-    profile.rightThumbstickButton.valueChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
-        
-        if (pressed){
+            if (pressed){
+                
+                CGPoint hand = PAT([self actionTypeForControllerButton:LeftThumbstickButton]);//PAT(kPGBActionHandAction);
+                [[self IOSView] tapAtPoint:hand];
+            }
             
-            CGPoint first = PAT([self actionTypeForControllerButton:RightThumbstickButton]);//PAT(kPGBActionFirstItemSelect);
-            [[self IOSView] tapAtPoint:first];
-        }
+        };
         
-    };
-    
+        profile.rightThumbstickButton.valueChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+            
+            if (pressed){
+                
+                CGPoint first = PAT([self actionTypeForControllerButton:RightThumbstickButton]);//PAT(kPGBActionFirstItemSelect);
+                [[self IOSView] tapAtPoint:first];
+            }
+            
+        };
+    }
     
     profile.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
@@ -412,9 +426,129 @@
     return [self actionTypeFromConstant:controllerValue];
 }
 
-
+- (CGPoint)pointForActionTypeOnIPadPro97:(PGBActionType)type {
+    
+    CGPoint outpoint = CGPointZero;
+    switch (type) {
+        case kPGBActionTypeAim:
+            outpoint = CGPointMake(982,503);
+            break;
+            
+        case kPGBActionTypeRun:
+            outpoint = CGPointMake(863, 135);
+            break;
+            
+        case kPGBActionTypeConceal: //lay down
+            outpoint = CGPointMake(947, 730);
+            break;
+            
+        case kPGBActionTypeReload:
+            outpoint = CGPointMake(793,730);
+            break;
+            
+        case kPGBActionTypeFirstWeapon:
+            outpoint = CGPointMake(441,712);
+            break;
+            
+        case kPGBActionTypeSecondWeapon:
+            outpoint = CGPointMake(582, 712);
+            break;
+            
+        case kPGBActionTypeTrainingButton:
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+        case kPGBActionTypeOKCancelButton:    //Cancel button (on ok/cancel alert)
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+        case kPGBActionTypeXCloseButton:  //top right close x
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+        case kPGBActionTypeStartButton:
+            outpoint = CGPointMake(81, 32);
+            break;
+            
+        case kPGBActionTypeOKDualButton: //(point for OK on Cancel / OK alert)
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+        case kPGBActionTypeXClose2Button: //lower close X
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+         
+            
+        case kPGBActionTypeRight:
+            outpoint = CGPointMake(875, 631);
+            break;
+            
+        case kPGBActionTypeLeft:
+            outpoint = CGPointMake(61,389);
+            break;
+            
+        case kPGBActionTypeJump:
+            outpoint = CGPointMake(983,587); //long press
+            break;
+            
+        case kPGBActionTypeCrouch:
+            outpoint = CGPointMake(876, 730);
+            break;
+        case kPGBActionTypeSmallWeapon:
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+        case kPGBActionTypeExitRound:
+            outpoint = CGPointMake(64,13);
+            break;
+            
+            
+            /*
+             weapon option 1 = (441, 680)
+             weapon options 2 = (582, 680)
+             first item - (716, 188)
+             
+             */
+            
+        case kPGBActionTypeInventory:
+            outpoint =  CGPointMake(70,713);
+            break;
+            
+        case kPGBActionHandAction:
+            outpoint = CGPointMake(748, 146);
+            break;
+            
+        case kPGBActionFirstItemSelect:
+            outpoint = CGPointMake(716, 188);// y+50 = 2 item y+ 100 = 3rd item
+            break;
+            
+        case kPGBActionTypeOKSoloButton:
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+        case kPGBActionTypePeakLeft:
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+        case kPGBActionTypePeakRight:
+            outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+        default:
+            break;
+    }
+    return outpoint;
+    
+}
 
 - (CGPoint)pointForActionType:(PGBActionType)type {
+    
+    NSArray *ipad97 = @[@"iPad6,3",@"iPad6,4"];
+    if ([ipad97 containsObject:[self machine]]){
+        
+        return [self pointForActionTypeOnIPadPro97:type];
+    }
     
     CGPoint outpoint = CGPointZero;
     
