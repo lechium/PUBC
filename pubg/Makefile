@@ -3,6 +3,7 @@ TARGET = iphone
 export GO_EASY_ON_ME=1
 export SDKVERSION=10.2
 THEOS_DEVICE_IP=eleven.local
+DEBUG=0
 
 include $(THEOS)/makefiles/common.mk
 

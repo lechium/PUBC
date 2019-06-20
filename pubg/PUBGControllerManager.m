@@ -133,19 +133,19 @@
             
         } else {
             CGFloat xv=(xValue*180)+xValueNeutral;
-            CGFloat xy=(yValue*180 * - 1)+yValueNeutral;
+            CGFloat yv=(yValue*180 * - 1)+yValueNeutral;
             
             if (xv < 40) xv = 40;
             if (xv > 170) xv = 170;
-            if (yv < 230) xy = 230;
+            if (yv < 230) yv = 230;
             if (yv > 321) yv = 321;
             
-            NSLog(@"xv: %f, xy: %f", xv, xy);
+            NSLog(@"xv: %f, xy: %f", xv, yv);
             if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
                 
                 
                 //move from median point to x,y without touching back up.. maybe keep track of all the touches?
-                previousPoint = CGPointMake(xv, xy);
+                previousPoint = CGPointMake(xv, yv);
                 NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
                     NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousPoint];
                     if (newtouches){
@@ -158,7 +158,7 @@
             } else { //we are already touched down, we just want to move from one place to the next
                 
                 
-                CGPoint newPoint = CGPointMake(xv, xy);
+                CGPoint newPoint = CGPointMake(xv, yv);
                 NSLog(@"already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
                 NSArray *newtouches = [self.IOSView dragFromPoint:previousPoint toPoint:newPoint];
                 if (newtouches){
