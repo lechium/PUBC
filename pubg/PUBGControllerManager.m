@@ -276,12 +276,15 @@
         
             } else { //we are already touched down, we just want to move from one place to the next
                 
-                //This doesn't appear to work properly, i wonder if we need to end previous touch events first and THEN move it? i dont know.
-                
                 CGPoint newPoint = CGPointMake(xv, yv);
                 //NSLog(@"PUBC: already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
+          /*
+           
+           Cycle through the touches we already have saved and update them to be moved to their new
+           proper location
+           
+           */
                 
-                //NSLog(@"last touch: %@", self.touches.lastObject);
                 NSMutableArray *newTouches = [NSMutableArray new];
                 for (UITouch *updatedTouch in self.touches){
                         [updatedTouch setLocationInWindow:newPoint];
@@ -291,13 +294,13 @@
                 
                 UIEvent *event = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
                 [[UIApplication sharedApplication] sendEvent:event];
-                [[self touches] removeAllObjects];
+                [[self touches] removeAllObjects]; //remove old touches
                 if (newTouches){
                     [self.touches addObjectsFromArray:newTouches];
                 }
             
             
-                previousPoint = newPoint;
+                previousPoint = newPoint; //update to our new point
             }
             
         }
