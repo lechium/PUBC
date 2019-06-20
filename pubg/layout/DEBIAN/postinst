@@ -8,5 +8,5 @@ if [ ! -f $PREF ] ; then
      /bin/chown mobile:mobile $PREF
 fi
 
-/usr/bin/killall -9 ShadowTrackerExtra
+#/usr/bin/killall -9 ShadowTrackerExtra
 

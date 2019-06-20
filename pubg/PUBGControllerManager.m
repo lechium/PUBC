@@ -254,12 +254,12 @@
              that
              
              */
-            /*
+            
             if (xv < 40) xv = 40;
             if (xv > 170) xv = 170;
             if (yv < 230) yv = 230;
             if (yv > 321) yv = 321;
-            */
+            
             NSLog(@"xv: %f, xy: %f", xv, yv);
             if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
                 
@@ -278,7 +278,7 @@
                 //This doesn't appear to work properly, i wonder if we need to end previous touch events first and THEN move it? i dont know.
                 
                 CGPoint newPoint = CGPointMake(xv, yv);
-                NSLog(@"already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
+                NSLog(@"PUBC: already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
                 
                 NSArray *newtouches = [self.IOSView dragFromPoint:previousPoint toPoint:newPoint];
                 if (newtouches){
