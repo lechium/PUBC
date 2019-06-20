@@ -182,6 +182,15 @@
     
 }
 
+- (void)controllerDisconnected:(NSNotification *)n {
+    
+    if (n.object == self.gameController){
+        NSLog(@"game controller gone: %@", self.gameController);
+        self.gameController = nil;
+    }
+    
+}
+
 - (void)listenForControllers {
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
