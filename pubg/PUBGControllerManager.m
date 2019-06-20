@@ -221,6 +221,7 @@
             //NSLog(@"reset points");
             //move from previous point to joystick mid point and end all touches events.
             [self.IOSView endTouches:self.touches]; //end previous touch events first
+            [[self touches] removeAllObjects];
             NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid]; //move from center to center
             [self.IOSView endTouches:newtouches]; //end those touches
             
@@ -243,8 +244,8 @@
              
              */
             
-            CGFloat xv=(xValue*180)+xValueNeutral;
-            CGFloat yv=(yValue*180 * - 1)+yValueNeutral;
+            CGFloat xv=(xValue*200)+xValueNeutral;
+            CGFloat yv=(yValue*200 * - 1)+yValueNeutral;
             
             /*
              
@@ -253,12 +254,12 @@
              that
              
              */
-            
+            /*
             if (xv < 40) xv = 40;
             if (xv > 170) xv = 170;
             if (yv < 230) yv = 230;
             if (yv > 321) yv = 321;
-            
+            */
             NSLog(@"xv: %f, xy: %f", xv, yv);
             if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
                 
@@ -278,6 +279,7 @@
                 
                 CGPoint newPoint = CGPointMake(xv, yv);
                 NSLog(@"already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
+                
                 NSArray *newtouches = [self.IOSView dragFromPoint:previousPoint toPoint:newPoint];
                 if (newtouches){
                     [self.touches addObjectsFromArray:newtouches];
@@ -319,22 +321,26 @@
     profile.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         if (dpad.down.isPressed){
+            NSLog(@"down");
             CGPoint reload = PAT([self actionTypeForControllerButton:DpadDown]);//PAT(kPGBActionTypeReload);
             [[self IOSView] tapAtPoint:reload];
             
         }
         
         if (dpad.left.isPressed){
-            CGPoint leftWeapon = PAT([self actionTypeForControllerButton:DpadLeft]);//PAT(kPGBActionTypeFirstWeapon);
+            CGPoint leftWeapon = PAT([self actionTypeForControllerButton:DpadLeft]);
+            NSLog(@"left");
             [[self IOSView] tapAtPoint:leftWeapon];
         }
         
         if (dpad.up.isPressed){
+            NSLog(@"up");
             CGPoint aim = PAT([self actionTypeForControllerButton:DpadUp]);//PAT(kPGBActionTypeAim);
             [[self IOSView] tapAtPoint:aim];
         }
         
         if (dpad.right.isPressed){
+            NSLog(@"right");
             CGPoint rightWeapon = PAT([self actionTypeForControllerButton:DpadRight]);//PAT(kPGBActionTypeSecondWeapon);
             [[self IOSView] tapAtPoint:rightWeapon];
         }
@@ -345,6 +351,7 @@
     profile.leftShoulder.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed){
+            NSLog(@"leftShoulder");
             CGPoint training = PAT([self actionTypeForControllerButton:LeftShoulder]);//PAT(kPGBActionTypeTrainingButton);
             [[self IOSView] tapAtPoint:training];
             
@@ -361,6 +368,7 @@
     profile.rightShoulder.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed){
+            NSLog(@"rightShoulder");
             CGPoint start = PAT([self actionTypeForControllerButton:RightShoulder]);//PAT(kPGBActionTypeStartButton);
             [[self IOSView] tapAtPoint:start];
             
@@ -383,6 +391,7 @@
     profile.rightTrigger.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed){
+                 NSLog(@"rightTrigger");
             CGPoint punchRight = PAT([self actionTypeForControllerButton:RightTrigger]);//PAT(kPGBActionTypeRight);
             if (currentRightTouch){
                 [[self IOSView] finishTouch:currentRightTouch];
@@ -404,6 +413,7 @@
         
         if (pressed)
         {
+            NSLog(@"leftTrigger");
             CGPoint punchLeft = PAT([self actionTypeForControllerButton:LeftTrigger]);//PAT(kPGBActionTypeLeft);
             currentLeftTouch = [[self IOSView] tapDownAtPoint:punchLeft];
         } else {
@@ -420,6 +430,7 @@
     {
         if (pressed)
         {
+            NSLog(@"ButtonA");
             CGPoint jump = PAT([self actionTypeForControllerButton:ButtonA]);//PAT(kPGBActionTypeJump);
             //jumpTouch = [[self IOSView] longPressAtPoint: jump duration: .1];
             jumpTouch =  [[self IOSView] tapDownAtPoint:jump];
@@ -437,6 +448,7 @@
     {
         if (pressed)
         {
+            NSLog(@"ButtonB");
             CGPoint laydown = PAT([self actionTypeForControllerButton:ButtonB]);//PAT(kPGBActionTypeConceal);
             [[self IOSView] tapAtPoint:laydown];
         }
@@ -446,6 +458,7 @@
     {
         if (pressed)
         {
+            NSLog(@"buttonX");
             CGPoint run = PAT([self actionTypeForControllerButton:ButtonX]);////PAT(kPGBActionTypeRun);
             [[self IOSView] tapAtPoint:run];
         }
@@ -455,6 +468,7 @@
     {
         if (pressed)
         {
+            NSLog(@"buttonY");
             CGPoint crouch = PAT([self actionTypeForControllerButton:ButtonY]);//PAT(kPGBActionTypeCrouch);
             [[self IOSView] tapAtPoint:crouch];
             
