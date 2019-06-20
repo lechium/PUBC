@@ -12,7 +12,7 @@ How it works:
 
 1. I map the x,y coordinates of each of the buttons on this screenshot I took on my 6s
 
-![alt text](game_play_map.jpg "Mapping Screen"
+![alt text](game_play_map.jpg "Mapping Screen")
 
 2. Hook IOSAppDelegate and our PUBGController class
 
