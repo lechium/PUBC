@@ -77,7 +77,7 @@
     if (self.gamePlayDictionary == nil){
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
         self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:preferenceFile];
-        NSLog(@"gameplay dict: %@", self.gamePlayDictionary);
+        //NSLog(@"gameplay dict: %@", self.gamePlayDictionary);
     }
     return self.gamePlayDictionary;
 }
@@ -105,22 +105,7 @@
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     
     __block NSArray <UITouch *> *touches = nil;
-    
-    [profile.leftThumbstick.xAxis setValueChangedHandler:^(GCControllerAxisInput *axis, float value) {
-        NSInteger v=(NSInteger)(value*127); //-127 ... + 127 range
-        
-        if (v != 0){
-            NSLog(@"Joy X: %i", v);
-        }
-    }];
-    [profile.leftThumbstick.yAxis setValueChangedHandler:^(GCControllerAxisInput *axis, float value) {
-        NSInteger v= (NSInteger)(value*127 * - 1); //-127 ... + 127 range
-        
-        if (v != 0){
-            NSLog(@"Joy Y: %i", v);
-        }
-    }];
-    
+
     self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
         
         NSLog(@"### pause button??");
@@ -131,32 +116,14 @@
     
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
-        
         CGPoint mid = CGPointMake(108,280);
-        CGPoint rmin = CGPointMake(145,280);
-        CGPoint dmin = CGPointMake(104, 320);
-        CGPoint lmin = CGPointMake(67, 280);
-        CGPoint umin = CGPointMake(108, 240);
         CGFloat yValueNeutral = 281;
         CGFloat xValueNeutral = 108;
-        /*
-         
-         if (touches.count > 0) {
-         
-         if (xValue == 0 && yValue == 0){
-         NSLog(@"shit aint null: %@", touches);
-         
-         //[[self IOSView] endTouches:touches];
-         touches = nil;
-         
-         }
-         
-         }
-         */
+     
         
         if (xValue == 0 && yValue == 0){
             
-            NSLog(@"reset points");
+            //NSLog(@"reset points");
             //move from previous point to median point and end all touches events.
             [self.IOSView endTouches:self.touches];
             NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid];
@@ -165,8 +132,8 @@
             previousPoint = CGPointZero;
             
         } else {
-            CGFloat xv=(xValue*240)+108;
-            CGFloat xy=(241 * ABS(yValue))+281;
+            CGFloat xv=(xValue*180)+xValueNeutral;
+            CGFloat xy=(yValue*180 * - 1)+yValueNeutral;
             NSLog(@"xv: %f, xy: %f", xv, xy);
             if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
                 
@@ -174,18 +141,9 @@
                 //move from median point to x,y without touching back up.. maybe keep track of all the touches?
                 previousPoint = CGPointMake(xv, xy);
                 NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
-               // if (xv > 0){
                     NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousPoint];
                     if (newtouches){
                         [self.touches addObjectsFromArray:newtouches];
-                 //   }
-                } else {
-                   /*
-                    NSArray *newtouches = [self.IOSView dragFromPoint:previousPoint toPoint:mid];
-                    if (newtouches){
-                        [self.touches addObjectsFromArray:newtouches];
-                    }
-                    */
                 }
             
 
@@ -205,48 +163,7 @@
             
         }
         
-        
-        /*
-         if (xValue != 0){
-         NSLog(@"x value: %f", xValue);
-         if (xValue > 0) { //moving right
-         CGFloat newX = 185 * xValue;
-         NSLog(@"new x: %f", newX);
-         if (yValue != 0){
-         yValueNeutral *= ABS(yValue);
-         }
-         [[self IOSView] dragFromPoint:CGPointMake(xValue, yValueNeutral) toPoint:lmin];
-         } else if (0 > xValue){
-         if (yValue != 0){
-         yValueNeutral *= ABS(yValue);
-         }
-         CGFloat newX = 185 * ABS(xValue);
-         NSLog(@"lower new x: %f", newX);
-         [[self IOSView] dragFromPoint:lmin toPoint:CGPointMake(xValue, yValueNeutral)];
-         } else {
-         [[self IOSView] dragFromPoint:mid toPoint:mid];
-         }
-         } else {
-         if (yValue != 0){
-         NSLog(@"y value: %f", yValue);
-         if (yValue > 0) { //moving up
-         
-         CGFloat newY = 241 * yValue;
-         NSLog(@"new y: %f", newY);
-         if (xValue != 0){
-         xValueNeutral *= ABS(xValue);
-         }
-         [[self IOSView] dragFromPoint:umin toPoint:CGPointMake(xValueNeutral, newY)];
-         } else if (0 > yValue){
-         CGFloat newY = 241 * ABS(yValue);
-         NSLog(@"lower new y: %f", newY);
-         [[self IOSView] dragFromPoint:CGPointMake(xValueNeutral, newY) toPoint:dmin];
-         } else {
-         [[self IOSView] dragFromPoint:mid toPoint:mid];
-         }
-         }
-         }
-         */
+      
         
     };
     
@@ -303,7 +220,7 @@
             CGPoint training = PAT([self actionTypeForControllerButton:LeftShoulder]);//PAT(kPGBActionTypeTrainingButton);
             [[self IOSView] tapAtPoint:training];
             
-            NSLog(@"ios view: %@", [self IOSView]);
+            //NSLog(@"ios view: %@", [self IOSView]);
             CGPoint cancelPoint = PAT(kPGBActionTypeOKCancelButton);
             [[self IOSView] tapAtPoint:cancelPoint];
             
