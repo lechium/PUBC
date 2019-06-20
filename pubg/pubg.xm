@@ -1,18 +1,6 @@
-#import <GameController/GameController.h>
-#import "NSObject+AssociatedObjects.h"
-#import "UIView-KIFAdditions.h"
 #import "PUBGDefines.h"
 #import "PUBGControllerManager.h"
 //#import "FingerTips/MBFingerTipWindow.h"
-
-
-
-@interface IOSAppDelegate : UIResponder <UIApplicationDelegate, UITextFieldDelegate>
-
-@property(retain) UIView *IOSView; // @synthesize IOSView;
-
-@end
-
 
 %hook IOSAppDelegate
 
@@ -28,3 +16,5 @@
     return %orig;
 
 }
+
+%end

@@ -9,12 +9,10 @@
 
 #import "UIView-KIFAdditions.h"
 #import "CGGeometry-KIFAdditions.h"
-//#import "UIAccessibilityElement-KIFAdditions.h"
 #import "UIApplication-KIFAdditions.h"
 #import "UITouch-KIFAdditions.h"
 #import <objc/runtime.h>
 #import "UIEvent+KIFAdditions.h"
-//#import "KIFUITestActor.h"
 
 double KIFDegreesToRadians(double deg) {
     return (deg) / 180.0 * M_PI;
@@ -35,43 +33,6 @@ static CGFloat const kTwoFingerConstantWidth = 40;
 - (void)tapInteractionWithLocation:(CGPoint)point;
 
 @end
-
-// On iOS 6 the accessibility label may contain line breaks, so when trying to find the
-// element, these line breaks are necessary. But on iOS 7 the system replaces them with
-// spaces. So the same test breaks on either iOS 6 or iOS 7. iOS8 befuddles this again by
-//limiting replacement to spaces in between strings. To work around this replace
-// the line breaks in both and try again.
-NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual) {
-    if (expected == actual) {
-        return YES;
-    }
-    
-    if (expected.length != actual.length) {
-        return NO;
-    }
-    
-    if ([expected isEqualToString:actual]) {
-        return YES;
-    }
-    
-    if ([expected rangeOfString:@"\n"].location == NSNotFound &&
-        [actual rangeOfString:@"\n"].location == NSNotFound) {
-        return NO;
-    }
-    
-    for (NSUInteger i = 0; i < expected.length; i ++) {
-        unichar expectedChar = [expected characterAtIndex:i];
-        unichar actualChar = [actual characterAtIndex:i];
-        if (expectedChar != actualChar &&
-           !(expectedChar == '\n' && actualChar == ' ') &&
-           !(expectedChar == ' '  && actualChar == '\n')) {
-            return NO;
-        }
-    }
-    
-    return YES;
-}
-
 
 @implementation UIView (KIFAdditions)
 
@@ -309,7 +270,7 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
 }
 
 
-- (UITouch *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
+- (NSArray <UITouch *> *)dragFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint steps:(NSUInteger)stepCount;
 {
     KIFDisplacement displacement = CGPointMake(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
     return [self dragFromPoint:startPoint displacement:displacement steps:stepCount];
@@ -400,20 +361,25 @@ NS_INLINE BOOL StringsMatchExceptLineBreaks(NSString *expected, NSString *actual
             [[UIApplication sharedApplication] sendEvent:event];
             
             CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
+           
+            //PUBC specific change, we don't want to the touch events to end immediately in every drag instance
             
+            /*
             // The last point needs to also send a phase ended touch.
             if (pointIndex == pointsInPath - 1) {
                 //NSLog(@"point index: %lu", pointIndex);
                 for (UITouch * touch in touches) {
                     
-                    //[touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
-                    //UIEvent *eventUp = [self eventWithTouch:touch];
+                    [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
+                    UIEvent *eventUp = [self eventWithTouch:touch];
                     //NSLog(@"touch: %@", touch);
-                    //[[UIApplication sharedApplication] sendEvent:eventUp];
+                    [[UIApplication sharedApplication] sendEvent:eventUp];
                  
                 }
                 
-            }
+            } //end eventUp if
+            
+            */
         }
     }
     

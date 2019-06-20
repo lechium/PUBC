@@ -116,8 +116,6 @@
     
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     
-    __block NSArray <UITouch *> *touches = nil;
-    
     self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
         
         NSLog(@"### pause button??");
