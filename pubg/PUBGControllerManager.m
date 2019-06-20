@@ -1,6 +1,6 @@
 //
 //  PUBGControllerManager.m
-//  nitoTV4
+//  pubc
 //
 //  Created by Kevin Bradley on 6/15/19.
 //  Copyright © 2019 nito. All rights reserved.
@@ -9,17 +9,23 @@
 #import "PUBGControllerManager.h"
 #import <GameController/GameController.h>
 #import "UIView-KIFAdditions.h"
-
 #include <sys/sysctl.h>
 
+//screen size
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
 #define SCREEN_HEIGHT [[UIScreen mainScreen] bounds].size.height
+
+//convenience
 #define PAT(x) [self pointForActionType:x]
+
+//logging
+
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 #define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 #define DLOG_SELF DLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 
-@interface GCExtendedGamepad (science)
+// added so older SDK's can build this without complaining
+@interface GCExtendedGamepad (pubc)
 
 @property (nonatomic,readonly) GCControllerButtonInput * leftThumbstickButton;
 @property (nonatomic,readonly) GCControllerButtonInput * rightThumbstickButton;
@@ -28,21 +34,43 @@
 
 @interface IOSAppDelegate : UIResponder <UIApplicationDelegate, UITextFieldDelegate>
 
+//the root view of pubg application, this is the view touch events need to be relayed through.
+
 @property(retain) UIView *IOSView; // @synthesize IOSView;
 
 @end
 
-
 @interface PUBGControllerManager ()
 
-@property (readwrite, assign) CGPoint previousPoint;
-@property (nonatomic, strong) NSMutableArray *touches;
+@property (readwrite, assign) CGPoint previousPoint; //track the previous point when dragging / moving touches
+@property (nonatomic, strong) NSMutableArray *touches; //all of our touches, kept track of when moving so we can change the phase to touch up as needed
 
 @end
 
 @implementation PUBGControllerManager
 
 @synthesize previousPoint;
+
++ (id)sharedManager
+{
+    static dispatch_once_t onceToken;
+    
+    static PUBGControllerManager *shared = nil;
+    if(shared == nil)
+    {
+        dispatch_once(&onceToken, ^{
+            shared = [[PUBGControllerManager alloc] init];
+            shared.touches = [NSMutableArray new];
+        });
+    }
+    return shared;
+}
+
+/**
+ 
+ returns the machine type of the device ie: iPad6,3
+ 
+ */
 
 - (NSString *)machine {
     
@@ -53,6 +81,16 @@
     return [NSString stringWithCString:machine encoding:NSUTF8StringEncoding];
     
 }
+
+/**
+ 
+ All input points (for most devices) need to be converted to their appropriate screen size
+ All of the on screen button values are mapped to the X,Y coordinates as displayed in the
+ default layout on the 6S, we convert the points to the native screen size to make sure the
+ offsets are translated properly.
+ 
+ 
+ */
 
 - (CGPoint)convertPointForScreen:(CGPoint)inputPoint {
     
@@ -67,27 +105,53 @@
     return CGPointMake(x, y);
 }
 
-+ (id)sharedManager
-{
-    LOG_SELF;
-    static dispatch_once_t onceToken;
-    
-    static PUBGControllerManager *shared = nil;
-    if(shared == nil)
-    {
-        dispatch_once(&onceToken, ^{
-            shared = [[PUBGControllerManager alloc] init];
-            shared.touches = [NSMutableArray new];
-            //[shared listenForControllers];
-        });
-    }
-    return shared;
-}
+/*
+ 
+ <key>ButtonA</key>
+ <string>PGBActionTypeJump</string>
+ <key>ButtonB</key>
+ <string>PGBActionTypeConceal</string>
+ <key>ButtonX</key>
+ <string>PGBActionTypeRun</string>
+ <key>ButtonY</key>
+ <string>PGBActionTypeCrouch</string>
+ <key>LeftShoulder</key>
+ <string>PGBActionTypeTrainingButton</string>
+ <key>RightShoulder</key>
+ <string>PGBActionTypeStartButton</string>
+ <key>LeftTrigger</key>
+ <string>PGBActionTypePeakLeft</string>
+ <key>RightTrigger</key>
+ <string>PGBActionTypeRight</string>
+ <key>RightThumbstickButton</key>
+ <string>PGBActionHandAction</string>
+ <key>LeftThumbstickButton</key>
+ <string>PGBActionFirstItemSelect</string>
+ <key>Dpad.up</key>
+ <string>PGBActionTypeAim</string>
+ <key>Dpad.down</key>
+ <string>PGBActionMapAction</string>
+ <key>Dpad.left</key>
+ <string>PGBActionTypeFirstWeapon</string>
+ <key>Dpad.right</key>
+ <string>PGBActionTypeSecondWeapon</string>
+ <key>Menu</key>
+ <string>PGBActionTypeSmallWeapon</string>
+
+
+ */
+
+/**
+ 
+ The controller preferences are stored here, keys are mapped
+ 
+ */
 
 - (NSDictionary *)controllerPreferences {
     
     if (self.gamePlayDictionary == nil){
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
+        
         self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:preferenceFile];
         //NSLog(@"gameplay dict: %@", self.gamePlayDictionary);
     }

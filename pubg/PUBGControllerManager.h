@@ -1,6 +1,6 @@
 //
 //  PUBGControllerManager.h
-//  nitoTV4
+//  pubc
 //
 //  Created by Kevin Bradley on 6/15/19.
 //  Copyright © 2019 nito. All rights reserved.

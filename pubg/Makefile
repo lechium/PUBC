@@ -1,7 +1,7 @@
 ARCHS = arm64
 TARGET = iphone
 export GO_EASY_ON_ME=1
-export SDKVERSION=10.2
+export SDKVERSION=12.1
 THEOS_DEVICE_IP=eleven.local
 DEBUG=0
 
