@@ -11,6 +11,8 @@
 #import "UIView-KIFAdditions.h"
 #include <sys/sysctl.h>
 #import "UITouch-KIFAdditions.h"
+#import "CGGeometry-KIFAdditions.h"
+#import "PUBGDefines.h"
 
 //screen size
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
@@ -46,11 +48,16 @@
 @property (readwrite, assign) CGPoint previousPoint; //track the previous point when dragging / moving touches
 @property (nonatomic, strong) NSMutableArray *touches; //all of our touches, kept track of when moving so we can change the phase to touch up as needed
 
+@property (readwrite, assign) CGPoint previousRightPoint; //track the previous point when dragging / moving touches
+@property (nonatomic, strong) NSMutableArray *rightTouches; //all of our touches, kept track of when moving so we can change the phase to touch up as needed
+
+
+
 @end
 
 @implementation PUBGControllerManager
 
-@synthesize previousPoint;
+@synthesize previousPoint, previousRightPoint;
 
 + (id)sharedManager
 {
@@ -62,6 +69,7 @@
         dispatch_once(&onceToken, ^{
             shared = [[PUBGControllerManager alloc] init];
             shared.touches = [NSMutableArray new];
+            shared.rightTouches = [NSMutableArray new];
         });
     }
     return shared;
@@ -207,7 +215,10 @@
 - (void)setupController:(GCController *)controller {
     
     //28/140 = training button
+    
     self.gameController = controller;
+    
+    [self.gameController setGateKeeper:self];
     
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     
@@ -218,7 +229,83 @@
         CGPoint menu = PAT([self actionTypeForControllerButton:Menu]);
         [[self IOSView] tapAtPoint:menu];
     };
+
+    /*
+     421,226 - top left
+     521, 226, top right
+     421, 324 - bottom left
+     521, 324 - bottom right
+     */
     
+    /*
+    
+    profile.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
+    
+        CGPoint mid = CGPointMake(474,280);
+        CGFloat yValueNeutral = 280;
+        CGFloat xValueNeutral = 474;
+        
+        //this means we're at neutral this is where we reset to "normal" as if no drags have ever occured
+        if (xValue == 0 && yValue == 0){
+            
+            //NSLog(@"reset points");
+            //move from previous point to joystick mid point and end all touches events.
+            [self.IOSView endTouches:self.rightTouches]; //end previous touch events first
+            [[self rightTouches] removeAllObjects];
+           // NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid]; //move from center to center
+            //[self.IOSView endTouches:newtouches]; //end those touches
+            
+            previousRightPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
+            
+        } else { //either xValue or yValue != 0
+            
+          
+            
+            CGFloat xv=(xValue*200)+xValueNeutral;
+            CGFloat yv=(yValue*200 * - 1)+yValueNeutral;
+            
+    
+         
+          
+            NSLog(@"xv: %f, xy: %f", xv, yv);
+            if (CGPointEqualToPoint(previousRightPoint, CGPointZero)){ //not touching down
+                
+                
+                //move from median point to x,y without touching back up
+                previousRightPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
+                //NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
+                NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousRightPoint];
+                if (newtouches){
+                    [self.rightTouches addObjectsFromArray:newtouches];
+                }
+                
+                
+            } else { //we are already touched down, we just want to move from one place to the next
+                
+                CGPoint newPoint = CGPointMake(xv, yv);
+            
+                NSMutableArray *newTouches = [NSMutableArray new];
+                for (UITouch *updatedTouch in self.rightTouches){
+                    [updatedTouch setLocationInWindow:newPoint];
+                    [updatedTouch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
+                    [newTouches addObject:updatedTouch];
+                }
+                
+                UIEvent *event = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
+                [[UIApplication sharedApplication] sendEvent:event];
+                [[self rightTouches] removeAllObjects]; //remove old touches
+                if (newTouches){
+                    [self.rightTouches addObjectsFromArray:newTouches];
+                }
+                
+                
+                previousRightPoint = newPoint; //update to our new point
+            }
+            
+        }
+    };
+    */
+   
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         CGPoint mid = CGPointMake(104,280);
