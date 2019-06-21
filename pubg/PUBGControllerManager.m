@@ -237,7 +237,7 @@
      521, 324 - bottom right
      */
     
-    /*
+    
     
     profile.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
     
@@ -304,7 +304,7 @@
             
         }
     };
-    */
+    
    
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
