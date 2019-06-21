@@ -14,11 +14,19 @@ How it works:
 
 ![alt text](game_play_map.jpg "Mapping Screen")
 
+https://github.com/lechium/ItsScience/blob/master/pubg/PUBGControllerManager.m#L719
+
+ie case kPGBActionTypeInventory the output is essentially CGPointMake(48, 343) (after being translated for the screen size) The inventory button is on the bottom left X: 48, y: 343
+
 2. Hook IOSAppDelegate and our PUBGController class
 
 3. This class listens for game controllers and upon receiving one, sets it up to receive value change handlers
+ie https://github.com/lechium/ItsScience/blob/master/pubg/PUBGControllerManager.m#L482
 
 4. Map buttons to different CGPoints that touches are simulated for on the screen.
+still looking at sample code from above on like 482+ you'll see if pressed is true, then it gets the mapped control for the button constant (in this case ButtonX) [[self IOSView] tapAtPoint:run];
+
+5. The touch events simulation was lifted and modified from the awesome KIF framework. Mostly from this folder https://github.com/kif-framework/KIF/tree/master/Additions 
 
 Custom button mapping:
 
