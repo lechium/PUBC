@@ -25,15 +25,16 @@
 - (GCExtendedGamepad *)extendedGamepad {
     %log;
     if ([self gateKeeper] != nil) {
-        return nil;
+        return %orig;
     } 
-    return %orig;
+    return nil;
 }
 
 + (NSArray<GCController *> *)controllers {
 
     %log;
-    return %orig;
+    return nil; //for now
+    //return %orig;
 }
 
 %end
