@@ -244,7 +244,16 @@
         CGPoint mid = CGPointMake(474,280);
         CGFloat yValueNeutral = 280;
         CGFloat xValueNeutral = 474;
+        BOOL right = FALSE;
+        BOOL up = FALSE;
         
+        if (xValue > 0){
+            right = TRUE;
+        }
+        
+        if (yValue > 0) {
+            up = TRUE;
+        }
         //this means we're at neutral this is where we reset to "normal" as if no drags have ever occured
         if (xValue == 0 && yValue == 0){
             
@@ -259,14 +268,9 @@
             
         } else { //either xValue or yValue != 0
             
-          
+            CGFloat xv=(xValue*120)+xValueNeutral;
+            CGFloat yv=(yValue*120 * - 1)+yValueNeutral;
             
-            CGFloat xv=(xValue*200)+xValueNeutral;
-            CGFloat yv=(yValue*200 * - 1)+yValueNeutral;
-            
-    
-         
-          
             NSLog(@"xv: %f, xy: %f", xv, yv);
             if (CGPointEqualToPoint(previousRightPoint, CGPointZero)){ //not touching down
                 
@@ -281,7 +285,31 @@
                 
                 
             } else { //we are already touched down, we just want to move from one place to the next
+                BOOL xRegister = TRUE;
                 
+                if (xValue > 0){
+                    if (xv < previousRightPoint.x){
+                        xv = previousRightPoint.x;
+                    }
+                } else if (xValue < 0){
+                    if (xv > previousRightPoint.x){
+                        xv = previousRightPoint.x;
+                    }
+                }
+                
+                BOOL yRegister = TRUE;
+                
+                if (yValue > 0){
+                    if (yv > previousRightPoint.y){
+                        yv = previousRightPoint.y;
+                    }
+                } else if (yValue < 0){
+                    if (yv < previousRightPoint.y){
+                        yv = previousRightPoint.y;
+                    }
+                }
+                 
+                if (xRegister && yRegister){
                 CGPoint newPoint = CGPointMake(xv, yv);
             
                 NSMutableArray *newTouches = [NSMutableArray new];
@@ -300,6 +328,7 @@
                 
                 
                 previousRightPoint = newPoint; //update to our new point
+                }
             }
             
         }
