@@ -33,8 +33,13 @@
 + (NSArray<GCController *> *)controllers {
 
     //%log;
-    return nil; //for now
-    //return %orig;
+    NSDictionary *gpd = [[PUBGControllerManager sharedManager] controllerPreferences];
+    BOOL enabled = [gpd[ExperimentalControl] boolValue];
+    if (enabled) {
+        NSLog(@"no controllers for you!");
+        return nil;
+    }
+    return %orig;
 }
 
 %end

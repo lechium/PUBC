@@ -1,13 +1,14 @@
 //
 //  PUBPrefTableViewController.m
-//  electra1131
+//  pubc
 //
 //  Created by Kevin Bradley on 6/21/19.
-//  Copyright © 2019 Electra Team. All rights reserved.
+//  Copyright © 2019 nito llc. All rights reserved.
 //
 
 #import "PUBPrefTableViewController.h"
 #import "PUBGControllerManager.h"
+#import "PUBControlListTableViewController.h"
 @interface PUBPrefTableViewController ()
 
 @end
@@ -24,8 +25,14 @@
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+      self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
 }
+
+- (void)close {
+    
+    [self dismissViewControllerAnimated:true completion:nil];
+}
+
 
 #pragma mark - Table view data source
 
@@ -44,22 +51,113 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-
+    PUBGControllerManager *shared = [PUBGControllerManager sharedManager];
+    NSDictionary *gpd = [shared controllerPreferences];
+    
+    
     if (indexPath.row == 0 && indexPath.section == 0){
         
-        PUBGControllerManager *shared = [PUBGControllerManager sharedManager];
-        [shared updateGamplayValue:[NSNumber numberWithBool:TRUE] forKey:ExperimentalControl];
+        BOOL enabled = [gpd[ExperimentalControl] boolValue];
+        [shared updateGamplayValue:[NSNumber numberWithBool:!enabled] forKey:ExperimentalControl];
+        [[self tableView] reloadData];
+        
+    } else {
+        NSString *key = [self keyForRow:indexPath.row];
+        NSLog(@"key: %@", key);
+        NSString *value = gpd[key];
+         NSLog(@"value: %@", value);
+        PUBControlListTableViewController *controller = [[PUBControlListTableViewController alloc] initWithOriginalValue:value keyValue:key];
+        [self.navigationController pushViewController:controller animated:true];
         
     }
         
+        
     
 }
-    
 
+- (NSString *)keyForRow:(NSInteger)row {
+    
+    NSString *keyValue = nil;
+    
+    switch (row) {
+        case 0: //ButtonA
+            keyValue = ButtonA;
+            break;
+            
+        case 1: //ButtonB
+            keyValue = ButtonB;
+            break;
+            
+        case 2: //ButtonX
+            
+            keyValue = ButtonX;
+            break;
+            
+        case 3: //ButtonY
+            
+            keyValue = ButtonY;
+            break;
+            
+        case 4: //LeftShoulder
+            
+            keyValue = LeftShoulder;
+            break;
+            
+        case 5: //RightShoulder
+            
+            keyValue = RightShoulder;
+            break;
+            
+        case 6: //LeftTrigger
+            
+            keyValue = LeftTrigger;
+            break;
+            
+        case 7: //RightTrigger
+            
+            keyValue = RightTrigger;
+            break;
+            
+        case 8: //LeftThumbstickButton
+            
+            keyValue = LeftThumbstickButton;
+            break;
+            
+        case 9: //RightThumbstickButton
+            
+            keyValue = RightThumbstickButton;
+            break;
+            
+        case 10: //Dpad.up
+            
+            keyValue = DpadUp;
+            break;
+            
+        case 11: //Dpad.down
+            
+            keyValue = DpadDown;
+            break;
+            
+        case 12: //Dpad.left
+            
+            keyValue = DpadLeft;
+            break;
+            
+        case 13: //Dpad.right
+            
+            keyValue = DpadRight;
+            break;
+            
+        default:
+            break;
+    }
+    
+    return keyValue;
+}
 - (void)configureCell:(UITableViewCell *)cell forRow:(NSInteger)row {
  
     NSDictionary *gpd = [[PUBGControllerManager sharedManager] controllerPreferences];
-    NSLog(@"controllerPreferences: %@", gpd);
+    //NSLog(@"controllerPreferences: %@", gpd);
     
     switch (row) {
         case 0: //ButtonA
@@ -146,9 +244,17 @@
         default:
             break;
     }
-    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
 }
+
+- (void)viewWillAppear:(BOOL)animated {
+ 
+    [super viewWillAppear:animated];
+    
+    [self.tableView reloadData];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     static NSString *CellIdentifier = @"CellIdentifier";
@@ -160,13 +266,17 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
     }
     // Configure the cell...
-    
+    NSDictionary *prefs = [[PUBGControllerManager sharedManager] controllerPreferences];
+    BOOL exp = [prefs[ExperimentalControl] boolValue];
+    NSString *value = @"Enabled";
+    if (!exp)
+        value = @"Disabled";
     switch (indexPath.section){
             
         case 0: //
             
             cell.textLabel.text = @"Experimental Right Joystick";
-            cell.detailTextLabel.text = @"Enabled";
+            cell.detailTextLabel.text = value;
             
             break;
             
