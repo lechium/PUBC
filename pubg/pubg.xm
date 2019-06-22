@@ -32,7 +32,7 @@
 
 + (NSArray<GCController *> *)controllers {
 
-    %log;
+    //%log;
     return nil; //for now
     //return %orig;
 }
