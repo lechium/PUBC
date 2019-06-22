@@ -15,6 +15,7 @@
 #import "PUBGDefines.h"
 #import "PUBPrefTableViewController.h"
 #import "NSObject+AssociatedObjects.h"
+#import "UIWindow+Additions.h"
 
 //screen size
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
@@ -79,6 +80,22 @@
         });
     }
     return shared;
+}
+
+- (UIViewController *)topViewController
+{
+    return [[[UIApplication sharedApplication] keyWindow] visibleViewController];
+}
+
+- (BOOL)menuVisible {
+    
+    UIViewController *tvc = [self topViewController];
+    NSLog(@"tvc: %@", tvc);
+    NSString *topViewClass = NSStringFromClass(tvc.class);
+    if ([topViewClass containsString:@"PUB"]){
+        return TRUE;
+    }
+    return FALSE;
 }
 
 /**
@@ -173,7 +190,7 @@
         ///[self toggleMode];
         if (!self.menuVisible){
             [self showControlEditingView];
-            self.menuVisible = true;
+            //self.menuVisible = true;
         }
     }
 }
@@ -301,6 +318,8 @@
     
 }
 
+
+
 - (void)selectButton {
     
     CGPoint select = PAT(kPGBActionTypeTrainingButton);
@@ -343,7 +362,7 @@
     NSLog(@"setupTapRecognizerIfNeeded IOSVIEW: %@", view);
     if (view != nil && _tapSetup == FALSE){
         touchSurfaceDoubleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTouchSurfaceDoubleTap:)];
-        touchSurfaceDoubleTapRecognizer.numberOfTapsRequired = 2;
+        touchSurfaceDoubleTapRecognizer.numberOfTapsRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
     }
@@ -367,12 +386,12 @@
         
         if (!self.menuVisible){
             [self showControlEditingView];
-            self.menuVisible = true;
+            //self.menuVisible = true;
         } else {
             
             UIViewController *rvc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
             [rvc dismissViewControllerAnimated:true completion:nil];
-            self.menuVisible = false;
+            //self.menuVisible = false;
             
         }
         //CGPoint menu = PAT([self actionTypeForControllerButton:Menu]);
