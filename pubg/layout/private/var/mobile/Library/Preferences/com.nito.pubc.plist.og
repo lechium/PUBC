@@ -11,17 +11,17 @@
 	<key>ButtonY</key>
 	<string>PGBActionTypeCrouch</string>
 	<key>LeftShoulder</key>
-	<string>PGBActionTypeTrainingButton</string>
+	<string>PGBActionHandAction</string>
 	<key>RightShoulder</key>
-	<string>PGBActionTypeStartButton</string>
+	<string>PGBActionFirstItemSelect</string>
 	<key>LeftTrigger</key>
 	<string>PGBActionTypePeakLeft</string>
 	<key>RightTrigger</key>
 	<string>PGBActionTypeRight</string>
 	<key>RightThumbstickButton</key>
-	<string>PGBActionHandAction</string>
+	<string>PGBActionTypeSmallWeapon</string>
 	<key>LeftThumbstickButton</key>
-	<string>PGBActionFirstItemSelect</string>
+	<string>PGBActionTypeReload</string>
 	<key>Dpad.up</key>
 	<string>PGBActionTypeAim</string>
 	<key>Dpad.down</key>
@@ -32,5 +32,7 @@
 	<string>PGBActionTypeSecondWeapon</string>
 	<key>Menu</key>
 	<string>PGBActionTypeSmallWeapon</string>
+	<key>ExperimentalControl</key>
+	<true/>
 </dict>
 </plist>
