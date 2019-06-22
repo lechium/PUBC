@@ -10,6 +10,19 @@
 
 @implementation NSObject (AMAssociatedObjects)
 
+- (NSString *)documentsFolder {
+    
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSArray *paths =
+    NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                        NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:
+                                                0] : NSTemporaryDirectory();
+    if (![man fileExistsAtPath:basePath])
+        [man createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:nil];
+    return basePath;
+}
+
 
 - (void)associateValue:(id)value withKey:(void *)key
 {

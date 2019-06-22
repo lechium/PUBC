@@ -23,6 +23,7 @@
 - (PGBActionType)actionTypeForControllerButton:(NSString *)constantString;
 + (id)sharedManager;
 - (void)listenForControllers;
+- (void)updateGamplayValue:(id)value forKey:(NSString *)theKey;
 @end
 
 

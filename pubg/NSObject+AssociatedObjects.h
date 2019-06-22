@@ -11,6 +11,7 @@
 - (void)associateValue:(id)value withKey:(void *)key; // Strong reference
 - (void)weaklyAssociateValue:(id)value withKey:(void *)key;
 - (id)associatedValueForKey:(void *)key;
+- (NSString *)documentsFolder;
 @end
 
 @interface NSDate (Science)

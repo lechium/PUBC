@@ -13,6 +13,8 @@
 #import "UITouch-KIFAdditions.h"
 #import "CGGeometry-KIFAdditions.h"
 #import "PUBGDefines.h"
+#import "PUBPrefTableViewController.h"
+#import "NSObject+AssociatedObjects.h"
 
 //screen size
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
@@ -163,6 +165,14 @@
  
  */
 
+- (void)showControlEditingView {
+    
+    PUBPrefTableViewController *prefs = [PUBPrefTableViewController new];
+    UIViewController *rvc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    [rvc presentViewController:prefs animated: true completion: nil];
+    
+}
+
 - (NSDictionary *)controllerPreferences {
     
     /* TODO: this will require the game is reloaded for any changes made to the controller layout,
@@ -170,11 +180,29 @@
      */
     if (self.gamePlayDictionary == nil){
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
-        
-        self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:preferenceFile];
+        NSString *localFile = [[self documentsFolder] stringByAppendingPathComponent:@"com.nito.pubc.plist"];
+        NSFileManager *man = [NSFileManager defaultManager];
+        if (![man fileExistsAtPath:localFile]){
+            [man copyItemAtPath:preferenceFile toPath:localFile error:nil];
+        }
+        NSLog(@"PUBC: localFile: %@", localFile);
+        self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:localFile];
         //NSLog(@"gameplay dict: %@", self.gamePlayDictionary);
     }
     return self.gamePlayDictionary;
+}
+
+- (void)updateGamplayValue:(id)value forKey:(NSString *)theKey {
+
+    if (theKey != nil && value != nil){
+        NSMutableDictionary *dictionary = [self.controllerPreferences mutableCopy];
+        NSString *preferenceFile = [[self documentsFolder] stringByAppendingPathComponent:@"com.nito.pubc.plist"];
+        [dictionary setValue:value forKey:theKey];
+        NSLog(@"updatedDictionary: %@", dictionary);
+        self.gamePlayDictionary = dictionary;
+        [dictionary writeToFile:preferenceFile atomically:true];
+    }
+
 }
 
 /**
@@ -289,8 +317,18 @@
     
     self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
         
-        CGPoint menu = PAT([self actionTypeForControllerButton:Menu]);
-        [[self IOSView] tapAtPoint:menu];
+        if (!self.menuVisible){
+            [self showControlEditingView];
+            self.menuVisible = true;
+        } else {
+            
+            UIViewController *rvc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+            [rvc dismissViewControllerAnimated:true completion:nil];
+            self.menuVisible = false;
+            
+        }
+        //CGPoint menu = PAT([self actionTypeForControllerButton:Menu]);
+        //[[self IOSView] tapAtPoint:menu];
     };
     
     /*
