@@ -409,7 +409,7 @@
     profile.valueChangedHandler = ^(GCExtendedGamepad * _Nonnull gamepad, GCControllerElement * _Nonnull element) {
         
         
-        [self setupTapRecognizerIfNeeded];
+        //[self setupTapRecognizerIfNeeded];
         
         
         
