@@ -54,14 +54,18 @@
 @property (readwrite, assign) CGPoint previousRightPoint; //track the previous point when dragging / moving touches
 @property (nonatomic, strong) NSMutableArray *rightTouches; //all of our touches, kept track of when moving so we can change the phase to touch up as needed
 
-@property (readwrite, assign) BOOL menuVisible;
-
 @end
 
 @implementation PUBGControllerManager{
     
     UITapGestureRecognizer *touchSurfaceDoubleTapRecognizer;
     BOOL _tapSetup;
+    CGFloat prev;
+    CGFloat absPrev;
+    
+    CGFloat vertPrev;
+    CGFloat vertAbsPrev;
+    
 }
 
 @synthesize previousPoint, previousRightPoint;
@@ -90,7 +94,7 @@
 - (BOOL)menuVisible {
     
     UIViewController *tvc = [self topViewController];
-    NSLog(@"tvc: %@", tvc);
+    //NSLog(@"tvc: %@", tvc);
     NSString *topViewClass = NSStringFromClass(tvc.class);
     if ([topViewClass containsString:@"PUB"]){
         return TRUE;
@@ -279,7 +283,7 @@
     _tapSetup = false;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDisconnected:) name:GCControllerDidDisconnectNotification object:nil];
-    
+    [GCController startWirelessControllerDiscoveryWithCompletionHandler:nil];
    
     
 }
@@ -331,6 +335,105 @@
     
 }
 
+/*
+ 
+ prev = 0
+ absprev = 0
+ 
+ function panning(val)
+ 
+ if val > topcentre then
+ val = ((val - topcentre) * 16383) / (max - topcentre)
+ elseif val < bottomcentre then
+ val = (((val - min) * 16383) / (bottomcentre - min)) - 16383
+ else val = 0 end
+ 
+ if val == 0 then return end
+ sendit = false
+ absval = val
+ if val < 0 then absval = -val end
+ if absval < absprev then
+ if (val < 0 and prev > 0) or
+ (val > 0 and prev < 0) then
+ sendit = true
+ end
+ else
+ sendit = true
+ end
+ if sendit then
+ if val < 0 then sendthis = 90 -- Right pan
+ else sendthis = 270 -- Left pan
+ end
+ ipc.control(66416, sendthis) -- Pan View
+ prev = val
+ absprev = absval
+ end
+ end
+ 
+ event.param("panning")
+ 
+ */
+
+- (NSInteger)verticalPanning:(CGFloat)val {
+    
+    NSInteger returnValue = 0;
+    if (val == 0) return returnValue;
+    BOOL sendIt = false;
+    CGFloat absVal = val;
+    if (val > 0) absVal = -val;
+    if (absVal > vertAbsPrev) {
+        
+        if ((val < 0 && prev < 0) || (val > 0 && prev > 0)) {
+            sendIt = true;
+        }
+    } else {
+        sendIt = true;
+    }
+    if (sendIt) {
+        if (val > 0)  {
+            NSLog(@"pan up!");
+            returnValue = 3;
+        } else {
+            NSLog(@"pan down!");
+            returnValue =  4; //pan down
+        }
+        vertPrev = val;
+        vertAbsPrev = absVal;
+    }
+    return returnValue;
+}
+
+- (NSInteger)panning:(CGFloat)val {
+    
+    NSInteger returnValue = 0;
+    if (val == 0) return returnValue;
+    BOOL sendIt = false;
+    CGFloat absVal = val;
+    if (val < 0) absVal = -val;
+    if (absVal < absPrev) {
+        
+        if ((val < 0 && prev > 0) || (val > 0 && prev < 0)) {
+            sendIt = true;
+        }
+    } else {
+        sendIt = true;
+    }
+    if (sendIt) {
+        if (val < 0)  {
+            NSLog(@"pan left!");
+            returnValue = 1;
+        } else {
+            NSLog(@"pan right!");
+            returnValue =  2; //pan right
+        }
+        //actually send the touch data
+        prev = val;
+        absPrev = absVal;
+    }
+    return returnValue;
+}
+
+
 - (void)handleCurrentStartSelectMode {
     NSInteger selectMode = [self selectOrStartMode];
     
@@ -359,10 +462,10 @@
 - (void)setupTapRecognizerIfNeeded {
     
     UIView *view = [self IOSView];
-    NSLog(@"setupTapRecognizerIfNeeded IOSVIEW: %@", view);
     if (view != nil && _tapSetup == FALSE){
         touchSurfaceDoubleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTouchSurfaceDoubleTap:)];
-        touchSurfaceDoubleTapRecognizer.numberOfTapsRequired = 3;
+        touchSurfaceDoubleTapRecognizer.numberOfTapsRequired = 2;
+        touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 2;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
     }
@@ -373,25 +476,18 @@
     
     //28/140 = training button
     
-    UIView *view = [self IOSView];
-    NSLog(@"IOSVIEW: %@", view);
-    
     self.gameController = controller;
-    
-    [self.gameController setGateKeeper:self];
-    
+
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     
     self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
         
         if (!self.menuVisible){
             [self showControlEditingView];
-            //self.menuVisible = true;
         } else {
             
             UIViewController *rvc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
             [rvc dismissViewControllerAnimated:true completion:nil];
-            //self.menuVisible = false;
             
         }
         //CGPoint menu = PAT([self actionTypeForControllerButton:Menu]);
@@ -409,7 +505,7 @@
     profile.valueChangedHandler = ^(GCExtendedGamepad * _Nonnull gamepad, GCControllerElement * _Nonnull element) {
         
         
-        //[self setupTapRecognizerIfNeeded];
+        [self setupTapRecognizerIfNeeded];
         
         
         
@@ -445,10 +541,10 @@
                 
             } else { //either xValue or yValue != 0
                 
-                CGFloat xv=(xValue*80)+xValueNeutral;
-                CGFloat yv=(yValue*80 * - 1)+yValueNeutral;
+                CGFloat xv=(xValue*100)+xValueNeutral;
+                CGFloat yv=(yValue*100 * - 1)+yValueNeutral;
                 
-                NSLog(@"xv: %f, xy: %f", xv, yv);
+                //NSLog(@"xv: %f, xy: %f", xv, yv);
                 if (CGPointEqualToPoint(previousRightPoint, CGPointZero)){ //not touching down
                     
                     
@@ -464,6 +560,7 @@
                 } else { //we are already touched down, we just want to move from one place to the next
                     BOOL xRegister = TRUE;
                     BOOL yRegister = TRUE;
+              
                     
                     if (xValue > 0){
                         if (xv < previousRightPoint.x){
@@ -474,6 +571,7 @@
                             xv = previousRightPoint.x;
                         }
                     }
+               
                     
                     NSLog(@"yvalue: %f previous y: %f", previousRightPoint.y);
                     if (yValue > 0){
@@ -487,8 +585,22 @@
                     }
                     
                     if (xRegister && yRegister){
-                        CGPoint newPoint = CGPointMake(xv, yv);
+                    NSInteger horizontalDir = [self panning:xValue];
+                    NSInteger verticalDir = [self verticalPanning:yValue];
+                    CGPoint newPoint = CGPointMake(xv, yv);
+                    /*
+                    if (horizontalDir != 0 || verticalDir != 0){
+                        CGPoint newPoint = CGPointMake(xValueNeutral, yValueNeutral);
+                     
+                        if (horizontalDir != 0){
+                            newPoint.x = xv;
+                        }
                         
+                        if (verticalDir != 0){
+                            newPoint.y = yv;
+                        }
+                        
+                        */
                         NSMutableArray *newTouches = [NSMutableArray new];
                         for (UITouch *updatedTouch in self.rightTouches){
                             [updatedTouch setLocationInWindow:newPoint];
@@ -566,7 +678,7 @@
             if (yv < 230) yv = 230;
             if (yv > 321) yv = 321;
             
-            NSLog(@"xv: %f, xy: %f", xv, yv);
+            //NSLog(@"xv: %f, xy: %f", xv, yv);
             if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
                 
                 

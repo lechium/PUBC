@@ -5,38 +5,14 @@
 //#import "FingerTips/MBFingerTipWindow.h"
 
 
-
-@implementation GCController (pubc)
-
-- (NSObject *)gateKeeper
-{
-    return [self associatedValueForKey:@selector(gateKeeper)];
-}
-
-- (void)setGateKeeper:(NSObject *)gateKeeper
-{
-    [self associateValue:gateKeeper withKey:@selector(gateKeeper)];
-}
-
-@end
-
 %hook GCController
-
-- (GCExtendedGamepad *)extendedGamepad {
-    %log;
-    if ([self gateKeeper] != nil) {
-        return %orig;
-    } 
-    return nil;
-}
 
 + (NSArray<GCController *> *)controllers {
 
-    //%log;
     NSDictionary *gpd = [[PUBGControllerManager sharedManager] controllerPreferences];
     BOOL enabled = [gpd[ExperimentalControl] boolValue];
     if (enabled) {
-        NSLog(@"no controllers for you!");
+        //NSLog(@"no controllers for you!");
         return nil;
     }
     return %orig;
@@ -51,10 +27,10 @@
 - (_Bool)application:(id)arg1 didFinishLaunchingWithOptions:(id)arg2 {
 
     %log;
+    NSLog(@"PUBC: #### in application:didFinishLaunchingWithOptions");
     PUBGControllerManager *man = [PUBGControllerManager sharedManager];
     [man listenForControllers];
-    //UIWindow *keyWindow = UIApplication.sharedApplication.keyWindow;
-    //[keyWindow MBFingerTipWindow_commonInit];
+ 
 
     return %orig;
 

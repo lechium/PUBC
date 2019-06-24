@@ -15,7 +15,7 @@
 @property (nonatomic, strong) GCController *gameController;
 @property (nonatomic, strong) NSDictionary *gamePlayDictionary;
 
-- (UIViewController *)topViewControll;
+- (UIViewController *)topViewController;
 - (UIView *)IOSView;
 - (CGPoint)convertPointForScreen:(CGPoint)inputPoint;
 - (CGPoint)pointForActionType:(PGBActionType)type;
