@@ -585,8 +585,8 @@
                     }
                     
                     if (xRegister && yRegister){
-                    NSInteger horizontalDir = [self panning:xValue];
-                    NSInteger verticalDir = [self verticalPanning:yValue];
+                    //NSInteger horizontalDir = [self panning:xValue];
+                    //NSInteger verticalDir = [self verticalPanning:yValue];
                     CGPoint newPoint = CGPointMake(xv, yv);
                     /*
                     if (horizontalDir != 0 || verticalDir != 0){
