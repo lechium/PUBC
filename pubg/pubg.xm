@@ -4,6 +4,16 @@
 #import "NSObject+AssociatedObjects.h"
 //#import "FingerTips/MBFingerTipWindow.h"
 
+%hook FMetalDebugRenderCommandEncoder
+
+- (void)setTessellationFactorBuffer:(id)arg1 offset:(unsigned long long)arg2 instanceStride:(unsigned long long)arg3 {
+
+    %log;
+    %orig;
+
+}
+
+%end
 
 %hook GCController
 
@@ -11,6 +21,8 @@
 
     NSDictionary *gpd = [[PUBGControllerManager sharedManager] controllerPreferences];
     BOOL enabled = [gpd[ExperimentalControl] boolValue];
+   // NSArray *callStack = [NSThread callStackSymbols];
+   // NSLog(@"callstack: %@", callStack);
     if (enabled) {
         //NSLog(@"no controllers for you!");
         return nil;

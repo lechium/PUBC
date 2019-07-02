@@ -363,7 +363,8 @@ static CGFloat const kTwoFingerConstantWidth = 40;
             [[UIApplication sharedApplication] sendEvent:event];
             
             
-        }
+            
+        } //else
     }
     
     // Dispatching the event doesn't actually update the first responder, so fake it
