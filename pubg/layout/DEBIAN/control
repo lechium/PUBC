@@ -1,8 +1,8 @@
 Package: com.nito.pubc
 Name: pubc
-Version: 1.4
+Version: 1.5
 Architecture: iphoneos-arm
-Description: Add MFI controller support to pubg BETA build, just a preview of what is coming.
+Description: Add MFI controller support to pubg.
 Maintainer: Kevin Bradley
 Author: Kevin Bradley
 Section: Tweaks
