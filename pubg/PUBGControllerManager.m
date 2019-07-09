@@ -16,7 +16,7 @@
 #import "PUBPrefTableViewController.h"
 #import "NSObject+AssociatedObjects.h"
 #import "UIWindow+Additions.h"
-#import "RKDropdownAlert/RKDropdownAlert.h"
+
 
 //screen size
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
@@ -223,9 +223,6 @@
 
 - (NSDictionary *)controllerPreferences {
     
-    /* TODO: this will require the game is reloaded for any changes made to the controller layout,
-     should get this working through defaults somehow - but at that point it should have a preference loader bundle
-     */
     if (self.gamePlayDictionary == nil){
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
         NSString *localFile = [[self documentsFolder] stringByAppendingPathComponent:@"com.nito.pubc.plist"];
@@ -502,11 +499,11 @@
     self.gameController = controller;
 
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
-    
+    @weakify(self);
     self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
         
-        if (!self.menuVisible){
-            [self showControlEditingView];
+        if (!self_weak_.menuVisible){
+            [self_weak_ showControlEditingView];
         } else {
             
             UIViewController *rvc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
@@ -601,7 +598,7 @@
                     }
                     
                     
-                    NSLog(@"yvalue: %f previous y: %f", previousRightPoint.y);
+                    NSLog(@"yvalue: %f previous y: %f", yValue, previousRightPoint.y);
                     if (yValue > 0){
                         if (yv > previousRightPoint.y){
                             yv = previousRightPoint.y;
@@ -656,7 +653,7 @@
             }
         }
         if(xValue > 0 || yValue > 0){
-            NSLog(@"x axis: %f , y axis: ",xValue, yValue );
+            NSLog(@"x axis: %f , y axis: %f",xValue, yValue );
         }
     }];
     
@@ -867,7 +864,8 @@
     //L3/R3 are API specific, but since i do the lazy category above to add this to everything, respondsToSelector wouldn't be sufficient.
     
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"12.1")){
-        
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
         profile.leftThumbstickButton.valueChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
             
             if (pressed){
@@ -887,6 +885,7 @@
             }
             
         };
+        #pragma clang diagnostic pop
     }
     
     profile.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
