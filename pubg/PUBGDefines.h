@@ -97,6 +97,7 @@ typedef enum {
 #define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
 #import <GameController/GameController.h>
+#import "EXTScope.h"
 
 @interface GCController (pubc)
 
