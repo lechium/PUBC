@@ -145,53 +145,6 @@
     return CGPointMake(x, y);
 }
 
-/*
- 
- <key>ButtonA</key>
- <string>PGBActionTypeJump</string>
- <key>ButtonB</key>
- <string>PGBActionTypeConceal</string>
- <key>ButtonX</key>
- <string>PGBActionTypeRun</string>
- <key>ButtonY</key>
- <string>PGBActionTypeCrouch</string>
- <key>LeftShoulder</key>
- <string>PGBActionTypeTrainingButton</string>
- <key>RightShoulder</key>
- <string>PGBActionTypeStartButton</string>
- <key>LeftTrigger</key>
- <string>PGBActionTypePeakLeft</string>
- <key>RightTrigger</key>
- <string>PGBActionTypeRight</string>
- <key>RightThumbstickButton</key>
- <string>PGBActionHandAction</string>
- <key>LeftThumbstickButton</key>
- <string>PGBActionFirstItemSelect</string>
- <key>Dpad.up</key>
- <string>PGBActionTypeAim</string>
- <key>Dpad.down</key>
- <string>PGBActionMapAction</string>
- <key>Dpad.left</key>
- <string>PGBActionTypeFirstWeapon</string>
- <key>Dpad.right</key>
- <string>PGBActionTypeSecondWeapon</string>
- <key>Menu</key>
- <string>PGBActionTypeSmallWeapon</string>
- 
- 
- */
-
-/**
- 
- The controller preferences are stored here, keys are mapped like the following
- 
- ButtonA: PGBActionTypeJump
- 
- all these are defined in PUBGDefines.h
- 
- It should be pretty self explanatory from here
- 
- */
 
 -(void)handleTouchSurfaceDoubleTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
@@ -209,21 +162,36 @@
     PUBPrefTableViewController *prefs = [PUBPrefTableViewController new];
     UIViewController *rvc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     dispatch_async(dispatch_get_main_queue(), ^{
-   
+        
         UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:prefs];
         [rvc presentViewController:nc animated: true completion: nil];
         
     });
 }
 
+//convenience variable for whether or not we use the experimental right joystick code.
+
 - (BOOL)experimentalMode {
     
     return [self.controllerPreferences[ExperimentalControl] boolValue];
 }
 
+/**
+ 
+ The controller preferences are stored here, keys are mapped like the following
+ 
+ ButtonA: PGBActionTypeJump
+ 
+ all these are defined in PUBGDefines.h
+ 
+ It should be pretty self explanatory from here
+ 
+ */
+
 - (NSDictionary *)controllerPreferences {
     
     if (self.gamePlayDictionary == nil){
+        
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
         NSString *localFile = [[self documentsFolder] stringByAppendingPathComponent:@"com.nito.pubc.plist"];
         NSFileManager *man = [NSFileManager defaultManager];
@@ -244,7 +212,7 @@
 }
 
 - (void)updateGamplayValue:(id)value forKey:(NSString *)theKey {
-
+    
     if (theKey != nil && value != nil){
         NSMutableDictionary *dictionary = [self.controllerPreferences mutableCopy];
         NSString *preferenceFile = [[self documentsFolder] stringByAppendingPathComponent:@"com.nito.pubc.plist"];
@@ -253,22 +221,20 @@
         self.gamePlayDictionary = dictionary;
         [dictionary writeToFile:preferenceFile atomically:true];
     }
-
+    
 }
 
 -(BOOL)dropdownAlertWasTapped:(RKDropdownAlert*)alert {
     
-    NSLog(@"#### dropdownAlertWasTapped???");
-    
+    NSLog(@"dropdownAlertWasTapped");
     if (!self.menuVisible){
         [self performSelector:@selector(showControlEditingView) withObject:nil afterDelay:1];
-       // [self showControlEditingView];
+        // [self showControlEditingView];
     }
     return YES;
 }
 -(BOOL)dropdownAlertWasDismissed {
-
-    NSLog(@"#### dropdownAlertWasDismissed???");
+    
     return YES;
     
 }
@@ -299,10 +265,14 @@
 - (void)listenForControllers {
     
     _tapSetup = false;
+    prev = 0;
+    absPrev = 0;
+    vertAbsPrev = 0;
+    vertPrev = 0;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDisconnected:) name:GCControllerDidDisconnectNotification object:nil];
     [GCController startWirelessControllerDiscoveryWithCompletionHandler:nil];
-   
+    
     
 }
 
@@ -409,10 +379,10 @@
     }
     if (sendIt) {
         if (val > 0)  {
-            NSLog(@"pan up!");
+            //NSLog(@"PUBC: pan up!");
             returnValue = 3;
         } else {
-            NSLog(@"pan down!");
+            //NSLog(@"PUBC: pan down!");
             returnValue =  4; //pan down
         }
         vertPrev = val;
@@ -438,10 +408,10 @@
     }
     if (sendIt) {
         if (val < 0)  {
-            NSLog(@"pan left!");
+            //NSLog(@"PUBC: pan left!");
             returnValue = 1;
         } else {
-            NSLog(@"pan right!");
+            //NSLog(@"PUBC: pan right!");
             returnValue =  2; //pan right
         }
         //actually send the touch data
@@ -468,7 +438,7 @@
             break;
             
         case 3: //both
-            
+            //NSLog(@"PUBC: both");
             [self showControlEditingView];
             break;
             
@@ -497,7 +467,7 @@
     //28/140 = training button
     
     self.gameController = controller;
-
+    
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     @weakify(self);
     self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
@@ -536,9 +506,9 @@
         float xValue = profile.rightThumbstick.xAxis.value;
         float yValue = profile.rightThumbstick.yAxis.value;
         if ([self experimentalMode]){
-             if(xValue != 0 || yValue != 0){
-                 NSLog(@"x axis: %f , y axis: %f",xValue, yValue );
-             }
+            if(xValue != 0 || yValue != 0){
+                NSLog(@"x axis: %f , y axis: %f",xValue, yValue );
+            }
             CGPoint mid = CGPointMake(474,280);
             CGFloat yValueNeutral = 280;
             CGFloat xValueNeutral = 474;
@@ -559,9 +529,11 @@
                 //move from previous point to joystick mid point and end all touches events.
                 [self.IOSView endTouches:self.rightTouches]; //end previous touch events first
                 [[self rightTouches] removeAllObjects];
-                // NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid]; //move from center to center
-                //[self.IOSView endTouches:newtouches]; //end those touches
                 
+                prev = 0;
+                absPrev = 0;
+                vertAbsPrev = 0;
+                vertPrev = 0;
                 previousRightPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
                 
             } else { //either xValue or yValue != 0
@@ -583,50 +555,21 @@
                     
                     
                 } else { //we are already touched down, we just want to move from one place to the next
-                    BOOL xRegister = TRUE;
-                    BOOL yRegister = TRUE;
                     
-                    
-                    if (xValue > 0){
-                        if (xv < previousRightPoint.x){
-                            xv = previousRightPoint.x;
-                        }
-                    } else if (xValue < 0){
-                        if (xv > previousRightPoint.x){
-                            xv = previousRightPoint.x;
-                        }
-                    }
-                    
-                    
-                    NSLog(@"yvalue: %f previous y: %f", yValue, previousRightPoint.y);
-                    if (yValue > 0){
-                        if (yv > previousRightPoint.y){
-                            yv = previousRightPoint.y;
-                        }
-                    } else if (yValue < 0){
-                        if (yv < previousRightPoint.y){
-                            yv = previousRightPoint.y;
-                        }
-                    }
-                    
-                    if (xRegister && yRegister){
-                        //NSInteger horizontalDir = [self panning:xValue];
-                        //NSInteger verticalDir = [self verticalPanning:yValue];
-                        CGPoint newPoint = CGPointMake(xv, yv);
-                        /*
-                         if (horizontalDir != 0 || verticalDir != 0){
-                         CGPoint newPoint = CGPointMake(xValueNeutral, yValueNeutral);
-                         
-                         if (horizontalDir != 0){
-                         newPoint.x = xv;
-                         }
-                         
-                         if (verticalDir != 0){
-                         newPoint.y = yv;
-                         }
-                         
-                         */
+                    NSInteger horizontalDir = [self panning:xValue];
+                    NSInteger verticalDir = [self verticalPanning:yValue];
+               
+                    CGPoint newPoint = previousRightPoint;
+                    //NSLog(@"pan hd: %lu vd: %lu",  (long)horizontalDir, (long)verticalDir);
+                    if (horizontalDir != 0 || verticalDir != 0){
                         
+                        if (horizontalDir != 0){
+                            newPoint.x = xv;
+                        }
+                        
+                        if (verticalDir != 0){
+                            newPoint.y = yv;
+                        }
                         NSMutableArray *newTouches = [NSMutableArray new];
                         for (UITouch *updatedTouch in self.rightTouches){
                             [updatedTouch setLocationInWindow:newPoint];
@@ -637,10 +580,7 @@
                         UIEvent *event = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
                         [[UIApplication sharedApplication] sendEvent:event];
                         [[self rightTouches] removeAllObjects]; //remove old touches
-                         
-                        /*
-                        NSArray *newTouches = [self.IOSView dragFromPoint:previousRightPoint toPoint:newPoint];
-            */
+                        
                         if (newTouches){
                             [self.rightTouches addObjectsFromArray:newTouches];
                         }
@@ -648,6 +588,9 @@
                         
                         previousRightPoint = newPoint; //update to our new point
                     }
+                    
+                    
+                    
                 }
                 
             }
@@ -657,111 +600,6 @@
         }
     }];
     
-    /*
-    profile.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
-        
-        if ([self experimentalMode]){
-            CGPoint mid = CGPointMake(474,280);
-            CGFloat yValueNeutral = 280;
-            CGFloat xValueNeutral = 474;
-            BOOL right = FALSE;
-            BOOL up = FALSE;
-            
-            if (xValue > 0){
-                right = TRUE;
-            }
-            
-            if (yValue > 0) {
-                up = TRUE;
-            }
-            //this means we're at neutral this is where we reset to "normal" as if no drags have ever occured
-            if (xValue == 0 && yValue == 0){
-                
-                //NSLog(@"reset points");
-                //move from previous point to joystick mid point and end all touches events.
-                [self.IOSView endTouches:self.rightTouches]; //end previous touch events first
-                [[self rightTouches] removeAllObjects];
-                // NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid]; //move from center to center
-                //[self.IOSView endTouches:newtouches]; //end those touches
-                
-                previousRightPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
-                
-            } else { //either xValue or yValue != 0
-                
-                CGFloat xv=(xValue*100)+xValueNeutral;
-                CGFloat yv=(yValue*100 * - 1)+yValueNeutral;
-                
-                //NSLog(@"xv: %f, xy: %f", xv, yv);
-                if (CGPointEqualToPoint(previousRightPoint, CGPointZero)){ //not touching down
-                    
-                    
-                    //move from median point to x,y without touching back up
-                    previousRightPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
-                    //NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
-                    NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousRightPoint];
-                    if (newtouches){
-                        [self.rightTouches addObjectsFromArray:newtouches];
-                    }
-                    
-                    
-                } else { //we are already touched down, we just want to move from one place to the next
-                    BOOL xRegister = TRUE;
-                    BOOL yRegister = TRUE;
-              
-                    
-                    if (xValue > 0){
-                        if (xv < previousRightPoint.x){
-                            xv = previousRightPoint.x;
-                        }
-                    } else if (xValue < 0){
-                        if (xv > previousRightPoint.x){
-                            xv = previousRightPoint.x;
-                        }
-                    }
-               
-                    
-                    NSLog(@"yvalue: %f previous y: %f", previousRightPoint.y);
-                    if (yValue > 0){
-                        if (yv > previousRightPoint.y){
-                            yv = previousRightPoint.y;
-                        }
-                    } else if (yValue < 0){
-                        if (yv < previousRightPoint.y){
-                            yv = previousRightPoint.y;
-                        }
-                    }
-                    
-                    if (xRegister && yRegister){
-                    //NSInteger horizontalDir = [self panning:xValue];
-                    //NSInteger verticalDir = [self verticalPanning:yValue];
-                    CGPoint newPoint = CGPointMake(xv, yv);
-               
-                        NSMutableArray *newTouches = [NSMutableArray new];
-                        for (UITouch *updatedTouch in self.rightTouches){
-                            [updatedTouch setLocationInWindow:newPoint];
-                            [updatedTouch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
-                            [newTouches addObject:updatedTouch];
-                        }
-                        
-                        UIEvent *event = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
-                        [[UIApplication sharedApplication] sendEvent:event];
-                        [[self rightTouches] removeAllObjects]; //remove old touches
-                        if (newTouches){
-                            [self.rightTouches addObjectsFromArray:newTouches];
-                        }
-                        
-                        
-                        previousRightPoint = newPoint; //update to our new point
-                    }
-                }
-                
-            }
-        }
-        
-        
-    };
-    
-    */
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         CGPoint mid = CGPointMake(104,280);
@@ -779,6 +617,7 @@
             [self.IOSView endTouches:newtouches]; //end those touches
             
             previousPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
+            
             
         } else { //either xValue or yValue != 0
             
@@ -885,7 +724,7 @@
             }
             
         };
-        #pragma clang diagnostic pop
+#pragma clang diagnostic pop
     }
     
     profile.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
@@ -925,7 +764,7 @@
             
             CGPoint training = PAT([self actionTypeForControllerButton:LeftShoulder]);
             [[self IOSView] tapAtPoint:training];
-       
+            
         } else if (pressed && [self selectOrStartMode] != 0){
             
             [self handleCurrentStartSelectMode]; //only need to do it in one place.
@@ -979,51 +818,70 @@
         }
     };
     
-    __block UITouch *jumpTouch = nil;
+    __block UITouch *aTouch = nil;
     profile.buttonA.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed)
         {
             //NSLog(@"ButtonA");
             CGPoint jump = PAT([self actionTypeForControllerButton:ButtonA]);
-            jumpTouch =  [[self IOSView] tapDownAtPoint:jump];
+            aTouch =  [[self IOSView] tapDownAtPoint:jump];
         } else {
-            if (jumpTouch) {
-                [[self IOSView] finishTouch:jumpTouch];
-                jumpTouch = nil;
+            if (aTouch) {
+                [[self IOSView] finishTouch:aTouch];
+                aTouch = nil;
             }
             
         }
     };
     
-    
+    __block UITouch *bTouch = nil;
     profile.buttonB.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed)
         {
             //NSLog(@"ButtonB");
-            CGPoint laydown = PAT([self actionTypeForControllerButton:ButtonB]);//PAT(kPGBActionTypeConceal);
-            [[self IOSView] tapAtPoint:laydown];
+            CGPoint laydown = PAT([self actionTypeForControllerButton:ButtonB]);
+            bTouch =  [[self IOSView] tapDownAtPoint:laydown];
+        } else {
+            if (bTouch) {
+                [[self IOSView] finishTouch:bTouch];
+                bTouch = nil;
+            }
+            
         }
     };
     
+    __block UITouch *xTouch = nil;
     profile.buttonX.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if(pressed && [self selectOrStartMode] == 0)
         {
             //NSLog(@"buttonX");
             CGPoint run = PAT([self actionTypeForControllerButton:ButtonX]);////PAT(kPGBActionTypeRun);
-            [[self IOSView] tapAtPoint:run];
+            xTouch = [[self IOSView] tapDownAtPoint:run];
+        } else if (!pressed){
+            
+            if (xTouch) {
+                [[self IOSView] finishTouch:xTouch];
+                xTouch = nil;
+            }
         }
     };
-    
+        __block UITouch *yTouch = nil;
     profile.buttonY.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed)
         {
             //NSLog(@"buttonY");
             CGPoint crouch = PAT([self actionTypeForControllerButton:ButtonY]);//PAT(kPGBActionTypeCrouch);
-            [[self IOSView] tapAtPoint:crouch];
+            yTouch = [[self IOSView] tapDownAtPoint:crouch];
+            
+        } else {
+            if (yTouch) {
+                [[self IOSView] finishTouch:yTouch];
+                yTouch = nil;
+            }
             
         }
     };
@@ -1172,7 +1030,7 @@
         case kPGBActionTypeXClose2Button: //lower close X
             outpoint = CGPointZero; //dont have this value yet
             break;
-         
+            
             
         case kPGBActionTypeRight:
             outpoint = CGPointMake(684, 283);

@@ -2,7 +2,7 @@ ARCHS = arm64e armv7 armv7s arm64
 TARGET = iphone
 export GO_EASY_ON_ME=1
 export SDKVERSION=12.1
-THEOS_DEVICE_IP=192.168.0.7
+THEOS_DEVICE_IP=eleven.local
 DEBUG=0
 
 include $(THEOS)/makefiles/common.mk
@@ -22,4 +22,4 @@ PUBC_LDFLAGS = -miphoneos-version-min=9.0 -undefined dynamic_lookup
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 after-install::
-	install.exec "killall -9 ShadowTrackerExtra"
+	install.exec "killall -9 ShadowTrackerExtra ; lsdtrip launch com.tencent.ig"
