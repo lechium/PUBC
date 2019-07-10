@@ -457,7 +457,7 @@
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
         NSLog(@"#### show alert??");
-        [RKDropdownAlert title:@"PUBC 1.4 Activated" message:@"Tap here now OR double tap anywhere on the screen with two fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.5 Activated" message:@"Tap here now OR double tap anywhere on the screen with two fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
@@ -501,10 +501,13 @@
         
     };
     
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:.038482 repeats:TRUE block:^(NSTimer * _Nonnull timer) {
+    profile.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue){
         
-        float xValue = profile.rightThumbstick.xAxis.value;
-        float yValue = profile.rightThumbstick.yAxis.value;
+
+   // self.timer = [NSTimer scheduledTimerWithTimeInterval:.038482 repeats:TRUE block:^(NSTimer * _Nonnull timer) {
+        
+        //float xValue = profile.rightThumbstick.xAxis.value;
+        //float yValue = profile.rightThumbstick.yAxis.value;
         if ([self experimentalMode]){
             if(xValue != 0 || yValue != 0){
                 NSLog(@"x axis: %f , y axis: %f",xValue, yValue );
@@ -598,7 +601,7 @@
         if(xValue > 0 || yValue > 0){
             NSLog(@"x axis: %f , y axis: %f",xValue, yValue );
         }
-    }];
+    };//];
     
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
