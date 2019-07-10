@@ -14,6 +14,7 @@
 @interface PUBGControllerManager : NSObject <RKDropdownAlertDelegate>
 
 @property (nonatomic, strong) GCController *gameController;
+@property (nonatomic, strong) NSArray <GCController*> *gameControllers;
 @property (nonatomic, strong) NSDictionary *gamePlayDictionary;
 
 - (UIViewController *)topViewController;

@@ -19,12 +19,14 @@
 
 + (NSArray<GCController *> *)controllers {
 
-    NSDictionary *gpd = [[PUBGControllerManager sharedManager] controllerPreferences];
+    PUBGControllerManager *man = [PUBGControllerManager sharedManager];
+    NSDictionary *gpd = [man controllerPreferences];
     BOOL enabled = [gpd[ExperimentalControl] boolValue];
    // NSArray *callStack = [NSThread callStackSymbols];
    // NSLog(@"callstack: %@", callStack);
     if (enabled) {
         //NSLog(@"no controllers for you!");
+        man.gameControllers = %orig;
         return nil;
     }
     return %orig;
