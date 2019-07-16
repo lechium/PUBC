@@ -37,6 +37,13 @@
 
 %hook IOSAppDelegate
 
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+
+    %orig;
+    [[PUBGControllerManager sharedManager] appWasActivated];
+}
+
+
 
 - (_Bool)application:(id)arg1 didFinishLaunchingWithOptions:(id)arg2 {
 

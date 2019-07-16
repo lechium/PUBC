@@ -17,6 +17,7 @@
 @property (nonatomic, strong) NSArray <GCController*> *gameControllers;
 @property (nonatomic, strong) NSDictionary *gamePlayDictionary;
 
+- (void)appWasActivated;
 - (UIViewController *)topViewController;
 - (UIView *)IOSView;
 - (CGPoint)convertPointForScreen:(CGPoint)inputPoint;
