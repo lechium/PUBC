@@ -15,6 +15,21 @@
 
 %end
 
+%hook _GCControllerAxisInput
+
+-(float)value {
+    
+    //%log;
+    float orig = %orig;
+    if (orig > 0 || orig < 0){
+        return orig*2.5;
+        //return orig;
+    }
+    return %orig;
+}
+
+%end
+
 %hook GCController
 
 + (NSArray<GCController *> *)controllers {

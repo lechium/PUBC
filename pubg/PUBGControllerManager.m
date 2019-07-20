@@ -471,7 +471,7 @@
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
         NSLog(@"#### show alert??");
-        [RKDropdownAlert title:@"PUBC 1.5-23 Activated" message:@"Tap here now OR double tap anywhere on the screen with two fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.5.1-5 Activated" message:@"Tap here now OR double tap anywhere on the screen with two fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
@@ -604,7 +604,7 @@
                         }
                     
                         if (verticalDir != 0){
-                            //newPoint.y = yv;
+                            newPoint.y = yv;
                         }
                         NSLog(@"PUBC: moving from %@ to %@", NSStringFromCGPoint(self_weak_.previousRightPoint), NSStringFromCGPoint(newPoint));
                         for (UITouch *updatedTouch in self.rightTouches){
@@ -628,22 +628,23 @@
                                 [updatedTouch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
                                 [newTouches addObject:updatedTouch];
                             }
-                            
+                            /*
                             UIEvent *event2 = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
                             [[UIApplication sharedApplication] sendEvent:event2];
                             [[self rightTouches] removeAllObjects]; //remove old touches
-                            [[self IOSView] endTouches:newTouches];
-                        /*
+                            //[[self IOSView] endTouches:newTouches];
+                        
                            if (newTouches){
                                 [self.rightTouches addObjectsFromArray:newTouches];
                             }
-                         */
+                        
                             newPoint = secondPoint;
+                             */
                        // }
                         
                         
                         
-                        self_weak_.previousRightPoint = CGPointZero; //update to our new point
+                        self_weak_.previousRightPoint = newPoint; //update to our new point
                     }
                     
                     
