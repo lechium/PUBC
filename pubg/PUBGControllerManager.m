@@ -57,22 +57,27 @@
 @property (nonatomic, strong) NSMutableArray *rightTouches; //all of our touches, kept track of when moving so we can change the phase to touch up as needed
 
 @property (nonatomic, strong) NSTimer *timer;
-
+@property (readwrite, assign) CGFloat prev;
+@property (readwrite, assign) CGFloat absPrev;
+@property (readwrite, assign) CGFloat vertPrev;
+@property (readwrite, assign) CGFloat vertAbsPrev;
 @end
 
 @implementation PUBGControllerManager{
     
     UITapGestureRecognizer *touchSurfaceDoubleTapRecognizer;
     BOOL _tapSetup;
+  /*
     CGFloat prev;
     CGFloat absPrev;
     
     CGFloat vertPrev;
     CGFloat vertAbsPrev;
+   */
     
 }
 
-@synthesize previousPoint, previousRightPoint;
+@synthesize previousPoint, previousRightPoint, prev, vertAbsPrev, vertPrev, absPrev;
 
 + (id)sharedManager
 {
@@ -256,8 +261,16 @@
 - (void)controllerDisconnected:(NSNotification *)n {
     
     if (n.object == self.gameController){
+        [self.timer invalidate];
+        self.timer = nil;
         NSLog(@"game controller gone: %@", self.gameController);
+        if (self.gameControllers.count > 0){
+            NSMutableArray *gcCopy = [self.gameControllers mutableCopy];
+            [gcCopy removeObject:self.gameController];
+            self.gameControllers = gcCopy;
+        }
         self.gameController = nil;
+        
     }
     
 }
@@ -368,10 +381,10 @@
     if (val == 0) return returnValue;
     BOOL sendIt = false;
     CGFloat absVal = val;
-    if (val > 0) absVal = -val;
-    if (absVal > vertAbsPrev) {
+    if (val < 0) absVal = -val;
+    if (absVal < vertAbsPrev) {
         
-        if ((val < 0 && prev < 0) || (val > 0 && prev > 0)) {
+        if ((val < 0 && prev > 0) || (val > 0 && prev < 0)) {
             sendIt = true;
         }
     } else {
@@ -390,6 +403,7 @@
     }
     return returnValue;
 }
+
 
 - (NSInteger)panning:(CGFloat)val {
     
@@ -457,10 +471,26 @@
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
         NSLog(@"#### show alert??");
-        [RKDropdownAlert title:@"PUBC 1.5-15 Activated" message:@"Tap here now OR double tap anywhere on the screen with two fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.5.1-5 Activated" message:@"Tap here now OR double tap anywhere on the screen with two fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
+- (void)appWasActivated {
+    
+    NSLog(@"appWasActivated");
+    if (self.gameController == nil){
+        NSLog(@"gc nil");
+        [GCController controllers];
+        
+        if (self.gameControllers.count > 0){
+            NSLog(@"self.gameControllers: %@", self.gameControllers);
+            [self setupController:self.gameControllers[0]];
+            
+        }
+        
+    }
+    
+}
 
 - (void)setupController:(GCController *)controller {
     
@@ -513,67 +543,70 @@
                 //NSLog(@"x axis: %f , y axis: %f",xValue, yValue );
             }
             CGPoint mid = CGPointMake(474,280);
-            CGFloat yValueNeutral = 280;
-            CGFloat xValueNeutral = 474;
-            BOOL right = FALSE;
-            BOOL up = FALSE;
-            
-            if (xValue > 0){
-                right = TRUE;
-            }
-            
-            if (yValue > 0) {
-                up = TRUE;
-            }
+            CGFloat yValueNeutral = mid.y;
+            CGFloat xValueNeutral = mid.x;
             //this means we're at neutral this is where we reset to "normal" as if no drags have ever occured
             if (xValue == 0 && yValue == 0){
                 
                 //NSLog(@"reset points");
-                //move from previous point to joystick mid point and end all touches events.
                 [self.IOSView endTouches:self.rightTouches]; //end previous touch events first
                 [[self rightTouches] removeAllObjects];
                 
-                prev = 0;
-                absPrev = 0;
-                vertAbsPrev = 0;
-                vertPrev = 0;
-                previousRightPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
+                self_weak_.prev = 0;
+                self_weak_.absPrev = 0;
+                self_weak_.vertAbsPrev = 0;
+                self_weak_.vertPrev = 0;
+                self_weak_.previousRightPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
                 
             } else { //either xValue or yValue != 0
+                
                 
                 CGFloat xv=(xValue*140)+xValueNeutral;
                 CGFloat yv=(yValue*140 * - 1)+yValueNeutral;
                 
                 //NSLog(@"xv: %f, xy: %f", xv, yv);
-                if (CGPointEqualToPoint(previousRightPoint, CGPointZero)){ //not touching down
+                if (CGPointEqualToPoint(self_weak_.previousRightPoint, CGPointZero)){ //not touching down
                     
                     
                     //move from median point to x,y without touching back up
-                    previousRightPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
-                    //NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
-                    NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousRightPoint];
+                    self_weak_.previousRightPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
+                    NSLog(@"PUBC: first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(self_weak_.previousRightPoint));
+                    NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:self_weak_.previousRightPoint];
                     if (newtouches){
-                        [self.rightTouches addObjectsFromArray:newtouches];
+                        [self_weak_.rightTouches addObjectsFromArray:newtouches];
                     }
-                    
                     
                 } else { //we are already touched down, we just want to move from one place to the next
                     
                     NSInteger horizontalDir = [self panning:xValue];
-                    NSInteger verticalDir = [self verticalPanning:yValue];
-               
-                    CGPoint newPoint = previousRightPoint;
+                    NSInteger verticalDir = [self verticalPanning:(yValue * -1)];
+                 
+                    CGPoint newPoint = self_weak_.previousRightPoint;
+                    CGPoint secondPoint = newPoint;
+                  
                     //NSLog(@"pan hd: %lu vd: %lu",  (long)horizontalDir, (long)verticalDir);
                     if (horizontalDir != 0 || verticalDir != 0){
+                        NSMutableArray *newTouches = [NSMutableArray new];
                         
-                        if (horizontalDir != 0){
+                        if (horizontalDir == 2){//right
+                            
                             newPoint.x = xv;
+                            secondPoint.x = newPoint.x+5;
+//                            if (newPoint.x < self_weak_.previousRightPoint.x){
+//                                newPoint.x = self_weak_.previousRightPoint.x;
+//                                secondPoint.x = newPoint.x-2;
+//                            }
+                            
+                        } else if(horizontalDir == 1) { //left
+                            newPoint.x = xv;
+                            secondPoint.x = newPoint.x-5;
+                           
                         }
-                        
+                    
                         if (verticalDir != 0){
                             newPoint.y = yv;
                         }
-                        NSMutableArray *newTouches = [NSMutableArray new];
+                        NSLog(@"PUBC: moving from %@ to %@", NSStringFromCGPoint(self_weak_.previousRightPoint), NSStringFromCGPoint(newPoint));
                         for (UITouch *updatedTouch in self.rightTouches){
                             [updatedTouch setLocationInWindow:newPoint];
                             [updatedTouch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
@@ -583,13 +616,35 @@
                         UIEvent *event = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
                         [[UIApplication sharedApplication] sendEvent:event];
                         [[self rightTouches] removeAllObjects]; //remove old touches
-                        
                         if (newTouches){
                             [self.rightTouches addObjectsFromArray:newTouches];
                         }
                         
+                        //if (!CGPointEqualToPoint(secondPoint, newPoint)){
+                            NSLog(@"PUBC: second point %@ to %@", NSStringFromCGPoint(newPoint), NSStringFromCGPoint(secondPoint));
+                            [newTouches removeAllObjects];
+                            for (UITouch *updatedTouch in self.rightTouches){
+                                [updatedTouch setLocationInWindow:secondPoint];
+                                [updatedTouch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
+                                [newTouches addObject:updatedTouch];
+                            }
+                            /*
+                            UIEvent *event2 = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
+                            [[UIApplication sharedApplication] sendEvent:event2];
+                            [[self rightTouches] removeAllObjects]; //remove old touches
+                            //[[self IOSView] endTouches:newTouches];
                         
-                        previousRightPoint = newPoint; //update to our new point
+                           if (newTouches){
+                                [self.rightTouches addObjectsFromArray:newTouches];
+                            }
+                        
+                            newPoint = secondPoint;
+                             */
+                       // }
+                        
+                        
+                        
+                        self_weak_.previousRightPoint = newPoint; //update to our new point
                     }
                     
                     
@@ -671,7 +726,7 @@
             } else { //we are already touched down, we just want to move from one place to the next
                 
                 CGPoint newPoint = CGPointMake(xv, yv);
-                //NSLog(@"PUBC: already down, moving from %@ to %@", NSStringFromCGPoint(mid),NSStringFromCGPoint(newPoint));
+                //NSLog(@"PUBC: already down, moving from %@ to %@", NSStringFromCGPoint(previousRightPoint),NSStringFromCGPoint(newPoint));
                 /*
                  
                  Cycle through the touches we already have saved and update them to be moved to their new
