@@ -32,7 +32,9 @@
 	<string>PGBActionTypeSecondWeapon</string>
 	<key>Menu</key>
 	<string>PGBActionTypeSmallWeapon</string>
-	<key>ExperimentalControl</key>
-	<true/>
+	<key>InvertedControl</key>
+	<false/>
+	<key>PanningSpeed</key>
+	<real>3</real>
 </dict>
 </plist>

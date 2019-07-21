@@ -21,18 +21,21 @@
     
     //%log;
     float orig = %orig;
-
     if (orig > 0 || orig < 0){
         PUBGControllerManager *man = [PUBGControllerManager sharedManager];
-        GCControllerDirectionPad *rt = [[[man gameController] extendedGamepad] rightThumbstick];
-        GCControllerAxisInput *rightY = rt.yAxis;
-        if (rightY == self){
-            return orig*-3;
+        float ps = [man panningSpeed];
+        if (ps == 0) { ps = 3.0; }
+        BOOL inverted = [man invertedControl];
+        if (!inverted){
+            GCControllerDirectionPad *rt = [[[man gameController] extendedGamepad] rightThumbstick];
+            GCControllerAxisInput *rightY = rt.yAxis;
+            if ((_GCControllerAxisInput*)rightY == self){
+                return orig*-ps;
+            }
         }
-        
-        return orig*3;
+        return orig*ps;
     }
-    return %orig;
+    return orig;
 }
 
 %end

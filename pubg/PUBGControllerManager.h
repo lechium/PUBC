@@ -17,6 +17,8 @@
 @property (nonatomic, strong) NSArray <GCController*> *gameControllers;
 @property (nonatomic, strong) NSDictionary *gamePlayDictionary;
 
+- (float)panningSpeed ;
+- (BOOL)invertedControl ;
 - (void)appWasActivated;
 - (UIViewController *)topViewController;
 - (UIView *)IOSView;

@@ -10,7 +10,7 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = PUBC 
 PUBC_FILES = pubg.xm Categories/NSObject+AssociatedObjects.m KIF/UIEvent+KIFAdditions.m KIF/UIView-KIFAdditions.m KIF/CGGeometry-KIFAdditions.m KIF/UIScreen+KIFAdditions.m KIF/UIWindow-KIFAdditions.m KIF/IOHIDEvent+KIF.m KIF/UITouch-KIFAdditions.m KIF/NSError-KIFAdditions.m KIF/UIApplication-KIFAdditions.m KIF/UIView-Debugging.m PUBGControllerManager.m #FingerTips/MBFingerTipWindow.m
 PUBC_FILES += PureLayout/ALView+PureLayout.m PureLayout/NSArray+PureLayout.m PureLayout/NSLayoutConstraint+PureLayout.m
-PUBC_FILES += Preferences/PUBPrefTableViewController.m Preferences/PUBControlListTableViewController.m Categories/UIWindow+Additions.m
+PUBC_FILES += Preferences/PUBPrefTableViewController.m Preferences/PUBControlListTableViewController.m Categories/UIWindow+Additions.m Preferences/PUBCPanSpeedViewController.m
 PUBC_FILES += RKDropdownAlert/RKDropdownAlert.m
 PUBC_FILES += extobjc/EXTRuntimeExtensions.m extobjc/EXTScope.m 
 PUBC_LIBRARIES = substrate
