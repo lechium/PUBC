@@ -174,11 +174,24 @@
     });
 }
 
+- (float)panningSpeed {
+    
+    float ps = [self.controllerPreferences[PanningSpeed] floatValue];
+    return ps;
+}
+
+- (BOOL)invertedControl {
+    
+    return [self.controllerPreferences[InvertedControl] boolValue];
+}
+
+
 //convenience variable for whether or not we use the experimental right joystick code.
 
 - (BOOL)experimentalMode {
     
-    return [self.controllerPreferences[ExperimentalControl] boolValue];
+    return false;
+    //return [self.controllerPreferences[ExperimentalControl] boolValue];
 }
 
 /**
@@ -205,9 +218,10 @@
         }
         NSLog(@"PUBC: localFile: %@", localFile);
         self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:localFile];
-        if (![[self.gamePlayDictionary allKeys] containsObject:ExperimentalControl]){
+        if (![[self.gamePlayDictionary allKeys] containsObject:InvertedControl]){
             NSMutableDictionary *fixed = [self.gamePlayDictionary mutableCopy];
-            [fixed setValue:[NSNumber numberWithBool:TRUE] forKey:ExperimentalControl];
+            [fixed setValue:[NSNumber numberWithBool:FALSE] forKey:InvertedControl];
+            [fixed setValue:[NSNumber numberWithFloat:3.0] forKey:PanningSpeed];
             [fixed writeToFile:localFile atomically:TRUE];
             self.gamePlayDictionary = fixed;
         }
@@ -467,11 +481,11 @@
     if (view != nil && _tapSetup == FALSE){
         touchSurfaceDoubleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTouchSurfaceDoubleTap:)];
         touchSurfaceDoubleTapRecognizer.numberOfTapsRequired = 2;
-        touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 2;
+        touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
         NSLog(@"#### show alert??");
-        [RKDropdownAlert title:@"PUBC 1.5.2-2 Activated" message:@"Tap here now OR double tap anywhere on the screen with two fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.5.3-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 

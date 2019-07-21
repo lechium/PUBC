@@ -9,6 +9,8 @@
 #import "PUBPrefTableViewController.h"
 #import "PUBGControllerManager.h"
 #import "PUBControlListTableViewController.h"
+#import "PUBCPanSpeedViewController.h"
+
 @interface PUBPrefTableViewController ()
 
 @end
@@ -37,7 +39,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
     if (section == 0){
-        return  1;
+        return  2;
     }
     
     return 14;
@@ -49,10 +51,26 @@
     NSDictionary *gpd = [shared controllerPreferences];
     
     
-    if (indexPath.row == 0 && indexPath.section == 0){
-        
-        BOOL enabled = [gpd[ExperimentalControl] boolValue];
-        [shared updateGamplayValue:[NSNumber numberWithBool:!enabled] forKey:ExperimentalControl];
+    if (indexPath.section == 0){
+
+        switch (indexPath.row) {
+            case 0:
+                {
+                    BOOL enabled = [gpd[InvertedControl] boolValue];
+                    [shared updateGamplayValue:[NSNumber numberWithBool:!enabled] forKey:InvertedControl];
+                }
+                break;
+            case 1:
+                {
+                    PUBCPanSpeedViewController *controller = [PUBCPanSpeedViewController new];
+                    [self.navigationController pushViewController:controller animated:true];
+                }
+                break;
+                
+            default:
+                break;
+        }
+
         [[self tableView] reloadData];
         
     } else {
@@ -261,7 +279,8 @@
     }
     // Configure the cell...
     NSDictionary *prefs = [[PUBGControllerManager sharedManager] controllerPreferences];
-    BOOL exp = [prefs[ExperimentalControl] boolValue];
+    BOOL exp = [prefs[InvertedControl] boolValue];
+    float joystickSpeed = [prefs[PanningSpeed] floatValue];
     NSString *value = @"Enabled";
     if (!exp)
         value = @"Disabled";
@@ -269,9 +288,13 @@
             
         case 0: //
             
-            cell.textLabel.text = @"Experimental Right Joystick";
-            cell.detailTextLabel.text = value;
-            
+            if (indexPath.row == 0){
+                cell.textLabel.text = @"Inverted Right Joystick";
+                cell.detailTextLabel.text = value;
+            } else { //row 1
+                cell.textLabel.text = @"Right Joystick Speed";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%.2f", joystickSpeed];
+            }
             break;
             
         case 1: //

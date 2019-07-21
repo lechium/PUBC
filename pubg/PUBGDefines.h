@@ -56,6 +56,8 @@ static NSString * const DpadRight = @"Dpad.right";
 static NSString * const Menu = @"Menu";
 
 static NSString *const ExperimentalControl = @"ExperimentalControl";
+static NSString *const InvertedControl = @"InvertedControl";
+static NSString *const PanningSpeed = @"PanningSpeed";
 
 
 typedef enum {
