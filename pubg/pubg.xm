@@ -21,9 +21,16 @@
     
     //%log;
     float orig = %orig;
+
     if (orig > 0 || orig < 0){
-        return orig*2.5;
-        //return orig;
+        PUBGControllerManager *man = [PUBGControllerManager sharedManager];
+        GCControllerDirectionPad *rt = [[[man gameController] extendedGamepad] rightThumbstick];
+        GCControllerAxisInput *rightY = rt.yAxis;
+        if (rightY == self){
+            return orig*-3;
+        }
+        
+        return orig*3;
     }
     return %orig;
 }
