@@ -39,7 +39,7 @@
 }
 
 %end
-
+/*
 %hook GCController
 
 + (NSArray<GCController *> *)controllers {
@@ -58,7 +58,7 @@
 }
 
 %end
-
+*/
 
 %hook IOSAppDelegate
 
