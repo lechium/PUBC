@@ -485,7 +485,7 @@
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
         NSLog(@"#### show alert??");
-        [RKDropdownAlert title:@"PUBC 1.5.3-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.5.4-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
@@ -545,133 +545,6 @@
         
     };
     
-   // profile.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue){
-        
-
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:.000482 repeats:TRUE block:^(NSTimer * _Nonnull timer) {
-        
-        float xValue = profile.rightThumbstick.xAxis.value;
-        float yValue = profile.rightThumbstick.yAxis.value;
-        if ([self experimentalMode]){
-            if(xValue != 0 || yValue != 0){
-                //NSLog(@"x axis: %f , y axis: %f",xValue, yValue );
-            }
-            CGPoint mid = CGPointMake(474,280);
-            CGFloat yValueNeutral = mid.y;
-            CGFloat xValueNeutral = mid.x;
-            //this means we're at neutral this is where we reset to "normal" as if no drags have ever occured
-            if (xValue == 0 && yValue == 0){
-                
-                //NSLog(@"reset points");
-                [self.IOSView endTouches:self.rightTouches]; //end previous touch events first
-                [[self rightTouches] removeAllObjects];
-                
-                self_weak_.prev = 0;
-                self_weak_.absPrev = 0;
-                self_weak_.vertAbsPrev = 0;
-                self_weak_.vertPrev = 0;
-                self_weak_.previousRightPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
-                
-            } else { //either xValue or yValue != 0
-                
-                
-                CGFloat xv=(xValue*140)+xValueNeutral;
-                CGFloat yv=(yValue*140 * - 1)+yValueNeutral;
-                
-                //NSLog(@"xv: %f, xy: %f", xv, yv);
-                if (CGPointEqualToPoint(self_weak_.previousRightPoint, CGPointZero)){ //not touching down
-                    
-                    
-                    //move from median point to x,y without touching back up
-                    self_weak_.previousRightPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
-                    NSLog(@"PUBC: first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(self_weak_.previousRightPoint));
-                    NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:self_weak_.previousRightPoint];
-                    if (newtouches){
-                        [self_weak_.rightTouches addObjectsFromArray:newtouches];
-                    }
-                    
-                } else { //we are already touched down, we just want to move from one place to the next
-                    
-                    NSInteger horizontalDir = [self panning:xValue];
-                    NSInteger verticalDir = [self verticalPanning:(yValue * -1)];
-                 
-                    CGPoint newPoint = self_weak_.previousRightPoint;
-                    CGPoint secondPoint = newPoint;
-                  
-                    //NSLog(@"pan hd: %lu vd: %lu",  (long)horizontalDir, (long)verticalDir);
-                    if (horizontalDir != 0 || verticalDir != 0){
-                        NSMutableArray *newTouches = [NSMutableArray new];
-                        
-                        if (horizontalDir == 2){//right
-                            
-                            newPoint.x = xv;
-                            secondPoint.x = newPoint.x+5;
-//                            if (newPoint.x < self_weak_.previousRightPoint.x){
-//                                newPoint.x = self_weak_.previousRightPoint.x;
-//                                secondPoint.x = newPoint.x-2;
-//                            }
-                            
-                        } else if(horizontalDir == 1) { //left
-                            newPoint.x = xv;
-                            secondPoint.x = newPoint.x-5;
-                           
-                        }
-                    
-                        if (verticalDir != 0){
-                            newPoint.y = yv;
-                        }
-                        NSLog(@"PUBC: moving from %@ to %@", NSStringFromCGPoint(self_weak_.previousRightPoint), NSStringFromCGPoint(newPoint));
-                        for (UITouch *updatedTouch in self.rightTouches){
-                            [updatedTouch setLocationInWindow:newPoint];
-                            [updatedTouch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
-                            [newTouches addObject:updatedTouch];
-                        }
-                        
-                        UIEvent *event = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
-                        [[UIApplication sharedApplication] sendEvent:event];
-                        [[self rightTouches] removeAllObjects]; //remove old touches
-                        if (newTouches){
-                            [self.rightTouches addObjectsFromArray:newTouches];
-                        }
-                        
-                        //if (!CGPointEqualToPoint(secondPoint, newPoint)){
-                            NSLog(@"PUBC: second point %@ to %@", NSStringFromCGPoint(newPoint), NSStringFromCGPoint(secondPoint));
-                            [newTouches removeAllObjects];
-                            for (UITouch *updatedTouch in self.rightTouches){
-                                [updatedTouch setLocationInWindow:secondPoint];
-                                [updatedTouch setPhaseAndUpdateTimestamp:UITouchPhaseMoved];
-                                [newTouches addObject:updatedTouch];
-                            }
-                            /*
-                            UIEvent *event2 = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
-                            [[UIApplication sharedApplication] sendEvent:event2];
-                            [[self rightTouches] removeAllObjects]; //remove old touches
-                            //[[self IOSView] endTouches:newTouches];
-                        
-                           if (newTouches){
-                                [self.rightTouches addObjectsFromArray:newTouches];
-                            }
-                        
-                            newPoint = secondPoint;
-                             */
-                       // }
-                        
-                        
-                        
-                        self_weak_.previousRightPoint = newPoint; //update to our new point
-                    }
-                    
-                    
-                    
-                }
-                
-            }
-        }
-        if(xValue > 0 || yValue > 0){
-            //NSLog(@"x axis: %f , y axis: %f",xValue, yValue );
-        }
-    }];
-    
     profile.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         CGPoint mid = CGPointMake(104,280);
@@ -688,7 +561,7 @@
             NSArray *newtouches = [[self IOSView] dragFromPoint:mid toPoint:mid]; //move from center to center
             [self.IOSView endTouches:newtouches]; //end those touches
             
-            previousPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
+            self_weak_.previousPoint = CGPointZero; //if previous point is zero, no joystick event is detected as being in progress
             
             
         } else { //either xValue or yValue != 0
@@ -725,15 +598,15 @@
             if (yv > 321) yv = 321;
             
             //NSLog(@"xv: %f, xy: %f", xv, yv);
-            if (CGPointEqualToPoint(previousPoint, CGPointZero)){ //not touching down
+            if (CGPointEqualToPoint(self_weak_.previousPoint, CGPointZero)){ //not touching down
                 
                 
                 //move from median point to x,y without touching back up
-                previousPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
+                self_weak_.previousPoint = CGPointMake(xv, yv); //dont let the variable name fool you, this is the point we are moving to
                 //NSLog(@"first drag moving from %@ to %@", NSStringFromCGPoint(mid), NSStringFromCGPoint(previousPoint));
-                NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:previousPoint];
+                NSArray *newtouches = [self.IOSView dragFromPoint:mid toPoint:self_weak_.previousPoint];
                 if (newtouches){
-                    [self.touches addObjectsFromArray:newtouches];
+                    [self_weak_.touches addObjectsFromArray:newtouches];
                 }
                 
                 
@@ -757,13 +630,13 @@
                 
                 UIEvent *event = [self.IOSView eventWithTouches:[NSArray arrayWithArray:newTouches]];
                 [[UIApplication sharedApplication] sendEvent:event];
-                [[self touches] removeAllObjects]; //remove old touches
+                [[self_weak_ touches] removeAllObjects]; //remove old touches
                 if (newTouches){
-                    [self.touches addObjectsFromArray:newTouches];
+                    [self_weak_.touches addObjectsFromArray:newTouches];
                 }
                 
                 
-                previousPoint = newPoint; //update to our new point
+                self_weak_.previousPoint = newPoint; //update to our new point
             }
             
         }
@@ -799,64 +672,110 @@
 #pragma clang diagnostic pop
     }
     
+    __block UITouch *dpadDownTouch = nil;
+    __block UITouch *dpadLeftTouch = nil;
+    __block UITouch *dpadRightTouch = nil;
+    __block UITouch *dpadUpTouch = nil;
+    
     profile.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
-        if (dpad.down.isPressed){
-            //NSLog(@"down");
+        if (dpad.down.isPressed && dpadDownTouch == nil){
+            NSLog(@"down x value: %f y value: %f", xValue, yValue);
             CGPoint reload = PAT([self actionTypeForControllerButton:DpadDown]);//PAT(kPGBActionTypeReload);
-            [[self IOSView] tapAtPoint:reload];
+           dpadDownTouch = [[self IOSView] tapDownAtPoint:reload];
+        } else if (!dpad.down.isPressed){
+            
+            if (dpadDownTouch) {
+                [[self IOSView] finishTouch:dpadDownTouch];
+                dpadDownTouch = nil;
+            }
             
         }
         
-        if (dpad.left.isPressed){
+        if (dpad.left.isPressed && dpadLeftTouch == nil){
+            NSLog(@"left x value: %f y value: %f", xValue, yValue);
             CGPoint leftWeapon = PAT([self actionTypeForControllerButton:DpadLeft]);
             //NSLog(@"left");
-            [[self IOSView] tapAtPoint:leftWeapon];
+           dpadLeftTouch = [[self IOSView] tapDownAtPoint:leftWeapon];
+        } else if (!dpad.left.isPressed){
+            
+            if (dpadLeftTouch) {
+                [[self IOSView] finishTouch:dpadLeftTouch];
+                dpadLeftTouch = nil;
+            }
+            
         }
         
-        if (dpad.up.isPressed){
-            //NSLog(@"up");
+        if (dpad.up.isPressed && dpadUpTouch == nil){
+            NSLog(@"up x value: %f y value: %f", xValue, yValue);
             CGPoint aim = PAT([self actionTypeForControllerButton:DpadUp]);//PAT(kPGBActionTypeAim);
-            [[self IOSView] tapAtPoint:aim];
+           dpadUpTouch = [[self IOSView] tapDownAtPoint:aim];
+        }else if (!dpad.up.isPressed){
+            
+            if (dpadUpTouch) {
+                [[self IOSView] finishTouch:dpadUpTouch];
+                dpadUpTouch = nil;
+            }
+            
         }
         
-        if (dpad.right.isPressed && [self selectOrStartMode] == 0){
-            //NSLog(@"right");
+        if ((dpad.right.isPressed && dpadRightTouch == nil) && [self selectOrStartMode] == 0){
+            NSLog(@"right x value: %f y value: %f", xValue, yValue);
             CGPoint rightWeapon = PAT([self actionTypeForControllerButton:DpadRight]);//PAT(kPGBActionTypeSecondWeapon);
-            [[self IOSView] tapAtPoint:rightWeapon];
+            dpadRightTouch = [[self IOSView] tapDownAtPoint:rightWeapon];
+        } else if (!dpad.right.isPressed){
+            
+            if (dpadRightTouch) {
+                [[self IOSView] finishTouch:dpadRightTouch];
+                dpadRightTouch = nil;
+            }
+            
         }
         
         
     };
-    
+    __block UITouch *leftShoulderTouch = nil;
     profile.leftShoulder.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         
-        if (pressed && [self selectOrStartMode] == 0){
+        if ((pressed && leftShoulderTouch == nil) && [self selectOrStartMode] == 0){
             
             CGPoint training = PAT([self actionTypeForControllerButton:LeftShoulder]);
-            [[self IOSView] tapAtPoint:training];
+            leftShoulderTouch = [[self IOSView] tapDownAtPoint:training];
             
         } else if (pressed && [self selectOrStartMode] != 0){
             
             [self handleCurrentStartSelectMode]; //only need to do it in one place.
             
+        } else if (!pressed){
+            
+            if (leftShoulderTouch) {
+                [[self IOSView] finishTouch:leftShoulderTouch];
+                leftShoulderTouch = nil;
+            }
         }
     };
     
+    __block UITouch *rightShoulderTouch = nil;
     profile.rightShoulder.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
-        if (pressed && [self selectOrStartMode] == 0){
+        if ((pressed && rightShoulderTouch == nil) && [self selectOrStartMode] == 0){
             CGPoint start = PAT([self actionTypeForControllerButton:RightShoulder]);
-            [[self IOSView] tapAtPoint:start];
+            rightShoulderTouch = [[self IOSView] tapDownAtPoint:start];
             
+        } else if (!pressed){
+            
+            if (rightShoulderTouch) {
+                [[self IOSView] finishTouch:rightShoulderTouch];
+                rightShoulderTouch = nil;
+            }
         }
     };
     
     __block UITouch *currentRightTouch = nil;
     profile.rightTrigger.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
-        if (pressed && [self selectOrStartMode] == 0){
+        if ((pressed && currentRightTouch == nil) && [self selectOrStartMode] == 0){
             // NSLog(@"rightTrigger");
             CGPoint punchRight = PAT([self actionTypeForControllerButton:RightTrigger]);//PAT(kPGBActionTypeRight);
             if (currentRightTouch){
@@ -877,7 +796,7 @@
     profile.leftTrigger.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         
-        if (pressed && [self selectOrStartMode] == 0) {
+        if ((pressed && currentLeftTouch == nil) && [self selectOrStartMode] == 0) {
             //NSLog(@"leftTrigger");
             CGPoint punchLeft = PAT([self actionTypeForControllerButton:LeftTrigger]);//PAT(kPGBActionTypeLeft);
             currentLeftTouch = [[self IOSView] tapDownAtPoint:punchLeft];
@@ -893,9 +812,9 @@
     __block UITouch *aTouch = nil;
     profile.buttonA.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
-        if (pressed)
+        if (pressed && aTouch == nil)
         {
-            //NSLog(@"ButtonA");
+            NSLog(@"PUBC: ButtonA value:%f", value);
             CGPoint jump = PAT([self actionTypeForControllerButton:ButtonA]);
             aTouch =  [[self IOSView] tapDownAtPoint:jump];
         } else {
@@ -910,7 +829,7 @@
     __block UITouch *bTouch = nil;
     profile.buttonB.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
-        if (pressed)
+        if (pressed && bTouch == nil)
         {
             //NSLog(@"ButtonB");
             CGPoint laydown = PAT([self actionTypeForControllerButton:ButtonB]);
@@ -927,7 +846,7 @@
     __block UITouch *xTouch = nil;
     profile.buttonX.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
-        if(pressed && [self selectOrStartMode] == 0)
+        if((pressed && xTouch == nil) && [self selectOrStartMode] == 0)
         {
             //NSLog(@"buttonX");
             CGPoint run = PAT([self actionTypeForControllerButton:ButtonX]);////PAT(kPGBActionTypeRun);
@@ -943,7 +862,7 @@
         __block UITouch *yTouch = nil;
     profile.buttonY.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
-        if (pressed)
+        if (pressed && yTouch == nil)
         {
             //NSLog(@"buttonY");
             CGPoint crouch = PAT([self actionTypeForControllerButton:ButtonY]);//PAT(kPGBActionTypeCrouch);
