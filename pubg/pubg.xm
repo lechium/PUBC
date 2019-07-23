@@ -4,6 +4,8 @@
 #import "NSObject+AssociatedObjects.h"
 //#import "FingerTips/MBFingerTipWindow.h"
 
+#include "pubghooks/pubghooks.h"
+
 %hook FMetalDebugRenderCommandEncoder
 
 - (void)setTessellationFactorBuffer:(id)arg1 offset:(unsigned long long)arg2 instanceStride:(unsigned long long)arg3 {
@@ -60,9 +62,18 @@
 %end
 */
 
+static int has_launched = 0;
+
 %hook IOSAppDelegate
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    /* don't know if it's bad to call MSHookFunction twice on the same
+     * function... shouldn't be. But just to make sure.
+     */
+    if(!has_launched){
+        ph_initialize();
+        has_launched = 1;
+    }
 
     %orig;
     [[PUBGControllerManager sharedManager] appWasActivated];
