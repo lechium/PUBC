@@ -2,6 +2,7 @@
 #import "PUBGControllerManager.h"
 #import <GameController/GameController.h>
 #import "NSObject+AssociatedObjects.h"
+#import "pubghooks/pubghooks.h"
 //#import "FingerTips/MBFingerTipWindow.h"
 
 #include "pubghooks/pubghooks.h"
@@ -27,6 +28,10 @@
         PUBGControllerManager *man = [PUBGControllerManager sharedManager];
         float ps = [man panningSpeed];
         if (ps == 0) { ps = 3.0; }
+        int mt = ph_get_is_aimed_down_sights();
+        if (mt == 1){
+            ps = 1.0;
+        }
         BOOL inverted = [man invertedControl];
         if (!inverted){
             GCControllerDirectionPad *rt = [[[man gameController] extendedGamepad] rightThumbstick];
