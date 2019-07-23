@@ -13,6 +13,7 @@ PUBC_FILES += PureLayout/ALView+PureLayout.m PureLayout/NSArray+PureLayout.m Pur
 PUBC_FILES += Preferences/PUBPrefTableViewController.m Preferences/PUBControlListTableViewController.m Categories/UIWindow+Additions.m Preferences/PUBCPanSpeedViewController.m
 PUBC_FILES += RKDropdownAlert/RKDropdownAlert.m
 PUBC_FILES += extobjc/EXTRuntimeExtensions.m extobjc/EXTScope.m 
+PUBC_FILES += pubghooks/pubghooks.m
 PUBC_LIBRARIES = substrate
 PUBC_FRAMEWORKS = Foundation IOKit GameController
 PUBC_CFLAGS += -I.-IRKDropdownAlert -Iextobjc -IPureLayout -IKIF -IPreferences -ICategories -fobjc-arc -miphoneos-version-min=9.0
