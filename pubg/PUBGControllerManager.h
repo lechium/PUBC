@@ -11,6 +11,7 @@
 #import <GameController/GameController.h>
 #import "RKDropdownAlert/RKDropdownAlert.h"
 
+
 @interface PUBGControllerManager : NSObject <RKDropdownAlertDelegate>
 
 @property (nonatomic, strong) GCController *gameController;

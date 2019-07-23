@@ -16,7 +16,7 @@
 #import "PUBPrefTableViewController.h"
 #import "NSObject+AssociatedObjects.h"
 #import "UIWindow+Additions.h"
-
+#import "pubghooks/pubghooks.h"
 
 //screen size
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
@@ -121,7 +121,7 @@
     
     size_t size;
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-    char *machine = malloc(size);
+    char *machine = (char *)malloc(size);
     sysctlbyname("hw.machine", machine, &size, NULL, 0);
     return [NSString stringWithCString:machine encoding:NSUTF8StringEncoding];
     
@@ -476,6 +476,12 @@
 }
 
 - (void)setupTapRecognizerIfNeeded {
+    
+    movetype_t currentMoveType = ph_get_move_type();
+    int ads = ph_get_is_aimed_down_sights();
+    
+    NSLog(@"move type: %lu", currentMoveType);
+    NSLog(@"aimed down sights: %i", ads);
     
     UIView *view = [self IOSView];
     if (view != nil && _tapSetup == FALSE){
