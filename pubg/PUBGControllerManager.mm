@@ -480,8 +480,6 @@
     movetype_t currentMoveType = ph_get_move_type();
     int ads = ph_get_is_aimed_down_sights();
     
-    NSLog(@"move type: %lu", currentMoveType);
-    NSLog(@"aimed down sights: %i", ads);
     
     UIView *view = [self IOSView];
     if (view != nil && _tapSetup == FALSE){
