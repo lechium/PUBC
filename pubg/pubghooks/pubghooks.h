@@ -23,10 +23,13 @@ typedef enum {
     MOVE_Custom,
     MOVE_Max
 } movetype_t;
+
+
 #ifdef __cplusplus
 extern "C" {
     /* ph = "PubgHook". This way, it's easier to see the function's origin */
     void ph_initialize(void);
+    bool ph_is_hooker(void);
     movetype_t ph_get_move_type(void);
     int ph_get_is_aimed_down_sights(void);
 };

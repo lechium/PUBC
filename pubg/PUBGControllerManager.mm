@@ -477,10 +477,8 @@
 
 - (void)setupTapRecognizerIfNeeded {
     
-    movetype_t currentMoveType = ph_get_move_type();
-    int ads = ph_get_is_aimed_down_sights();
-    
-    
+    //movetype_t currentMoveType = ph_get_move_type();
+    //int ads = ph_get_is_aimed_down_sights();
     UIView *view = [self IOSView];
     if (view != nil && _tapSetup == FALSE){
         touchSurfaceDoubleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTouchSurfaceDoubleTap:)];
