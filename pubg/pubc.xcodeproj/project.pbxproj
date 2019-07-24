@@ -465,9 +465,11 @@
 		32004A7822DD661800FB4FF1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9EUFEA5U7G;
+				HEADER_SEARCH_PATHS = $SRCROOT/theos/include;
 				INFOPLIST_FILE = pubc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -482,9 +484,11 @@
 		32004A7922DD661800FB4FF1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9EUFEA5U7G;
+				HEADER_SEARCH_PATHS = $SRCROOT/theos/include;
 				INFOPLIST_FILE = pubc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

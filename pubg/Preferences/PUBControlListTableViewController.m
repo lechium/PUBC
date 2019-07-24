@@ -22,10 +22,15 @@
 
 }
 
+- (NSArray *)availableOptionsForDriving {
+    
+    return @[PGBActionTypeDriveChangeSeat, PGBActionTypeDriveSpeedBoost,PGBActionTypeDriveBrake, PGBActionTypeDriveHorn, PGBActionTypeDriveUp, PGBActionTypeDriveDown];
+    
+}
 
 - (NSArray *)availableOptions {
  
-    return @[@"PGBActionTypeLeft",@"PGBActionTypeRight",@"PGBActionTypeRun",@"PGBActionTypeCrouch",@"PGBActionTypeConceal",@"PGBActionTypeJump",@"PGBActionTypeFirstWeapon",@"PGBActionTypeSecondWeapon",@"PGBActionTypeSmallWeapon",@"PGBActionTypeAim",@"PGBActionTypeReload",@"PGBActionTypeExitRound",@"PGBActionTypeInventory",@"PGBActionHandAction",@"PGBActionFirstItemSelect",@"PGBActionMapAction",@"PGBActionTypePeakLeft",@"PGBActionTypePeakRight"];
+    return @[PGBActionTypeLeft,PGBActionTypeRight,PGBActionTypeRun,PGBActionTypeCrouch,PGBActionTypeConceal,PGBActionTypeJump,PGBActionTypeFirstWeapon,PGBActionTypeSecondWeapon,PGBActionTypeSmallWeapon,PGBActionTypeAim,PGBActionTypeReload,PGBActionTypeExitRound,PGBActionTypeInventory,PGBActionHandAction,PGBActionFirstItemSelect,PGBActionMapAction,PGBActionTypePeakLeft,PGBActionTypePeakRight, PGBActionTypeDrive, PGBActionTypeGetIn ];
 }
 
 - (id)initWithOriginalValue:(id)value keyValue:(NSString *)kv {

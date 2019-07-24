@@ -49,6 +49,7 @@ static NSString * const PGBActionTypeDriveUp = @"PGBActionTypeDriveUp";
 static NSString * const PGBActionTypeDriveDown = @"PGBActionTypeDriveDown";
 static NSString * const PGBActionTypeDriveBrake = @"PGBActionTypeDriveBrake";
 static NSString * const PGBActionTypeDriveSpeedBoost =@"PGBActionTypeDriveSpeedBoost";
+static NSString * const PGBActionTypeDriveChangeSeat =@"PGBActionTypeDriveChangeSeat";
 
 static NSString * const LeftThumbstick = @"LeftThumbstick";
 static NSString * const RightThumbstick = @"RightThumbstick";
@@ -112,6 +113,7 @@ typedef enum {
     kPGBActionTypeDriveDown,
     kPGBActionTypeDriveBrake,
     kPGBActionTypeDriveSpeedBoost,
+    kPGBActionTypeDriveChangeSeat,
     kPGBActionTypeUndefined,
     
 } PGBActionType;

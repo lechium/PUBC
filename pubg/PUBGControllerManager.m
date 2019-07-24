@@ -208,6 +208,16 @@
 
 - (NSDictionary *)controllerPreferences {
     
+    if (ph_is_hooker() == 1){
+        
+        if (ph_get_move_type() == 0){ //driving
+            
+            return [self tempDrivingDictionary];
+            
+        }
+        
+    }
+    
     if (self.gamePlayDictionary == nil){
         
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
@@ -240,6 +250,12 @@
         self.gamePlayDictionary = dictionary;
         [dictionary writeToFile:preferenceFile atomically:true];
     }
+    
+}
+
+- (NSDictionary *)tempDrivingDictionary {
+    
+    return @{DpadUp: PGBActionTypeDriveFW, DpadDown: PGBActionTypeDriveBW, DpadLeft: PGBActionTypeDriveLeft, DpadRight: PGBActionTypeDriveRight, ButtonY: PGBActionTypeDriveHorn, ButtonA: PGBActionTypeDriveSpeedBoost, LeftShoulder: PGBActionTypeDriveUp, RightShoulder: PGBActionTypeDriveDown, ButtonB: PGBActionTypeDriveBrake, ButtonX: PGBActionTypeDriveExit };
     
 }
 
@@ -962,10 +978,13 @@
         type = kPGBActionTypeDriveExit;
     } else if ([constant isEqualToString:PGBActionTypeDriveSpeedBoost]){
         type = kPGBActionTypeDriveSpeedBoost;
-    }  
+    }  else if ([constant isEqualToString:PGBActionTypeDriveChangeSeat]){
+        type = kPGBActionTypeDriveChangeSeat;
+    }
     return type;
     
 }
+
 
 /**
  
@@ -1406,6 +1425,10 @@
             
         case kPGBActionTypeDriveSpeedBoost:
             outpoint = [self convertPointForScreen:CGPointMake(53,132)];
+            break;
+            
+        case kPGBActionTypeDriveChangeSeat:
+            outpoint = [self convertPointForScreen:CGPointMake(628, 333)];
             break;
             
         default:
