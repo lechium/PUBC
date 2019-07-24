@@ -36,6 +36,19 @@ static NSString * const PGBActionTypeStartButton = @"PGBActionTypeStartButton";
 static NSString * const PGBActionTypePeakLeft = @"PGBActionTypePeakLeft";
 static NSString * const PGBActionTypePeakRight = @"PGBActionTypePeakRight";
 
+static NSString * const PGBActionTypeDrive = @"PGBActionTypeDrive";
+static NSString * const PGBActionTypeGetIn = @"PGBActionTypeGetIn";
+
+static NSString * const PGBActionTypeDriveFW = @"PGBActionTypeDriveFW";
+static NSString * const PGBActionTypeDriveBW = @"PGBActionTypeDriveBW";
+static NSString * const PGBActionTypeDriveLeft = @"PGBActionTypeDriveLeft";
+static NSString * const PGBActionTypeDriveRight = @"PGBActionTypeDriveRight";
+static NSString * const PGBActionTypeDriveHorn = @"PGBActionTypeDriveHorn";
+static NSString * const PGBActionTypeDriveExit = @"PGBActionTypeDriveExit";
+static NSString * const PGBActionTypeDriveUp = @"PGBActionTypeDriveUp";
+static NSString * const PGBActionTypeDriveDown = @"PGBActionTypeDriveDown";
+static NSString * const PGBActionTypeDriveBrake = @"PGBActionTypeDriveBrake";
+static NSString * const PGBActionTypeDriveSpeedBoost =@"PGBActionTypeDriveSpeedBoost";
 
 static NSString * const LeftThumbstick = @"LeftThumbstick";
 static NSString * const RightThumbstick = @"RightThumbstick";
@@ -87,6 +100,18 @@ typedef enum {
     kPGBActionTypeStartButton,
     kPGBActionTypePeakLeft,
     kPGBActionTypePeakRight,
+    kPGBActionTypeDrive,
+    kPGBActionTypeGetIn,
+    kPGBActionTypeDriveFW,
+    kPGBActionTypeDriveBW,
+    kPGBActionTypeDriveLeft,
+    kPGBActionTypeDriveRight,
+    kPGBActionTypeDriveHorn,
+    kPGBActionTypeDriveExit,
+    kPGBActionTypeDriveUp,
+    kPGBActionTypeDriveDown,
+    kPGBActionTypeDriveBrake,
+    kPGBActionTypeDriveSpeedBoost,
     kPGBActionTypeUndefined,
     
 } PGBActionType;

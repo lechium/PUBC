@@ -27,11 +27,13 @@ typedef enum {
 
 #ifdef __cplusplus
 extern "C" {
+#endif
     /* ph = "PubgHook". This way, it's easier to see the function's origin */
     void ph_initialize(void);
     bool ph_is_hooker(void);
     movetype_t ph_get_move_type(void);
     int ph_get_is_aimed_down_sights(void);
+#ifdef __cplusplus
 };
 #endif
 #endif

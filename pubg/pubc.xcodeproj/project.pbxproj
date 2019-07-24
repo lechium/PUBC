@@ -30,7 +30,7 @@
 		32004AC822DD66CB00FB4FF1 /* RKDropdownAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004AB222DD66CB00FB4FF1 /* RKDropdownAlert.m */; };
 		32004AC922DD66CB00FB4FF1 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 32004AB322DD66CB00FB4FF1 /* Makefile */; };
 		32004ACB22DD66D200FB4FF1 /* pubg.xm in Resources */ = {isa = PBXBuildFile; fileRef = 32004ACA22DD66D100FB4FF1 /* pubg.xm */; };
-		32004ACF22DD66F000FB4FF1 /* PUBGControllerManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 32004ACE22DD66F000FB4FF1 /* PUBGControllerManager.mm */; };
+		32004ACF22DD66F000FB4FF1 /* PUBGControllerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004ACE22DD66F000FB4FF1 /* PUBGControllerManager.m */; };
 		32004AD222E433DF00FB4FF1 /* PUBCPanSpeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004AD122E433DF00FB4FF1 /* PUBCPanSpeedViewController.m */; };
 		32004AD622E7B6B100FB4FF1 /* pubghooks.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004AD522E7B6B100FB4FF1 /* pubghooks.m */; };
 /* End PBXBuildFile section */
@@ -89,7 +89,7 @@
 		32004ACA22DD66D100FB4FF1 /* pubg.xm */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = pubg.xm; sourceTree = "<group>"; };
 		32004ACC22DD66F000FB4FF1 /* PUBGControllerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PUBGControllerManager.h; sourceTree = "<group>"; };
 		32004ACD22DD66F000FB4FF1 /* PUBGDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PUBGDefines.h; sourceTree = "<group>"; };
-		32004ACE22DD66F000FB4FF1 /* PUBGControllerManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PUBGControllerManager.mm; sourceTree = "<group>"; };
+		32004ACE22DD66F000FB4FF1 /* PUBGControllerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PUBGControllerManager.m; sourceTree = "<group>"; };
 		32004AD022E433DF00FB4FF1 /* PUBCPanSpeedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PUBCPanSpeedViewController.h; sourceTree = "<group>"; };
 		32004AD122E433DF00FB4FF1 /* PUBCPanSpeedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PUBCPanSpeedViewController.m; sourceTree = "<group>"; };
 		32004AD422E7B6B100FB4FF1 /* pubghooks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pubghooks.h; sourceTree = "<group>"; };
@@ -129,7 +129,7 @@
 			children = (
 				32004ACA22DD66D100FB4FF1 /* pubg.xm */,
 				32004ACC22DD66F000FB4FF1 /* PUBGControllerManager.h */,
-				32004ACE22DD66F000FB4FF1 /* PUBGControllerManager.mm */,
+				32004ACE22DD66F000FB4FF1 /* PUBGControllerManager.m */,
 				32004ACD22DD66F000FB4FF1 /* PUBGDefines.h */,
 				32004A8322DD66CB00FB4FF1 /* Categories */,
 				32004A7C22DD66CB00FB4FF1 /* extobjc */,
@@ -335,7 +335,7 @@
 				32004AC222DD66CB00FB4FF1 /* UIScreen+KIFAdditions.m in Sources */,
 				32004AC822DD66CB00FB4FF1 /* RKDropdownAlert.m in Sources */,
 				32004AD622E7B6B100FB4FF1 /* pubghooks.m in Sources */,
-				32004ACF22DD66F000FB4FF1 /* PUBGControllerManager.mm in Sources */,
+				32004ACF22DD66F000FB4FF1 /* PUBGControllerManager.m in Sources */,
 				32004AC922DD66CB00FB4FF1 /* Makefile in Sources */,
 				32004AC522DD66CB00FB4FF1 /* UIView-KIFAdditions.m in Sources */,
 				32004AB422DD66CB00FB4FF1 /* EXTRuntimeExtensions.m in Sources */,
