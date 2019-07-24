@@ -938,7 +938,31 @@
         type = kPGBActionTypePeakLeft;
     }  else if ([constant isEqualToString:PGBActionTypePeakRight]){
         type = kPGBActionTypePeakRight;
-    }
+    } else if ([constant isEqualToString:PGBActionTypeDrive]){
+        type = kPGBActionTypeDrive;
+    } else if ([constant isEqualToString:PGBActionTypeGetIn]){
+        type = kPGBActionTypeGetIn;
+    } else if ([constant isEqualToString:PGBActionTypeDriveFW]){
+        type = kPGBActionTypeDriveFW;
+    } else if ([constant isEqualToString:PGBActionTypeDriveBW]){
+        type = kPGBActionTypeDriveBW;
+    } else if ([constant isEqualToString:PGBActionTypeDriveLeft]){
+        type = kPGBActionTypeDriveLeft;
+    } else if ([constant isEqualToString:PGBActionTypeDriveRight]){
+        type = kPGBActionTypeDriveRight;
+    } else if ([constant isEqualToString:PGBActionTypeDriveUp]){
+        type = kPGBActionTypeDriveUp;
+    } else if ([constant isEqualToString:PGBActionTypeDriveDown]){
+        type = kPGBActionTypeDriveDown;
+    } else if ([constant isEqualToString:PGBActionTypeDriveHorn]){
+        type = kPGBActionTypeDriveHorn;
+    } else if ([constant isEqualToString:PGBActionTypeDriveBrake]){
+        type = kPGBActionTypeDriveBrake;
+    } else if ([constant isEqualToString:PGBActionTypeDriveExit]){
+        type = kPGBActionTypeDriveExit;
+    } else if ([constant isEqualToString:PGBActionTypeDriveSpeedBoost]){
+        type = kPGBActionTypeDriveSpeedBoost;
+    }  
     return type;
     
 }
@@ -1218,6 +1242,10 @@
  screen, but then I attempt to translate the button offset to other screen sizes
  it works for a decent amount of models, but not all. still needs work.
  
+
+
+ 
+ 
  */
 
 - (CGPoint)pointForActionType:(PGBActionType)type {
@@ -1329,6 +1357,55 @@
             
         case kPGBActionTypePeakRight:
             outpoint = [self convertPointForScreen:CGPointMake(144,139)];
+            break;
+            
+        case kPGBActionTypeDrive:
+            outpoint = [self convertPointForScreen:CGPointMake(458,160)];
+            break;
+        
+            
+        case kPGBActionTypeGetIn:
+            outpoint = [self convertPointForScreen:CGPointMake(458,196)];
+            break;
+            
+        case kPGBActionTypeDriveFW:
+            outpoint = [self convertPointForScreen:CGPointMake(109,202)];
+            break;
+            
+        case kPGBActionTypeDriveBW:
+            outpoint = [self convertPointForScreen:CGPointMake(109,290)];
+            break;
+            
+        case kPGBActionTypeDriveLeft:
+            outpoint = [self convertPointForScreen:CGPointMake(450,260)];
+            break;
+            
+        case kPGBActionTypeDriveRight:
+            outpoint = [self convertPointForScreen:CGPointMake(550, 260)];
+            break;
+            
+        case kPGBActionTypeDriveHorn:
+            outpoint = [self convertPointForScreen:CGPointMake(633,261)];
+            break;
+            
+        case kPGBActionTypeDriveBrake:
+            outpoint = [self convertPointForScreen:CGPointMake(40,248)];
+            break;
+            
+        case kPGBActionTypeDriveUp:
+            outpoint = [self convertPointForScreen:CGPointMake(475,192)];
+            break;
+            
+        case kPGBActionTypeDriveDown:
+            outpoint = [self convertPointForScreen:CGPointMake(535, 193)];
+            break;
+            
+        case kPGBActionTypeDriveExit:
+            outpoint = [self convertPointForScreen:CGPointMake(605,170)];
+            break;
+            
+        case kPGBActionTypeDriveSpeedBoost:
+            outpoint = [self convertPointForScreen:CGPointMake(53,132)];
             break;
             
         default:
