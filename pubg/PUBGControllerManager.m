@@ -209,15 +209,10 @@
 - (NSDictionary *)controllerPreferences {
     
     if (ph_is_hooker() == 1){
-        
         if (ph_get_move_type() == 0){ //driving
-            
             return [self tempDrivingDictionary];
-            
         }
-        
     }
-    
     if (self.gamePlayDictionary == nil){
         
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
@@ -502,7 +497,7 @@
         touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
-        [RKDropdownAlert title:@"PUBC 1.6.0-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.7.0-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
