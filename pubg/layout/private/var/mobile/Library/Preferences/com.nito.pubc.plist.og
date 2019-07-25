@@ -15,7 +15,7 @@
 	<key>RightShoulder</key>
 	<string>PGBActionFirstItemSelect</string>
 	<key>LeftTrigger</key>
-	<string>PGBActionTypePeakLeft</string>
+	<string>PGBActionTypeDrive</string>
 	<key>RightTrigger</key>
 	<string>PGBActionTypeRight</string>
 	<key>RightThumbstickButton</key>

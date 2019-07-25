@@ -10,6 +10,7 @@
 #import "PUBGControllerManager.h"
 #import "PUBControlListTableViewController.h"
 #import "PUBCPanSpeedViewController.h"
+#import "PUBCDrivingControlsTableViewController.h"
 
 @interface PUBPrefTableViewController ()
 
@@ -20,8 +21,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-
-      self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
+    self.title = @"PUBC Preferences";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
 }
 
 - (void)close {
@@ -36,10 +37,20 @@
     return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    switch (section) {
+        case 0:
+            return @"General";
+        case 1:
+            return @"Walking Controls";
+    }
+    return nil;
+}
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
     if (section == 0){
-        return  3;
+        return  4;
     }
     
     return 14;
@@ -52,23 +63,23 @@
     
     
     if (indexPath.section == 0){
-
+        
         switch (indexPath.row) {
             case 0:
-                {
-                    BOOL enabled = [gpd[InvertedControl] boolValue];
-                    [shared updateGamplayValue:[NSNumber numberWithBool:!enabled] forKey:InvertedControl];
-                }
+            {
+                BOOL enabled = [gpd[InvertedControl] boolValue];
+                [shared updateGamplayValue:[NSNumber numberWithBool:!enabled] forKey:InvertedControl];
+            }
                 break;
             case 1:
-                {
-                    PUBCPanSpeedViewController *controller = [[PUBCPanSpeedViewController alloc] initWithTitle:@"Standard Panning Speed" keyValue:PanningSpeed currentValue:shared.panningSpeed];
-                    controller.min = 2.0;
-                    controller.max = 5.0;
-                    [self.navigationController pushViewController:controller animated:true];
-                }
+            {
+                PUBCPanSpeedViewController *controller = [[PUBCPanSpeedViewController alloc] initWithTitle:@"Standard Panning Speed" keyValue:PanningSpeed currentValue:shared.panningSpeed];
+                controller.min = 2.0;
+                controller.max = 5.0;
+                [self.navigationController pushViewController:controller animated:true];
+            }
                 break;
-            
+                
             case 2:
             {
                 PUBCPanSpeedViewController *controller = [[PUBCPanSpeedViewController alloc] initWithTitle:@"ADS Panning Speed" keyValue:AimPanningSpeed currentValue:shared.aimPanningSpeed];
@@ -78,25 +89,30 @@
             }
                 break;
                 
+            case 3:
+            {
+                PUBCDrivingControlsTableViewController *controller = [PUBCDrivingControlsTableViewController new];
+                [self.navigationController pushViewController:controller animated:true];
+            }
                 
             default:
                 break;
         }
-
+        
         [[self tableView] reloadData];
         
     } else {
         NSString *key = [self keyForRow:indexPath.row];
         NSLog(@"key: %@", key);
         NSString *value = gpd[key];
-         NSLog(@"value: %@", value);
+        NSLog(@"value: %@", value);
         PUBControlListTableViewController *controller = [[PUBControlListTableViewController alloc] initWithOriginalValue:value keyValue:key];
         controller.controlType = kPBGControlTypeDefault;
         [self.navigationController pushViewController:controller animated:true];
         
     }
-        
-        
+    
+    
     
 }
 
@@ -180,7 +196,7 @@
     return keyValue;
 }
 - (void)configureCell:(UITableViewCell *)cell forRow:(NSInteger)row {
- 
+    
     NSDictionary *gpd = [[PUBGControllerManager sharedManager] controllerPreferences];
     //NSLog(@"controllerPreferences: %@", gpd);
     
@@ -274,7 +290,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
- 
+    
     [super viewWillAppear:animated];
     
     [self.tableView reloadData];
@@ -295,6 +311,7 @@
     BOOL exp = [prefs[InvertedControl] boolValue];
     float joystickSpeed = [prefs[PanningSpeed] floatValue];
     float aimJoystickSpeed = [prefs[AimPanningSpeed] floatValue];
+    cell.accessoryType = UITableViewCellAccessoryNone;
     NSString *value = @"Enabled";
     if (!exp)
         value = @"Disabled";
@@ -305,12 +322,16 @@
             if (indexPath.row == 0){
                 cell.textLabel.text = @"Inverted Right Joystick";
                 cell.detailTextLabel.text = value;
-            } else if (indexPath.row == 1){ //row 1
+            } else if (indexPath.row == 1){
                 cell.textLabel.text = @"Default Right Joystick Speed";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%.2f", joystickSpeed];
-            } else if (indexPath.row == 2){ //row 1
+            } else if (indexPath.row == 2){
                 cell.textLabel.text = @"ADS Joystick Speed";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%.2f", aimJoystickSpeed];
+            } else if (indexPath.row == 3){
+                cell.textLabel.text = @"Driving Controls";
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                cell.detailTextLabel.text = @"";
             }
             break;
             

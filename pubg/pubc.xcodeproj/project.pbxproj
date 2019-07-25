@@ -33,6 +33,7 @@
 		32004ACF22DD66F000FB4FF1 /* PUBGControllerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004ACE22DD66F000FB4FF1 /* PUBGControllerManager.m */; };
 		32004AD222E433DF00FB4FF1 /* PUBCPanSpeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004AD122E433DF00FB4FF1 /* PUBCPanSpeedViewController.m */; };
 		32004AD622E7B6B100FB4FF1 /* pubghooks.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004AD522E7B6B100FB4FF1 /* pubghooks.m */; };
+		329236B822EA477900AE5B9C /* PUBCDrivingControlsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 329236B722EA477900AE5B9C /* PUBCDrivingControlsTableViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -94,6 +95,8 @@
 		32004AD122E433DF00FB4FF1 /* PUBCPanSpeedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PUBCPanSpeedViewController.m; sourceTree = "<group>"; };
 		32004AD422E7B6B100FB4FF1 /* pubghooks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pubghooks.h; sourceTree = "<group>"; };
 		32004AD522E7B6B100FB4FF1 /* pubghooks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = pubghooks.m; sourceTree = "<group>"; };
+		329236B622EA477900AE5B9C /* PUBCDrivingControlsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PUBCDrivingControlsTableViewController.h; sourceTree = "<group>"; };
+		329236B722EA477900AE5B9C /* PUBCDrivingControlsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PUBCDrivingControlsTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,6 +189,8 @@
 		32004A9222DD66CB00FB4FF1 /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
+				329236B622EA477900AE5B9C /* PUBCDrivingControlsTableViewController.h */,
+				329236B722EA477900AE5B9C /* PUBCDrivingControlsTableViewController.m */,
 				32004A9322DD66CB00FB4FF1 /* PUBControlListTableViewController.h */,
 				32004A9422DD66CB00FB4FF1 /* PUBControlListTableViewController.m */,
 				32004A9522DD66CB00FB4FF1 /* PUBPrefTableViewController.h */,
@@ -342,6 +347,7 @@
 				32004ABB22DD66CB00FB4FF1 /* PUBControlListTableViewController.m in Sources */,
 				32004AC322DD66CB00FB4FF1 /* UITouch-KIFAdditions.m in Sources */,
 				32004AB922DD66CB00FB4FF1 /* NSArray+PureLayout.m in Sources */,
+				329236B822EA477900AE5B9C /* PUBCDrivingControlsTableViewController.m in Sources */,
 				32004AC022DD66CB00FB4FF1 /* UIApplication-KIFAdditions.m in Sources */,
 				32004AC122DD66CB00FB4FF1 /* UIEvent+KIFAdditions.m in Sources */,
 			);
