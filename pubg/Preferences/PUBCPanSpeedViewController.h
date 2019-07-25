@@ -8,10 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
 
 @interface PUBCPanSpeedViewController : UIViewController
 
+@property (nonatomic, strong) NSString *keyValue;
+@property (readwrite, assign) float min;
+@property (readwrite, assign) float max;
+
+- (id)initWithTitle:(NSString *)title keyValue:(NSString *)kv currentValue:(float)value;
+
+
 @end
 
-NS_ASSUME_NONNULL_END
+

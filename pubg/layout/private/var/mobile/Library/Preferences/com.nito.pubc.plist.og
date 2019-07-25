@@ -36,5 +36,38 @@
 	<false/>
 	<key>PanningSpeed</key>
 	<real>3</real>
+	<key>AimPanningSpeed</key>
+	<real>1</real>
+	<key>Driving</key>
+	<dict>
+		<key>Dpad.up</key>
+		<string>kPGBActionTypeDriveFW</string>
+		<key>Dpad.down</key>
+		<string>kPGBActionTypeDriveBW</string>
+		<key>Dpad.left</key>
+		<string>kPGBActionTypeDriveLeft</string>
+		<key>Dpad.right</key>
+		<string>kPGBActionTypeDriveRight</string>
+		<key>ButtonA</key>
+		<string>PGBActionTypeDriveSpeedBoost</string>
+		<key>ButtonB</key>
+		<string>PGBActionTypeDriveBrake</string>
+		<key>ButtonX</key>
+		<string>PGBActionTypeDriveExit</string>
+		<key>ButtonY</key>
+		<string>PGBActionTypeDriveHorn</string>
+		<key>LeftShoulder</key>
+		<string>PGBActionTypeDriveUp</string>
+		<key>RightShoulder</key>
+		<string>PGBActionTypeDriveDown</string>
+		<key>LeftTrigger</key>
+		<string>PGBActionTypeDriveSpeedBoost</string>
+		<key>RightTrigger</key>
+		<string>PGBActionTypeDriveBrake</string>
+		<key>RightThumbstickButton</key>
+		<string>kPGBActionTypeDriveChangeSeat</string>
+		<key>LeftThumbstickButton</key>
+		<string>kPGBActionTypeDriveChangeSeat</string>
+	</dict>
 </dict>
 </plist>

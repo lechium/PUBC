@@ -39,7 +39,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
     if (section == 0){
-        return  2;
+        return  3;
     }
     
     return 14;
@@ -62,10 +62,22 @@
                 break;
             case 1:
                 {
-                    PUBCPanSpeedViewController *controller = [PUBCPanSpeedViewController new];
+                    PUBCPanSpeedViewController *controller = [[PUBCPanSpeedViewController alloc] initWithTitle:@"Standard Panning Speed" keyValue:PanningSpeed currentValue:shared.panningSpeed];
+                    controller.min = 2.0;
+                    controller.max = 5.0;
                     [self.navigationController pushViewController:controller animated:true];
                 }
                 break;
+            
+            case 2:
+            {
+                PUBCPanSpeedViewController *controller = [[PUBCPanSpeedViewController alloc] initWithTitle:@"ADS Panning Speed" keyValue:AimPanningSpeed currentValue:shared.aimPanningSpeed];
+                controller.min = 1.0;
+                controller.max = 2.0;
+                [self.navigationController pushViewController:controller animated:true];
+            }
+                break;
+                
                 
             default:
                 break;
@@ -79,6 +91,7 @@
         NSString *value = gpd[key];
          NSLog(@"value: %@", value);
         PUBControlListTableViewController *controller = [[PUBControlListTableViewController alloc] initWithOriginalValue:value keyValue:key];
+        controller.controlType = kPBGControlTypeDefault;
         [self.navigationController pushViewController:controller animated:true];
         
     }
@@ -281,6 +294,7 @@
     NSDictionary *prefs = [[PUBGControllerManager sharedManager] controllerPreferences];
     BOOL exp = [prefs[InvertedControl] boolValue];
     float joystickSpeed = [prefs[PanningSpeed] floatValue];
+    float aimJoystickSpeed = [prefs[AimPanningSpeed] floatValue];
     NSString *value = @"Enabled";
     if (!exp)
         value = @"Disabled";
@@ -291,9 +305,12 @@
             if (indexPath.row == 0){
                 cell.textLabel.text = @"Inverted Right Joystick";
                 cell.detailTextLabel.text = value;
-            } else { //row 1
-                cell.textLabel.text = @"Right Joystick Speed";
+            } else if (indexPath.row == 1){ //row 1
+                cell.textLabel.text = @"Default Right Joystick Speed";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%.2f", joystickSpeed];
+            } else if (indexPath.row == 2){ //row 1
+                cell.textLabel.text = @"ADS Joystick Speed";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%.2f", aimJoystickSpeed];
             }
             break;
             

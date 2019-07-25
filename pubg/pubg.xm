@@ -27,11 +27,17 @@
     if (orig > 0 || orig < 0){
         PUBGControllerManager *man = [PUBGControllerManager sharedManager];
         float ps = [man panningSpeed];
+        float aps = [man aimPanningSpeed];
         if (ps == 0) { ps = 3.0; }
         if (ph_is_hooker()) {
             int mt = ph_get_is_aimed_down_sights();
             if (mt == 1){
-                ps = 1.0;
+                if (aps < 1.0 && aps > 2.0){
+                    ps = 1.0;
+                } else {
+                    //NSLog(@"PUBC: custom aim panning speed: %f", aps);
+                    ps = aps;
+                }
             }
         }
         

@@ -13,10 +13,27 @@
 @interface PUBCPanSpeedViewController ()
 
 @property (nonatomic, strong) UISlider *slider;
+@property (readwrite, assign) float currentValue;
+
 
 @end
 
 @implementation PUBCPanSpeedViewController
+
+@synthesize keyValue;
+
+- (id)initWithTitle:(NSString *)title keyValue:(NSString *)kv currentValue:(float)value {
+    
+    self = [super init];
+    if (self){
+        self.title = title;
+        self.keyValue = kv;
+        self.currentValue = value;
+    }
+    return self;
+    
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -24,10 +41,12 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.slider = [[UISlider alloc] initForAutoLayout];
     [self.view addSubview:self.slider];
-    self.slider.minimumValue = 2.0;
-    self.slider.maximumValue = 5.0;
+    self.slider.minimumValue = self.min;
+    self.slider.maximumValue = self.max;
     
-    self.slider.value = [[PUBGControllerManager sharedManager] panningSpeed];
+    //NSLog(@"PUBC: %@ currentValue: %f", self.keyValue, self.currentValue);
+    
+    self.slider.value = self.currentValue;
     [self.slider addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
     [self.slider autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:70];
     [self.slider autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self.view withMultiplier:0.8];
@@ -40,7 +59,7 @@
 - (void)close {
     
     PUBGControllerManager *shared = [PUBGControllerManager sharedManager];
-    [shared updateGamplayValue:[NSNumber numberWithFloat:self.slider.value] forKey:PanningSpeed];
+    [shared updateGamplayValue:[NSNumber numberWithFloat:self.slider.value] forKey:self.keyValue];
     [self.navigationController popViewControllerAnimated:true];
 }
 

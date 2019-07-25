@@ -174,6 +174,13 @@
     });
 }
 
+- (float)aimPanningSpeed {
+    
+    float ps = [self.controllerPreferences[AimPanningSpeed] floatValue];
+    if (ps == 0) return 1.0;
+    return ps;
+}
+
 - (float)panningSpeed {
     
     float ps = [self.controllerPreferences[PanningSpeed] floatValue];
@@ -207,12 +214,6 @@
  */
 
 - (NSDictionary *)controllerPreferences {
-    
-    if (ph_is_hooker() == 1){
-        if (ph_get_move_type() == 0){ //driving
-            return [self tempDrivingDictionary];
-        }
-    }
     if (self.gamePlayDictionary == nil){
         
         NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
@@ -223,18 +224,36 @@
         }
         NSLog(@"PUBC: localFile: %@", localFile);
         self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:localFile];
-        if (![[self.gamePlayDictionary allKeys] containsObject:InvertedControl]){
+        if (![[self.gamePlayDictionary allKeys] containsObject:AimPanningSpeed] || [[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
             NSMutableDictionary *fixed = [self.gamePlayDictionary mutableCopy];
-            [fixed setValue:[NSNumber numberWithBool:FALSE] forKey:InvertedControl];
-            [fixed setValue:[NSNumber numberWithFloat:3.0] forKey:PanningSpeed];
+            //[fixed setValue:[NSNumber numberWithBool:FALSE] forKey:InvertedControl];
+            //[fixed setValue:[NSNumber numberWithFloat:3.0] forKey:PanningSpeed];
+            [fixed setValue:[NSNumber numberWithFloat:1.0] forKey:AimPanningSpeed];
+            [fixed setValue:[self tempDrivingDictionary] forKey:@"Driving"];
+            [fixed writeToFile:localFile atomically:TRUE];
             [fixed writeToFile:localFile atomically:TRUE];
             self.gamePlayDictionary = fixed;
         }
         //NSLog(@"gameplay dict: %@", self.gamePlayDictionary);
     }
+    
+    if (ph_is_hooker() == 1){
+        if (ph_get_move_type() == 0){ //driving
+            if (![[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
+                return [self tempDrivingDictionary];
+            }
+            return self.gamePlayDictionary[@"Driving"];
+        }
+    }
+    
     return self.gamePlayDictionary;
 }
-
+- (void)updateDrivingVaLue:(id)value forKey:(NSString *)theKey {
+    
+    NSMutableDictionary *dict = [self.gamePlayDictionary[@"Driving"] mutableCopy];
+    dict[theKey] = value;
+    [self updateGamplayValue:dict forKey:@"Driving"];
+}
 - (void)updateGamplayValue:(id)value forKey:(NSString *)theKey {
     
     if (theKey != nil && value != nil){
@@ -250,7 +269,7 @@
 
 - (NSDictionary *)tempDrivingDictionary {
     
-    return @{DpadUp: PGBActionTypeDriveFW, DpadDown: PGBActionTypeDriveBW, DpadLeft: PGBActionTypeDriveLeft, DpadRight: PGBActionTypeDriveRight, ButtonY: PGBActionTypeDriveHorn, ButtonA: PGBActionTypeDriveSpeedBoost, LeftShoulder: PGBActionTypeDriveUp, RightShoulder: PGBActionTypeDriveDown, ButtonB: PGBActionTypeDriveBrake, ButtonX: PGBActionTypeDriveExit };
+    return @{DpadUp: PGBActionTypeDriveFW, DpadDown: PGBActionTypeDriveBW, DpadLeft: PGBActionTypeDriveLeft, DpadRight: PGBActionTypeDriveRight, ButtonY: PGBActionTypeDriveHorn, ButtonA: PGBActionTypeDriveSpeedBoost, LeftShoulder: PGBActionTypeDriveChangeSeat, RightShoulder: PGBActionTypeDriveChangeSeat, ButtonB: PGBActionTypeDriveBrake, ButtonX: PGBActionTypeDriveExit, LeftTrigger: PGBActionTypeDriveUp, RightTrigger: PGBActionTypeDriveDown, LeftThumbstickButton: PGBActionTypeDriveChangeSeat,  RightThumbstickButton: PGBActionTypeDriveHorn };
     
 }
 

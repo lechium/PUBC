@@ -7,7 +7,7 @@
 //
 
 #import "PUBControlListTableViewController.h"
-#import "PUBGControllerManager.h"
+
 @interface PUBControlListTableViewController ()
 
 @end
@@ -30,7 +30,11 @@
 
 - (NSArray *)availableOptions {
  
-    return @[PGBActionTypeLeft,PGBActionTypeRight,PGBActionTypeRun,PGBActionTypeCrouch,PGBActionTypeConceal,PGBActionTypeJump,PGBActionTypeFirstWeapon,PGBActionTypeSecondWeapon,PGBActionTypeSmallWeapon,PGBActionTypeAim,PGBActionTypeReload,PGBActionTypeExitRound,PGBActionTypeInventory,PGBActionHandAction,PGBActionFirstItemSelect,PGBActionMapAction,PGBActionTypePeakLeft,PGBActionTypePeakRight, PGBActionTypeDrive, PGBActionTypeGetIn ];
+    if (self.controlType == kPBGControlTypeDefault){
+        return @[PGBActionTypeLeft,PGBActionTypeRight,PGBActionTypeRun,PGBActionTypeCrouch,PGBActionTypeConceal,PGBActionTypeJump,PGBActionTypeFirstWeapon,PGBActionTypeSecondWeapon,PGBActionTypeSmallWeapon,PGBActionTypeAim,PGBActionTypeReload,PGBActionTypeExitRound,PGBActionTypeInventory,PGBActionHandAction,PGBActionFirstItemSelect,PGBActionMapAction,PGBActionTypePeakLeft,PGBActionTypePeakRight, PGBActionTypeDrive, PGBActionTypeGetIn ];
+    } else {
+        return [self availableOptionsForDriving];
+    }
 }
 
 - (id)initWithOriginalValue:(id)value keyValue:(NSString *)kv {
@@ -62,7 +66,11 @@
     self.currentValue = self.availableOptions[indexPath.row];
     [self.tableView reloadData];
     PUBGControllerManager *shared = [PUBGControllerManager sharedManager];
-    [shared updateGamplayValue:self.currentValue forKey:keyValue];
+     if (self.controlType == kPBGControlTypeDefault){
+         [shared updateGamplayValue:self.currentValue forKey:keyValue];
+     } else {
+         [shared updateDrivingVaLue:self.currentValue forKey:keyValue];
+     }
     [self.navigationController popViewControllerAnimated:true];
 }
     

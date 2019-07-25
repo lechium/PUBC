@@ -72,7 +72,7 @@ static NSString * const Menu = @"Menu";
 static NSString *const ExperimentalControl = @"ExperimentalControl";
 static NSString *const InvertedControl = @"InvertedControl";
 static NSString *const PanningSpeed = @"PanningSpeed";
-
+static NSString *const AimPanningSpeed = @"AimPanningSpeed";
 
 typedef enum {
     
@@ -117,6 +117,13 @@ typedef enum {
     kPGBActionTypeUndefined,
     
 } PGBActionType;
+
+typedef enum {
+    
+    kPBGControlTypeDefault,
+    kPBGControlTypeDriving,
+    
+} PGBControlType;
 
 // System info
 #define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)

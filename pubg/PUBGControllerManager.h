@@ -19,6 +19,7 @@
 @property (nonatomic, strong) NSDictionary *gamePlayDictionary;
 
 - (float)panningSpeed ;
+- (float)aimPanningSpeed ;
 - (BOOL)invertedControl ;
 - (void)appWasActivated;
 - (UIViewController *)topViewController;
@@ -30,6 +31,7 @@
 - (PGBActionType)actionTypeForControllerButton:(NSString *)constantString;
 + (id)sharedManager;
 - (void)listenForControllers;
+- (void)updateDrivingVaLue:(id)value forKey:(NSString *)theKey;
 - (void)updateGamplayValue:(id)value forKey:(NSString *)theKey;
 @end
 
