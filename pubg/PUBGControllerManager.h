@@ -27,6 +27,7 @@
 - (CGPoint)convertPointForScreen:(CGPoint)inputPoint;
 - (CGPoint)pointForActionType:(PGBActionType)type;
 - (NSDictionary *)controllerPreferences;
+- (NSDictionary *)drivingControls;
 - (PGBActionType)actionTypeFromConstant:(NSString *)constant;
 - (PGBActionType)actionTypeForControllerButton:(NSString *)constantString;
 + (id)sharedManager;

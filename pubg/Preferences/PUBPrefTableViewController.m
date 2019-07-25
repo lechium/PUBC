@@ -59,7 +59,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     PUBGControllerManager *shared = [PUBGControllerManager sharedManager];
-    NSDictionary *gpd = [shared controllerPreferences];
+    NSDictionary *gpd = [shared gamePlayDictionary]; //not ideal but at this point it should already exist.
     
     
     if (indexPath.section == 0){

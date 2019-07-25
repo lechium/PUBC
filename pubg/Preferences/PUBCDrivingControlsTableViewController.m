@@ -44,7 +44,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     PUBGControllerManager *shared = [PUBGControllerManager sharedManager];
-    NSDictionary *gpd = [shared controllerPreferences][@"Driving"];
+    NSDictionary *gpd = [shared drivingControls];
     NSString *key = [self keyForRow:indexPath.row];
     NSString *value = gpd[key];
     PUBControlListTableViewController *controller = [[PUBControlListTableViewController alloc] initWithOriginalValue:value keyValue:key];
@@ -116,7 +116,7 @@
 }
 - (void)configureCell:(UITableViewCell *)cell forRow:(NSInteger)row {
  
-    NSDictionary *gpd = [[PUBGControllerManager sharedManager] controllerPreferences][@"Driving"];
+    NSDictionary *gpd = [[PUBGControllerManager sharedManager] drivingControls];
     //NSLog(@"controllerPreferences: %@", gpd);
     
     switch (row) {

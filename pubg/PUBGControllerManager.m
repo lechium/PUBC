@@ -213,6 +213,10 @@
  
  */
 
+- (NSDictionary *)drivingControls {
+    return self.gamePlayDictionary[@"Driving"];
+}
+
 - (NSDictionary *)controllerPreferences {
     if (self.gamePlayDictionary == nil){
         
@@ -238,7 +242,10 @@
     }
     
     if (ph_is_hooker() == 1){
-        if (ph_get_move_type() == 0){ //driving
+        
+        int moveType = ph_get_move_type();
+        NSLog(@"hooker move type: %i", moveType);
+        if (moveType == 0){ //driving
             if (![[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
                 return [self tempDrivingDictionary];
             }
@@ -516,7 +523,7 @@
         touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
-        [RKDropdownAlert title:@"PUBC 1.7.0-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.8.0-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
@@ -711,7 +718,7 @@
     profile.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         
         if (dpad.down.isPressed && dpadDownTouch == nil){
-            NSLog(@"down x value: %f y value: %f", xValue, yValue);
+            //NSLog(@"down x value: %f y value: %f", xValue, yValue);
             CGPoint reload = PAT([self actionTypeForControllerButton:DpadDown]);//PAT(kPGBActionTypeReload);
            dpadDownTouch = [[self IOSView] tapDownAtPoint:reload];
         } else if (!dpad.down.isPressed){
@@ -724,7 +731,7 @@
         }
         
         if (dpad.left.isPressed && dpadLeftTouch == nil){
-            NSLog(@"left x value: %f y value: %f", xValue, yValue);
+            //NSLog(@"left x value: %f y value: %f", xValue, yValue);
             CGPoint leftWeapon = PAT([self actionTypeForControllerButton:DpadLeft]);
             //NSLog(@"left");
            dpadLeftTouch = [[self IOSView] tapDownAtPoint:leftWeapon];
@@ -738,7 +745,7 @@
         }
         
         if (dpad.up.isPressed && dpadUpTouch == nil){
-            NSLog(@"up x value: %f y value: %f", xValue, yValue);
+            //NSLog(@"up x value: %f y value: %f", xValue, yValue);
             CGPoint aim = PAT([self actionTypeForControllerButton:DpadUp]);//PAT(kPGBActionTypeAim);
            dpadUpTouch = [[self IOSView] tapDownAtPoint:aim];
         }else if (!dpad.up.isPressed){
@@ -751,7 +758,7 @@
         }
         
         if ((dpad.right.isPressed && dpadRightTouch == nil) && [self selectOrStartMode] == 0){
-            NSLog(@"right x value: %f y value: %f", xValue, yValue);
+            //NSLog(@"right x value: %f y value: %f", xValue, yValue);
             CGPoint rightWeapon = PAT([self actionTypeForControllerButton:DpadRight]);//PAT(kPGBActionTypeSecondWeapon);
             dpadRightTouch = [[self IOSView] tapDownAtPoint:rightWeapon];
         } else if (!dpad.right.isPressed){
@@ -845,7 +852,7 @@
     {
         if (pressed && aTouch == nil)
         {
-            NSLog(@"PUBC: ButtonA value:%f", value);
+            //NSLog(@"PUBC: ButtonA value:%f", value);
             CGPoint jump = PAT([self actionTypeForControllerButton:ButtonA]);
             aTouch =  [[self IOSView] tapDownAtPoint:jump];
         } else {
