@@ -18,8 +18,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-
+    self.tableView.backgroundColor  = nil;
+    self.tableView.backgroundView = nil;
+    self.tableView.maskView = nil;
+    self.navigationController.view.backgroundColor = nil;
+    self.tabBarController.view.backgroundColor = nil;
+    self.tableView.tintColor = [UIColor blackColor];
 }
 
 - (NSArray *)availableOptionsForDriving {

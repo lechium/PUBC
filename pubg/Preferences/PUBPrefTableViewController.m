@@ -20,7 +20,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.view.backgroundColor = [UIColor clearColor];
+    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
+    self.tableView.backgroundColor  = nil;
+    self.tableView.backgroundView = nil;
+    self.tableView.maskView = nil;
+    self.navigationController.view.backgroundColor = nil;
+    self.tabBarController.view.backgroundColor = nil;
     self.title = @"PUBC Preferences";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
 }

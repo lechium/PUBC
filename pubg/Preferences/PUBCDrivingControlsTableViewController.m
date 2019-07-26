@@ -19,8 +19,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-
+    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
+    self.tableView.backgroundColor  = nil;
+    self.tableView.backgroundView = nil;
+    self.tableView.maskView = nil;
+    self.tableView.tintColor = [UIColor blackColor];
+    self.navigationController.view.backgroundColor = nil;
+    self.tabBarController.view.backgroundColor = nil;
       self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
 }
 

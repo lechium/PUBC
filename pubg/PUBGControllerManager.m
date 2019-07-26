@@ -523,7 +523,7 @@
         touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
-        [RKDropdownAlert title:@"PUBC 1.8.0-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.8.0-8 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 

@@ -38,7 +38,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor  = [UIColor colorWithWhite:1.0 alpha:0.8];
+    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
+    self.navigationController.view.backgroundColor = nil;
+    self.tabBarController.view.backgroundColor = nil;
     self.slider = [[UISlider alloc] initForAutoLayout];
     [self.view addSubview:self.slider];
     self.slider.minimumValue = self.min;
