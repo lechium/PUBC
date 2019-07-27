@@ -228,13 +228,14 @@
         }
         NSLog(@"PUBC: localFile: %@", localFile);
         self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:localFile];
-        if (![[self.gamePlayDictionary allKeys] containsObject:AimPanningSpeed] || [[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
+        if (![[self.gamePlayDictionary allKeys] containsObject:AimPanningSpeed] || ![[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
+            NSLog(@"PUBC: fixing dictionary!");
+            
             NSMutableDictionary *fixed = [self.gamePlayDictionary mutableCopy];
             //[fixed setValue:[NSNumber numberWithBool:FALSE] forKey:InvertedControl];
             //[fixed setValue:[NSNumber numberWithFloat:3.0] forKey:PanningSpeed];
             [fixed setValue:[NSNumber numberWithFloat:1.0] forKey:AimPanningSpeed];
             [fixed setValue:[self tempDrivingDictionary] forKey:@"Driving"];
-            [fixed writeToFile:localFile atomically:TRUE];
             [fixed writeToFile:localFile atomically:TRUE];
             self.gamePlayDictionary = fixed;
         }
@@ -247,6 +248,11 @@
         NSLog(@"hooker move type: %i", moveType);
         if (moveType == 0){ //driving
             if (![[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
+                NSMutableDictionary *fixed = [self.gamePlayDictionary mutableCopy];
+                [fixed setValue:[self tempDrivingDictionary] forKey:@"Driving"];
+                [fixed writeToFile:@"/var/mobile/Library/Preferences/com.nito.pubc.plist" atomically:TRUE];
+                self.gamePlayDictionary = fixed;
+
                 return [self tempDrivingDictionary];
             }
             return self.gamePlayDictionary[@"Driving"];
@@ -523,7 +529,7 @@
         touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
-        [RKDropdownAlert title:@"PUBC 1.8.0-8 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.8.0-11 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
