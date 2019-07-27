@@ -18,6 +18,7 @@
 @property (nonatomic, strong) NSArray <GCController*> *gameControllers;
 @property (nonatomic, strong) NSDictionary *gamePlayDictionary;
 
+- (void)resetToDefaults;
 - (float)panningSpeed ;
 - (float)aimPanningSpeed ;
 - (BOOL)invertedControl ;

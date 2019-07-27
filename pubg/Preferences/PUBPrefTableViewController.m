@@ -29,6 +29,24 @@
     self.tabBarController.view.backgroundColor = nil;
     self.title = @"PUBC Preferences";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Reset" style:UIBarButtonItemStylePlain target:self action:@selector(reset)];
+}
+
+- (void)reset {
+    
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Reset controls to defaults?" message:@"You are about to reset the control preferences to their default values, are you sure you want to continue?" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *yes = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+       
+        [[PUBGControllerManager sharedManager] resetToDefaults];
+        [self.tableView reloadData];
+        
+    }];
+    UIAlertAction *no = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:nil];
+    
+    [ac addAction:yes];
+    [ac addAction:no];
+    [self presentViewController:ac animated:TRUE completion:nil];
 }
 
 - (void)close {

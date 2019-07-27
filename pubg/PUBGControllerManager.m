@@ -201,6 +201,19 @@
     //return [self.controllerPreferences[ExperimentalControl] boolValue];
 }
 
+- (NSString *)localPreferenceFile {
+    
+    return [[self documentsFolder] stringByAppendingPathComponent:@"com.nito.pubc.plist"];
+}
+
+
+- (void)resetToDefaults {
+    
+    [[NSFileManager defaultManager] removeItemAtPath:[self localPreferenceFile] error:nil];
+    self.gamePlayDictionary = nil;
+    [self loadControllerPreferences];
+}
+
 /**
  
  The controller preferences are stored here, keys are mapped like the following
@@ -214,53 +227,44 @@
  */
 
 - (NSDictionary *)drivingControls {
-    return self.gamePlayDictionary[@"Driving"];
+    return self.controllerPreferences[@"Driving"];
+}
+
+- (void)loadControllerPreferences {
+    
+    NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
+    NSString *localFile = [self localPreferenceFile];
+    NSFileManager *man = [NSFileManager defaultManager];
+    if (![man fileExistsAtPath:localFile]){
+        [man copyItemAtPath:preferenceFile toPath:localFile error:nil];
+    }
+    NSLog(@"PUBC: localFile: %@", localFile);
+    self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:localFile];
+    if (![[self.gamePlayDictionary allKeys] containsObject:AimPanningSpeed] || ![[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
+        NSLog(@"PUBC: fixing dictionary!");
+        
+        NSMutableDictionary *fixed = [self.gamePlayDictionary mutableCopy];
+        if (![[self.gamePlayDictionary allKeys] containsObject:InvertedControl]){
+            [fixed setValue:[NSNumber numberWithBool:FALSE] forKey:InvertedControl];
+        }
+        if (![[self.gamePlayDictionary allKeys] containsObject:PanningSpeed]){
+            [fixed setValue:[NSNumber numberWithFloat:3.0] forKey:PanningSpeed];
+        }
+        [fixed setValue:[NSNumber numberWithFloat:1.0] forKey:AimPanningSpeed];
+        [fixed setValue:[self tempDrivingDictionary] forKey:@"Driving"];
+        [fixed writeToFile:localFile atomically:TRUE];
+        self.gamePlayDictionary = fixed;
+    }
 }
 
 - (NSDictionary *)controllerPreferences {
     if (self.gamePlayDictionary == nil){
-        
-        NSString *preferenceFile = @"/var/mobile/Library/Preferences/com.nito.pubc.plist";
-        NSString *localFile = [[self documentsFolder] stringByAppendingPathComponent:@"com.nito.pubc.plist"];
-        NSFileManager *man = [NSFileManager defaultManager];
-        if (![man fileExistsAtPath:localFile]){
-            [man copyItemAtPath:preferenceFile toPath:localFile error:nil];
-        }
-        NSLog(@"PUBC: localFile: %@", localFile);
-        self.gamePlayDictionary = [NSDictionary dictionaryWithContentsOfFile:localFile];
-        if (![[self.gamePlayDictionary allKeys] containsObject:AimPanningSpeed] || ![[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
-            NSLog(@"PUBC: fixing dictionary!");
-            
-            NSMutableDictionary *fixed = [self.gamePlayDictionary mutableCopy];
-            //[fixed setValue:[NSNumber numberWithBool:FALSE] forKey:InvertedControl];
-            //[fixed setValue:[NSNumber numberWithFloat:3.0] forKey:PanningSpeed];
-            [fixed setValue:[NSNumber numberWithFloat:1.0] forKey:AimPanningSpeed];
-            [fixed setValue:[self tempDrivingDictionary] forKey:@"Driving"];
-            [fixed writeToFile:localFile atomically:TRUE];
-            self.gamePlayDictionary = fixed;
-        }
-        //NSLog(@"gameplay dict: %@", self.gamePlayDictionary);
+        [self loadControllerPreferences];
     }
-    
-    if (ph_is_hooker() == 1){
-        
-        int moveType = ph_get_move_type();
-        NSLog(@"hooker move type: %i", moveType);
-        if (moveType == 0){ //driving
-            if (![[self.gamePlayDictionary allKeys] containsObject:@"Driving"]){
-                NSMutableDictionary *fixed = [self.gamePlayDictionary mutableCopy];
-                [fixed setValue:[self tempDrivingDictionary] forKey:@"Driving"];
-                [fixed writeToFile:@"/var/mobile/Library/Preferences/com.nito.pubc.plist" atomically:TRUE];
-                self.gamePlayDictionary = fixed;
-
-                return [self tempDrivingDictionary];
-            }
-            return self.gamePlayDictionary[@"Driving"];
-        }
-    }
-    
     return self.gamePlayDictionary;
 }
+
+
 - (void)updateDrivingVaLue:(id)value forKey:(NSString *)theKey {
     
     NSMutableDictionary *dict = [self.gamePlayDictionary[@"Driving"] mutableCopy];
@@ -339,6 +343,7 @@
     absPrev = 0;
     vertAbsPrev = 0;
     vertPrev = 0;
+    [self loadControllerPreferences];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDisconnected:) name:GCControllerDidDisconnectNotification object:nil];
     [GCController startWirelessControllerDiscoveryWithCompletionHandler:nil];
@@ -529,7 +534,7 @@
         touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
-        [RKDropdownAlert title:@"PUBC 1.8.0-11 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.8.1-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
@@ -1024,6 +1029,15 @@
 - (PGBActionType)actionTypeForControllerButton:(NSString *)constantString {
     
     NSDictionary *controllerDictionary = [self controllerPreferences];
+    if (ph_is_hooker() == 1){
+        int moveType = ph_get_move_type();
+        NSLog(@"hooker move type: %i", moveType);
+        if (moveType == 0){ //driving
+            
+            controllerDictionary = self.drivingControls;
+        }
+    }
+    
     NSString *controllerValue = controllerDictionary[constantString];
     return [self actionTypeFromConstant:controllerValue];
 }
