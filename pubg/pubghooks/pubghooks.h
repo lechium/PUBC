@@ -33,6 +33,7 @@ extern "C" {
     bool ph_is_hooker(void);
     movetype_t ph_get_move_type(void);
     int ph_get_is_aimed_down_sights(void);
+    int ph_get_is_pressing_fire_button(void);
 #ifdef __cplusplus
 };
 #endif
