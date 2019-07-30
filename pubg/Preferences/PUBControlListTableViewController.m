@@ -28,7 +28,7 @@
 
 - (NSArray *)availableOptionsForDriving {
     
-    return @[PGBActionTypeDriveChangeSeat, PGBActionTypeDriveSpeedBoost,PGBActionTypeDriveBrake, PGBActionTypeDriveHorn, PGBActionTypeDriveUp, PGBActionTypeDriveDown];
+    return @[PGBActionTypeDriveFW, PGBActionTypeDriveBW, PGBActionTypeDriveLeft, PGBActionTypeDriveRight, PGBActionTypeDriveChangeSeat, PGBActionTypeDriveSpeedBoost,PGBActionTypeDriveBrake, PGBActionTypeDriveHorn, PGBActionTypeDriveUp, PGBActionTypeDriveDown];
     
 }
 

@@ -43,7 +43,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
-    return 10;
+    return 14;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -112,6 +112,25 @@
             keyValue = RightThumbstickButton;
             break;
             
+        case 10: //Dpad.up
+            
+            keyValue = DpadUp;
+            break;
+            
+        case 11: //Dpad.down
+            
+            keyValue = DpadDown;
+            break;
+            
+        case 12: //Dpad.left
+            
+            keyValue = DpadLeft;
+            break;
+            
+        case 13: //Dpad.right
+            
+            keyValue = DpadRight;
+            break;
 
         default:
             break;
@@ -183,6 +202,29 @@
             cell.detailTextLabel.text = gpd[RightThumbstickButton];
             break;
             
+        case 10: //Dpad.up
+            
+            cell.textLabel.text = @"D-Pad Up";
+            cell.detailTextLabel.text = gpd[DpadUp];
+            break;
+            
+        case 11: //Dpad.down
+            
+            cell.textLabel.text = @"D-Pad Down";
+            cell.detailTextLabel.text = gpd[DpadDown];
+            break;
+            
+        case 12: //Dpad.left
+            
+            cell.textLabel.text = @"D-Pad Left";
+            cell.detailTextLabel.text = gpd[DpadLeft];
+            break;
+            
+        case 13: //Dpad.right
+            
+            cell.textLabel.text = @"D-Pad Right";
+            cell.detailTextLabel.text = gpd[DpadRight];
+            break;
     
         default:
             break;

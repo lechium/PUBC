@@ -67,13 +67,13 @@
     
     UITapGestureRecognizer *touchSurfaceDoubleTapRecognizer;
     BOOL _tapSetup;
-  /*
-    CGFloat prev;
-    CGFloat absPrev;
-    
-    CGFloat vertPrev;
-    CGFloat vertAbsPrev;
-   */
+    /*
+     CGFloat prev;
+     CGFloat absPrev;
+     
+     CGFloat vertPrev;
+     CGFloat vertAbsPrev;
+     */
     
 }
 
@@ -137,11 +137,27 @@
  
  */
 
+- (CGPoint)convertForXPointOnScreen:(CGPoint)inputPoint {
+    
+    if (SCREEN_HEIGHT == 812) {
+        return inputPoint;
+    }
+    
+    //x = (OG_VALUE * TARGET_WIDTH) / OG_WIDTH;
+    //y = (OG_VALUE * TARGET_HEIGHT / OG_HEIGHT;
+    CGFloat x = (inputPoint.x * SCREEN_WIDTH) / 812;
+    CGFloat y = (inputPoint.y * SCREEN_HEIGHT) / 375;
+    
+    return CGPointMake(x, y);
+}
+
+
 - (CGPoint)convertPointForScreen:(CGPoint)inputPoint {
     
     if (SCREEN_HEIGHT == 667) {
         return inputPoint;
     }
+
     //x = (OG_VALUE * TARGET_WIDTH) / OG_WIDTH;
     //y = (OG_VALUE * TARGET_HEIGHT / OG_HEIGHT;
     CGFloat x = (inputPoint.x * SCREEN_WIDTH) / 667;
@@ -534,7 +550,7 @@
         touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
-        [RKDropdownAlert title:@"PUBC 1.8.1-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:@"PUBC 1.8.1-8 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
     }
 }
 
@@ -731,7 +747,7 @@
         if (dpad.down.isPressed && dpadDownTouch == nil){
             //NSLog(@"down x value: %f y value: %f", xValue, yValue);
             CGPoint reload = PAT([self actionTypeForControllerButton:DpadDown]);//PAT(kPGBActionTypeReload);
-           dpadDownTouch = [[self IOSView] tapDownAtPoint:reload];
+            dpadDownTouch = [[self IOSView] tapDownAtPoint:reload];
         } else if (!dpad.down.isPressed){
             
             if (dpadDownTouch) {
@@ -745,7 +761,7 @@
             //NSLog(@"left x value: %f y value: %f", xValue, yValue);
             CGPoint leftWeapon = PAT([self actionTypeForControllerButton:DpadLeft]);
             //NSLog(@"left");
-           dpadLeftTouch = [[self IOSView] tapDownAtPoint:leftWeapon];
+            dpadLeftTouch = [[self IOSView] tapDownAtPoint:leftWeapon];
         } else if (!dpad.left.isPressed){
             
             if (dpadLeftTouch) {
@@ -758,7 +774,7 @@
         if (dpad.up.isPressed && dpadUpTouch == nil){
             //NSLog(@"up x value: %f y value: %f", xValue, yValue);
             CGPoint aim = PAT([self actionTypeForControllerButton:DpadUp]);//PAT(kPGBActionTypeAim);
-           dpadUpTouch = [[self IOSView] tapDownAtPoint:aim];
+            dpadUpTouch = [[self IOSView] tapDownAtPoint:aim];
         }else if (!dpad.up.isPressed){
             
             if (dpadUpTouch) {
@@ -908,7 +924,7 @@
             }
         }
     };
-        __block UITouch *yTouch = nil;
+    __block UITouch *yTouch = nil;
     profile.buttonY.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
     {
         if (pressed && yTouch == nil)
@@ -1060,43 +1076,43 @@
     CGPoint outpoint = CGPointZero;
     switch (type) {
         case kPGBActionTypeAim:
-            outpoint = CGPointMake(754,197);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(754,197)];
             break;
             
         case kPGBActionTypeRun:
-            outpoint = CGPointMake(668, 94);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(668, 94)];
             break;
             
         case kPGBActionTypeConceal: //lay down
-            outpoint = CGPointMake(730, 352);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(730, 352)];
             break;
             
         case kPGBActionTypeReload:
-            outpoint = CGPointMake(627,355);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(627,355)];
             break;
             
         case kPGBActionTypeFirstWeapon:
-            outpoint = CGPointMake(374,343);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(374,343)];
             break;
             
         case kPGBActionTypeSecondWeapon:
-            outpoint = CGPointMake(354, 343);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(354, 343)];
             break;
             
         case kPGBActionTypeTrainingButton:
-            outpoint = CGPointZero; //dont have this value yet
+            outpoint = [self convertPointForScreen:CGPointMake(28, 140)];
             break;
             
         case kPGBActionTypeOKCancelButton:    //Cancel button (on ok/cancel alert)
-            outpoint = CGPointZero; //dont have this value yet
+            outpoint = [self convertPointForScreen:CGPointMake(281,266)];
             break;
             
         case kPGBActionTypeXCloseButton:  //top right close x
-            outpoint = CGPointZero; //dont have this value yet
+            outpoint = [self convertPointForScreen:CGPointMake(610,72)];
             break;
             
         case kPGBActionTypeStartButton:
-            outpoint = CGPointMake(81, 32);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(81, 32)];
             break;
             
         case kPGBActionTypeOKDualButton: //(point for OK on Cancel / OK alert)
@@ -1109,26 +1125,26 @@
             
             
         case kPGBActionTypeRight:
-            outpoint = CGPointMake(684, 283);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(684, 283)];
             break;
             
         case kPGBActionTypeLeft:
-            outpoint = CGPointMake(72,196);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(72,196)];
             break;
             
         case kPGBActionTypeJump:
-            outpoint = CGPointMake(756,257); //long press
+            outpoint = [self convertForXPointOnScreen:CGPointMake(756,257)]; //long press
             break;
             
         case kPGBActionTypeCrouch:
-            outpoint = CGPointMake(678, 349);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(678, 349)];
             break;
         case kPGBActionTypeSmallWeapon:
-            outpoint = CGPointMake(485, 310); //dont have this value yet
+            outpoint = [self convertForXPointOnScreen:CGPointMake(485, 310)]; //dont have this value yet
             break;
             
         case kPGBActionTypeExitRound:
-            outpoint = CGPointMake(64,13);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(64,13)];
             break;
             
             
@@ -1149,19 +1165,19 @@
              
              */
         case kPGBActionTypeInventory:
-            outpoint =  CGPointMake(76,341);
+            outpoint =  [self convertForXPointOnScreen:CGPointMake(76,341)];
             break;
             
         case kPGBActionHandAction:
-            outpoint = CGPointMake(480+35,95);
+            outpoint = [self convertForXPointOnScreen:CGPointMake(480+35,95)];
             break;
             
         case kPGBActionFirstItemSelect:
-            outpoint = CGPointMake(437+35,132);// y+50 = 2 item y+ 100 = 3rd item
+            outpoint = [self convertForXPointOnScreen:CGPointMake(437+35,132)];// y+50 = 2 item y+ 100 = 3rd item
             break;
             
         case kPGBActionTypeOKSoloButton:
-            outpoint = CGPointZero; //dont have this value yet
+            outpoint = [self convertPointForScreen:CGPointMake(330,266)]; //dont have this value yet
             break;
             
         case kPGBActionTypePeakLeft:
@@ -1170,6 +1186,75 @@
             
         case kPGBActionTypePeakRight:
             outpoint = CGPointZero; //dont have this value yet
+            break;
+            
+            /*
+             speedBoost
+             brake
+             up
+             down
+             left
+             right
+             horn
+             exit
+             changeSeat
+             liftup
+             pointdowm
+             
+             */
+            
+            
+        case kPGBActionTypeDrive:
+            outpoint = [self convertPointForScreen:CGPointMake(458,160)];
+            break;
+            
+            
+        case kPGBActionTypeGetIn:
+            outpoint = [self convertPointForScreen:CGPointMake(458,196)];
+            break;
+            
+        case kPGBActionTypeDriveFW:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(137,201)];
+            break;
+            
+        case kPGBActionTypeDriveBW:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(137,201)];
+            break;
+            
+        case kPGBActionTypeDriveLeft:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(595,264)];
+            break;
+            
+        case kPGBActionTypeDriveRight:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(669,263)];
+            break;
+            
+        case kPGBActionTypeDriveHorn:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(751,258)];
+            break;
+            
+        case kPGBActionTypeDriveBrake:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(68,255)];
+            break;
+            
+        case kPGBActionTypeDriveUp:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(591,195)];
+            break;
+            
+        case kPGBActionTypeDriveDown:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(652,195)];
+            break;
+            
+        case kPGBActionTypeDriveExit:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(723,168)];
+            break;
+            
+        case kPGBActionTypeDriveSpeedBoost:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(85,130)];
+            break;
+            
+        case kPGBActionTypeDriveChangeSeat:
+            outpoint = [self convertForXPointOnScreen:CGPointMake(750,321)];
             break;
             
         default:
@@ -1288,6 +1373,7 @@
             outpoint = CGPointZero; //dont have this value yet
             break;
             
+            
         default:
             break;
     }
@@ -1302,10 +1388,6 @@
  screen, but then I attempt to translate the button offset to other screen sizes
  it works for a decent amount of models, but not all. still needs work.
  
-
-
- 
- 
  */
 
 - (CGPoint)pointForActionType:(PGBActionType)type {
@@ -1316,7 +1398,7 @@
         return [self pointForActionTypeOnIPadPro97:type];
     }
     
-    if (SCREEN_HEIGHT == 812) {
+    if (SCREEN_HEIGHT == 812 || SCREEN_HEIGHT == 896) {
         
         return [self pointForActionTypeOnX:type];
     }
@@ -1422,7 +1504,7 @@
         case kPGBActionTypeDrive:
             outpoint = [self convertPointForScreen:CGPointMake(458,160)];
             break;
-        
+            
             
         case kPGBActionTypeGetIn:
             outpoint = [self convertPointForScreen:CGPointMake(458,196)];
@@ -1449,7 +1531,7 @@
             break;
             
         case kPGBActionTypeDriveBrake:
-            outpoint = [self convertPointForScreen:CGPointMake(40,248)];
+            outpoint = [self convertPointForScreen:CGPointMake(46,249)];
             break;
             
         case kPGBActionTypeDriveUp:
