@@ -363,9 +363,8 @@
     
     if (!_shownActivatedAlert){
         _shownActivatedAlert = true;
-        NSLog(@"SHO MU FUCKIN ALERT BREH");
       //  dispatch_async(dispatch_get_main_queue(), ^{
-            [RKDropdownAlert title:@"PUBC 1.8.1-8 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+            [RKDropdownAlert title:@"PUBC 1.8.2-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
             
         //});
     }
