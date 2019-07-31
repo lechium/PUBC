@@ -132,11 +132,9 @@ typedef enum {
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
+#import "PUBGControllerManager.h"
 #import <GameController/GameController.h>
 #import "EXTScope.h"
 
-@interface GCController (pubc)
-
-@property (nonatomic) NSObject *gateKeeper;
-
-@end
+#define PRINT_CALL_STACK NSArray *callStack = [NSThread callStackSymbols]; NSLog(@"PUBC: callstack: %@", callStack);
+#define CM [PUBGControllerManager sharedManager]

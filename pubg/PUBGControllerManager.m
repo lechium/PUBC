@@ -6,6 +6,8 @@
 //  Copyright © 2019 nito. All rights reserved.
 //
 
+#define VERSION @"1.8.2-17"
+
 #import "PUBGControllerManager.h"
 #import <GameController/GameController.h>
 #import "UIView-KIFAdditions.h"
@@ -53,6 +55,10 @@
 {
     BOOL _shownActivatedAlert;
 }
+
+//keep track of our own
+
+
 @property (readwrite, assign) CGPoint previousPoint; //track the previous point when dragging / moving touches
 @property (nonatomic, strong) NSMutableArray *touches; //all of our touches, kept track of when moving so we can change the phase to touch up as needed
 
@@ -353,10 +359,16 @@
             [gcCopy removeObject:self.gameController];
             self.gameControllers = gcCopy;
         }
+        self.controllerPausedHandler = nil;
         self.gameController = nil;
+        
         
     }
     
+}
+
+- (NSString *)message {
+    return @"Tap here now, press your 'menu' or double tap anywhere on the screen with THREE fingers to bring up the control customization window.";
 }
 
 - (void)showActivatedAlert {
@@ -364,7 +376,7 @@
     if (!_shownActivatedAlert){
         _shownActivatedAlert = true;
       //  dispatch_async(dispatch_get_main_queue(), ^{
-            [RKDropdownAlert title:@"PUBC 1.8.2-1 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        [RKDropdownAlert title:[NSString stringWithFormat:@"PUBC %@ Activated",VERSION] message:[self message] backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
             
         //});
     }
@@ -577,14 +589,12 @@
 - (void)appWasActivated {
     
     [self showActivatedAlert];
-    NSLog(@"appWasActivated");
     if (self.gameController == nil){
-        NSLog(@"gc nil");
-        [GCController controllers];
+       NSArray *controllers  = [GCController controllers];
         
-        if (self.gameControllers.count > 0){
-            NSLog(@"self.gameControllers: %@", self.gameControllers);
-            [self setupController:self.gameControllers[0]];
+        if (controllers.count > 0){
+            //NSLog(@"self.gameControllers: %@", controllers);
+            [self setupController:controllers[0]];
             
         }
         
@@ -600,7 +610,8 @@
     
     GCExtendedGamepad *profile = self.gameController.extendedGamepad;
     @weakify(self);
-    self.gameController.controllerPausedHandler = ^(GCController * _Nonnull controller) {
+    
+    self.controllerPausedHandler = ^(GCController *controller) {
         
         if (!self_weak_.menuVisible){
             [self_weak_ showControlEditingView];
@@ -610,10 +621,8 @@
             [rvc dismissViewControllerAnimated:true completion:nil];
             
         }
-        //CGPoint menu = PAT([self actionTypeForControllerButton:Menu]);
-        //[[self IOSView] tapAtPoint:menu];
     };
-    
+  
     /*
      421,226 - top left
      521, 226, top right
@@ -970,7 +979,7 @@
     GCController *controller = n.object;
     NSLog(@"PUBC: controller connected: %@", controller.vendorName);
     if (_shownActivatedAlert){
-        [RKDropdownAlert title:@"Game controller connected" message:[NSString stringWithFormat:@"%@ was connected", controller.vendorName]];
+        [RKDropdownAlert title:@"Game controller connected" message:[NSString stringWithFormat:@"%@ was connected, %@ ", controller.vendorName,self.message] time:3.0 delegate:self];
     }
     [self setupController:n.object];
     
@@ -1072,7 +1081,7 @@
     NSDictionary *controllerDictionary = [self controllerPreferences];
     if (ph_is_hooker() == 1){
         int moveType = ph_get_move_type();
-        NSLog(@"hooker move type: %i", moveType);
+        //NSLog(@"hooker move type: %i", moveType);
         if (moveType == 0){ //driving
             
             controllerDictionary = self.drivingControls;

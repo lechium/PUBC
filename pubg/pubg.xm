@@ -3,10 +3,7 @@
 #import <GameController/GameController.h>
 #import "NSObject+AssociatedObjects.h"
 #import "pubghooks/pubghooks.h"
-//#import "FingerTips/MBFingerTipWindow.h"
-
 #include "pubghooks/pubghooks.h"
-
 
 %hook _GCControllerAxisInput
 
@@ -15,9 +12,8 @@
     //%log;
     float orig = %orig;
     if (orig > 0 || orig < 0){
-        PUBGControllerManager *man = [PUBGControllerManager sharedManager];
-        float ps = [man panningSpeed];
-        float aps = [man aimPanningSpeed];
+        float ps = [CM panningSpeed];
+        float aps = [CM aimPanningSpeed];
         if (ps == 0) { ps = 3.0; }
         if (ph_is_hooker()) {
             int mt = ph_get_is_aimed_down_sights();
@@ -31,9 +27,9 @@
             }
         }
         
-        BOOL inverted = [man invertedControl];
+        BOOL inverted = [CM invertedControl];
         if (!inverted){
-            GCControllerDirectionPad *rt = [[[man gameController] extendedGamepad] rightThumbstick];
+            GCControllerDirectionPad *rt = [[[CM gameController] extendedGamepad] rightThumbstick];
             GCControllerAxisInput *rightY = rt.yAxis;
             if ((_GCControllerAxisInput*)rightY == self){
                 return orig*-ps;
@@ -45,26 +41,29 @@
 }
 
 %end
+
 /*
-%hook GCController
+ 
+ they update this after us, so they end up taking over and doing nothing with it
+ here we just force it to do our bidding instead. it may be smarter just to have
+ it call the hide/show for the control editor, but this works.
+ 
+ */
 
-+ (NSArray<GCController *> *)controllers {
+%hook _GCController
 
-    PUBGControllerManager *man = [PUBGControllerManager sharedManager];
-    NSDictionary *gpd = [man controllerPreferences];
-    BOOL enabled = [gpd[ExperimentalControl] boolValue];
-   // NSArray *callStack = [NSThread callStackSymbols];
-   // NSLog(@"callstack: %@", callStack);
-    if (enabled) {
-        //NSLog(@"no controllers for you!");
-        man.gameControllers = %orig;
-        return nil;
+- (id)controllerPausedHandler {
+  
+    id cph = [CM controllerPausedHandler];
+    if (cph){
+        return cph;
     }
-    return %orig;
+    id orig = %orig;
+    return orig;
 }
 
 %end
-*/
+
 
 static int has_launched = 0;
 
@@ -80,19 +79,14 @@ static int has_launched = 0;
     }
 
     %orig;
-    [[PUBGControllerManager sharedManager] appWasActivated];
+    [CM appWasActivated];
 }
-
-
 
 - (_Bool)application:(id)arg1 didFinishLaunchingWithOptions:(id)arg2 {
 
     %log;
     NSLog(@"PUBC: #### in application:didFinishLaunchingWithOptions");
-    PUBGControllerManager *man = [PUBGControllerManager sharedManager];
-    [man listenForControllers];
- 
-
+    [CM listenForControllers];
     return %orig;
 
 }
