@@ -17,6 +17,7 @@
 #import "NSObject+AssociatedObjects.h"
 #import "UIWindow+Additions.h"
 #import "pubghooks/pubghooks.h"
+#import "UIColor+Additions.h"
 
 //screen size
 #define SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
@@ -49,7 +50,9 @@
 @end
 
 @interface PUBGControllerManager ()
-
+{
+    BOOL _shownActivatedAlert;
+}
 @property (readwrite, assign) CGPoint previousPoint; //track the previous point when dragging / moving touches
 @property (nonatomic, strong) NSMutableArray *touches; //all of our touches, kept track of when moving so we can change the phase to touch up as needed
 
@@ -157,7 +160,7 @@
     if (SCREEN_HEIGHT == 667) {
         return inputPoint;
     }
-
+    
     //x = (OG_VALUE * TARGET_WIDTH) / OG_WIDTH;
     //y = (OG_VALUE * TARGET_HEIGHT / OG_HEIGHT;
     CGFloat x = (inputPoint.x * SCREEN_WIDTH) / 667;
@@ -337,6 +340,10 @@
 
 - (void)controllerDisconnected:(NSNotification *)n {
     
+    GCController *controller = n.object;
+    //8AD7FF
+    [RKDropdownAlert title:@"Game controller disconnected" message:[NSString stringWithFormat:@"%@ was disconnected", controller.vendorName]];
+    
     if (n.object == self.gameController){
         [self.timer invalidate];
         self.timer = nil;
@@ -352,13 +359,27 @@
     
 }
 
+- (void)showActivatedAlert {
+    
+    if (!_shownActivatedAlert){
+        _shownActivatedAlert = true;
+        NSLog(@"SHO MU FUCKIN ALERT BREH");
+      //  dispatch_async(dispatch_get_main_queue(), ^{
+            [RKDropdownAlert title:@"PUBC 1.8.1-8 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+            
+        //});
+    }
+}
+
 - (void)listenForControllers {
+    
     
     _tapSetup = false;
     prev = 0;
     absPrev = 0;
     vertAbsPrev = 0;
     vertPrev = 0;
+    _shownActivatedAlert = false;
     [self loadControllerPreferences];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDisconnected:) name:GCControllerDidDisconnectNotification object:nil];
@@ -550,12 +571,13 @@
         touchSurfaceDoubleTapRecognizer.numberOfTouchesRequired = 3;
         [view addGestureRecognizer:touchSurfaceDoubleTapRecognizer];
         _tapSetup = TRUE;
-        [RKDropdownAlert title:@"PUBC 1.8.1-8 Activated" message:@"Tap here now OR double tap anywhere on the screen with THREE fingers to bring up the control customization window." backgroundColor:[UIColor redColor] textColor:[UIColor whiteColor] time:3 delegate:self];
+        //[self showActivatedAlert];
     }
 }
 
 - (void)appWasActivated {
     
+    [self showActivatedAlert];
     NSLog(@"appWasActivated");
     if (self.gameController == nil){
         NSLog(@"gc nil");
@@ -946,8 +968,12 @@
 
 - (void)controllerConnected:(NSNotification *)n {
     
+    GCController *controller = n.object;
+    NSLog(@"PUBC: controller connected: %@", controller.vendorName);
+    if (_shownActivatedAlert){
+        [RKDropdownAlert title:@"Game controller connected" message:[NSString stringWithFormat:@"%@ was connected", controller.vendorName]];
+    }
     [self setupController:n.object];
-    
     
 }
 

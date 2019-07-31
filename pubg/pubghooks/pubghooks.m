@@ -2,7 +2,7 @@
 #include <substrate.h>
 #import <Foundation/Foundation.h>
 
-static int MOVE_TYPE_INTERNAL = -1; 
+static int MOVE_TYPE_INTERNAL = 0; 
 static int IS_AIMED_DOWN_SIGHTS_INTERNAL = 0;
 static int IS_PRESSING_FIRE_BUTTON_INTERNAL = 0;
 static bool HOOKER_INTERNAL = false;

@@ -33,6 +33,7 @@
 		32004ACF22DD66F000FB4FF1 /* PUBGControllerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004ACE22DD66F000FB4FF1 /* PUBGControllerManager.m */; };
 		32004AD222E433DF00FB4FF1 /* PUBCPanSpeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004AD122E433DF00FB4FF1 /* PUBCPanSpeedViewController.m */; };
 		32004AD622E7B6B100FB4FF1 /* pubghooks.m in Sources */ = {isa = PBXBuildFile; fileRef = 32004AD522E7B6B100FB4FF1 /* pubghooks.m */; };
+		32216FE822F11A0F001883F8 /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 32216FE722F11A0F001883F8 /* UIColor+Additions.m */; };
 		329236B822EA477900AE5B9C /* PUBCDrivingControlsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 329236B722EA477900AE5B9C /* PUBCDrivingControlsTableViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -95,6 +96,8 @@
 		32004AD122E433DF00FB4FF1 /* PUBCPanSpeedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PUBCPanSpeedViewController.m; sourceTree = "<group>"; };
 		32004AD422E7B6B100FB4FF1 /* pubghooks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pubghooks.h; sourceTree = "<group>"; };
 		32004AD522E7B6B100FB4FF1 /* pubghooks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = pubghooks.m; sourceTree = "<group>"; };
+		32216FE622F11A0F001883F8 /* UIColor+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Additions.h"; sourceTree = "<group>"; };
+		32216FE722F11A0F001883F8 /* UIColor+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Additions.m"; sourceTree = "<group>"; };
 		329236B622EA477900AE5B9C /* PUBCDrivingControlsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PUBCDrivingControlsTableViewController.h; sourceTree = "<group>"; };
 		329236B722EA477900AE5B9C /* PUBCDrivingControlsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PUBCDrivingControlsTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -162,6 +165,8 @@
 		32004A8322DD66CB00FB4FF1 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				32216FE622F11A0F001883F8 /* UIColor+Additions.h */,
+				32216FE722F11A0F001883F8 /* UIColor+Additions.m */,
 				32004A8422DD66CB00FB4FF1 /* NSObject+AssociatedObjects.h */,
 				32004A8522DD66CB00FB4FF1 /* NSObject+AssociatedObjects.m */,
 				32004A8622DD66CB00FB4FF1 /* UIWindow+Additions.h */,
@@ -335,6 +340,7 @@
 				32004ABD22DD66CB00FB4FF1 /* CGGeometry-KIFAdditions.m in Sources */,
 				32004AB622DD66CB00FB4FF1 /* NSObject+AssociatedObjects.m in Sources */,
 				32004AC622DD66CB00FB4FF1 /* UIWindow-KIFAdditions.m in Sources */,
+				32216FE822F11A0F001883F8 /* UIColor+Additions.m in Sources */,
 				32004AC722DD66CB00FB4FF1 /* MBFingerTipWindow.m in Sources */,
 				32004ABC22DD66CB00FB4FF1 /* PUBPrefTableViewController.m in Sources */,
 				32004AC222DD66CB00FB4FF1 /* UIScreen+KIFAdditions.m in Sources */,

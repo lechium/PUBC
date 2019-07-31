@@ -7,16 +7,6 @@
 
 #include "pubghooks/pubghooks.h"
 
-%hook FMetalDebugRenderCommandEncoder
-
-- (void)setTessellationFactorBuffer:(id)arg1 offset:(unsigned long long)arg2 instanceStride:(unsigned long long)arg3 {
-
-    %log;
-    %orig;
-
-}
-
-%end
 
 %hook _GCControllerAxisInput
 
