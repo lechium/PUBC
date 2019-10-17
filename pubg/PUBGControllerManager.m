@@ -1,4 +1,4 @@
-//
+/
 //  PUBGControllerManager.m
 //  pubc
 //
@@ -202,7 +202,7 @@
 - (float)aimPanningSpeed {
     
     float ps = [self.controllerPreferences[AimPanningSpeed] floatValue];
-    if (ps == 0) return 1.0;
+    if (ps == 0) return 0.0;
     return ps;
 }
 
@@ -275,7 +275,7 @@
         if (![[self.gamePlayDictionary allKeys] containsObject:PanningSpeed]){
             [fixed setValue:[NSNumber numberWithFloat:3.0] forKey:PanningSpeed];
         }
-        [fixed setValue:[NSNumber numberWithFloat:1.0] forKey:AimPanningSpeed];
+        [fixed setValue:[NSNumber numberWithFloat:0.0] forKey:AimPanningSpeed];
         [fixed setValue:[self tempDrivingDictionary] forKey:@"Driving"];
         [fixed writeToFile:localFile atomically:TRUE];
         self.gamePlayDictionary = fixed;
@@ -676,8 +676,8 @@
              
              */
             
-            CGFloat xv=(xValue*200)+xValueNeutral;
-            CGFloat yv=(yValue*200 * - 1)+yValueNeutral;
+            CGFloat xv=(xValue*100)+xValueNeutral;
+            CGFloat yv=(yValue*100 * - 1)+yValueNeutral;
             
             /*
              
