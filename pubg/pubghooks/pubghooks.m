@@ -27,31 +27,31 @@ static inline int is_local_player(void *obj){
     return (*(char *)((uint64_t)obj + 0x128) == 2);
 }
 
-static void *(*sub_101c6fb20)(void *, float);
+static void *(*sub_101cfe0ac)(void *, float);
 
-static void *_sub_101c6fb20(void *_this, float arg1){
+static void *_sub_101cfe0ac(void *_this, float arg1){
     if(is_local_player(_this)){
-        void *x8 = *(void **)((uint64_t)_this + 0x1378);
+        void *x8 = *(void **)((uint64_t)_this + 0x1500);
         
         if(x8)
             MOVE_TYPE_INTERNAL = *(char *)((uint64_t)x8 + 0x1c4);
     }
     
-    return sub_101c6fb20(_this, arg1);
+    return sub_101cfe0ac(_this, arg1);
 }
 
-static void (*sub_101c1da54)(void *, char);
+static void (*sub_101caab8c)(void *, char);
 
-static void _sub_101c1da54(void *_this, char arg1){
+static void _sub_101caab8c(void *_this, char arg1){
     IS_AIMED_DOWN_SIGHTS_INTERNAL = *(char *)((uint64_t)_this + 0x114);
 
-    sub_101c1da54(_this, arg1);
+    sub_101caab8c(_this, arg1);
 }
 
-static void (*sub_101c72490)(void *);
+static void (*sub_101d0086c)(void *);
 
-static void _sub_101c72490(void *_this){
-    sub_101c72490(_this);
+static void _sub_101d0086c(void *_this){
+    sub_101d0086c(_this);
     
     if(!is_local_player(_this))
         return;
@@ -61,7 +61,7 @@ static void _sub_101c72490(void *_this){
     if(!x8)
         return;
     
-    x8 = *(void **)((uint64_t)x8 + 0x9a8);
+    x8 = *(void **)((uint64_t)x8 + 0x9b0);
     
     if(!x8)
         return;
@@ -72,7 +72,7 @@ static void _sub_101c72490(void *_this){
     if(!x0)
         return;
     
-    int w8 = 0x2948;
+    int w8 = 0x2cb8;
     
     IS_PRESSING_FIRE_BUTTON_INTERNAL = *(char *)((uint64_t)x0 + w8);
 }
@@ -86,7 +86,7 @@ void ph_initialize(void){
 
     NSString *version = [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"];
     NSComparisonResult result
-    = [@"0.14.0" compare:version
+    = [@"0.15.0" compare:version
                     options:NSNumericSearch | NSCaseInsensitiveSearch];
     if (result == NSOrderedSame){
         
@@ -98,9 +98,9 @@ void ph_initialize(void){
         
         GetEntity = (void *(*)(void *))(slide + 0x101c62210);
         
-        HOOK(0x101c6fb20, _sub_101c6fb20, sub_101c6fb20);
-        HOOK(0x101c1da54, _sub_101c1da54, sub_101c1da54);
-        HOOK(0x101c72490, _sub_101c72490, sub_101c72490);
+        HOOK(0x101cfe0ac, _sub_101cfe0ac, sub_101cfe0ac);
+        HOOK(0x101caab8c, _sub_101caab8c, sub_101caab8c);
+        HOOK(0x101d0086c, _sub_101d0086c, sub_101d0086c);
     }
     
 }

@@ -2,7 +2,7 @@ ARCHS = arm64e armv7 armv7s arm64
 TARGET = iphone
 export GO_EASY_ON_ME=1
 export SDKVERSION=12.1
-THEOS_DEVICE_IP=192.168.0.3
+THEOS_DEVICE_IP=eleven.local
 DEBUG=0
 
 include $(THEOS)/makefiles/common.mk
