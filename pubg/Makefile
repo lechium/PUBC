@@ -1,7 +1,8 @@
+export PREFIX = $(THEOS)/toolchain/XcodeDefault.xctoolchain/usr/bin/
 ARCHS = arm64e armv7 armv7s arm64
 TARGET = iphone
 export GO_EASY_ON_ME=1
-export SDKVERSION=12.1
+#export SDKVERSION=12.1
 THEOS_DEVICE_IP=eleven.local
 DEBUG=0
 
@@ -16,7 +17,7 @@ PUBC_FILES += extobjc/EXTRuntimeExtensions.m extobjc/EXTScope.m
 PUBC_FILES += pubghooks/pubghooks.m
 PUBC_LIBRARIES = substrate
 PUBC_FRAMEWORKS = Foundation IOKit GameController
-PUBC_CFLAGS += -I.-Ipubghooks -IRKDropdownAlert -Iextobjc -IPureLayout -IKIF -IPreferences -ICategories -fobjc-arc -miphoneos-version-min=9.0
+PUBC_CFLAGS += -I. -Ipubghooks -IRKDropdownAlert -Iextobjc -IPureLayout -IKIF -IPreferences -ICategories -fobjc-arc -miphoneos-version-min=9.0
 PUBC_LDFLAGS = -miphoneos-version-min=9.0 -undefined dynamic_lookup
 #PUBC_CODESIGN_FLAGS=-Slibrespring.xml
 
